@@ -40,6 +40,7 @@ public class Interview {
     private String difficulty; // EASY, MEDIUM, HARD, FAANG
     private String persona; // FRIENDLY_HR, STRICT_TECHNICAL, ...
     private String roundType; // TECHNICAL, HR, BEHAVIORAL
+    private String governmentExamType; // SSB, UPSC, BANK_PO, SSC_RAILWAY, RESEARCH_ORG (only for GOVERNMENT mode)
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")

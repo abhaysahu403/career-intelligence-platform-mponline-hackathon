@@ -5,6 +5,7 @@ import com.cip.interview.dto.InterviewDtos;
 import com.cip.interview.dto.InterviewV3Dtos;
 import com.cip.interview.entity.BranchQuestion;
 import com.cip.interview.entity.CompanyQuestion;
+import com.cip.interview.entity.GovernmentInterviewQuestion;
 import com.cip.interview.service.InterviewService;
 import com.cip.interview.service.InterviewV3Service;
 import com.cip.interview.service.QuestionBankService;
@@ -48,6 +49,19 @@ public class InterviewController {
             @RequestParam(required = false) String difficulty) {
         return ResponseEntity.ok(ApiResponse.success(
                 questionBankService.getBranchQuestions(branch, difficulty)));
+    }
+
+    @GetMapping("/questions/government-exam-types")
+    public ResponseEntity<ApiResponse<List<String>>> listGovernmentExamTypes() {
+        return ResponseEntity.ok(ApiResponse.success(questionBankService.getGovernmentExamTypes()));
+    }
+
+    @GetMapping("/questions/government/{examType}")
+    public ResponseEntity<ApiResponse<List<GovernmentInterviewQuestion>>> governmentQuestions(
+            @PathVariable String examType,
+            @RequestParam(required = false) String difficulty) {
+        return ResponseEntity.ok(ApiResponse.success(
+                questionBankService.getGovernmentQuestions(examType, difficulty)));
     }
 
     @PostMapping("/start")
@@ -137,7 +151,8 @@ public class InterviewController {
                 "branches", java.util.List.of("Computer Science", "Information Technology", "Electronics", "Electrical", "Mechanical", "Civil"),
                 "difficulties", java.util.List.of("EASY", "MEDIUM", "HARD", "FAANG"),
                 "personas", java.util.List.of("FRIENDLY_HR", "STRICT_TECHNICAL", "STARTUP_FOUNDER", "FAANG_INTERVIEWER", "SENIOR_ARCHITECT"),
-                "durations", java.util.List.of(15, 30, 45, 60, 90)
+                "durations", java.util.List.of(15, 30, 45, 60, 90),
+                "governmentExamTypes", questionBankService.getGovernmentExamTypes()
             )
         ));
     }

@@ -5,6 +5,7 @@ import com.cip.interview.dto.InterviewV3Dtos;
 import com.cip.interview.entity.BranchQuestion;
 import com.cip.interview.entity.CompanyQuestion;
 import com.cip.interview.entity.FacialAnalytics;
+import com.cip.interview.entity.GovernmentInterviewQuestion;
 import com.cip.interview.entity.Interview;
 import com.cip.interview.repository.FacialAnalyticsRepository;
 import com.cip.interview.repository.InterviewRepository;
@@ -52,6 +53,7 @@ public class InterviewV3Service {
                 .difficulty(difficulty)
                 .persona(req.getPersona() != null ? req.getPersona() : "FRIENDLY_HR")
                 .roundType(req.getRoundType() != null ? req.getRoundType() : "TECHNICAL")
+                .governmentExamType(req.getGovernmentExamType())
                 .status(Interview.InterviewStatus.IN_PROGRESS)
                 .totalQuestions(questions.size())
                 .answeredQuestions(0)
@@ -90,14 +92,28 @@ public class InterviewV3Service {
             bank.stream().limit(numQuestions).forEach(q -> questions.add(InterviewV3Dtos.QuestionDto.builder()
                     .question(q.getQuestion()).topic(q.getSubject()).difficulty(q.getDifficulty())
                     .ideal(q.getIdealAnswer()).source("branch_bank").branch(q.getBranch()).build()));
+        } else if ("GOVERNMENT".equals(mode) && req.getGovernmentExamType() != null) {
+            List<GovernmentInterviewQuestion> bank =
+                    questionBankService.getGovernmentQuestions(req.getGovernmentExamType(), difficulty);
+            if (bank.isEmpty()) {
+                bank = questionBankService.getGovernmentQuestions(req.getGovernmentExamType(), null);
+            }
+            bank.stream().limit(numQuestions).forEach(q -> questions.add(InterviewV3Dtos.QuestionDto.builder()
+                    .question(q.getQuestion()).topic(q.getCategory()).difficulty(q.getDifficulty())
+                    .ideal(q.getIdealAnswer()).source("government_bank").governmentExamType(q.getExamType()).build()));
         }
 
         // Top up with AI-generated questions if the bank didn't cover the requested count
         // (also covers RESUME_BASED/ROLE_BASED/TIME_BASED, which have no static bank at all)
         if (questions.size() < numQuestions) {
+            // Government interviews get an exam-specific persona (ssb/upsc/bank_po/...) so the
+            // generated questions/feedback match that exam's tone instead of a generic HR persona.
+            String effectivePersona = "GOVERNMENT".equals(mode) && req.getGovernmentExamType() != null
+                    ? req.getGovernmentExamType().toLowerCase()
+                    : req.getPersona();
             List<Map<String, Object>> history = new ArrayList<>();
             while (questions.size() < numQuestions) {
-                Map<String, Object> generated = mlClient.generateQuestion(req.getRole(), req.getPersona(), history);
+                Map<String, Object> generated = mlClient.generateQuestion(req.getRole(), effectivePersona, history);
                 questions.add(InterviewV3Dtos.QuestionDto.builder()
                         .question(String.valueOf(generated.get("question")))
                         .topic(String.valueOf(generated.getOrDefault("topic", "General")))
@@ -105,7 +121,7 @@ public class InterviewV3Service {
                         .ideal(String.valueOf(generated.getOrDefault("expected_answer", "")))
                         .source("ai_generated")
                         .build());
-                history.add(Map.of("question", generated.get("question"), "answer_text", ""));
+                history.add(Map.of("question", generated.get("question"), "answer", ""));
             }
         }
 
@@ -365,7 +381,7 @@ public class InterviewV3Service {
     private List<Map<String, Object>> readAnswerHistory(Interview interview) {
         return readAnswers(interview).stream()
                 .map(a -> Map.<String, Object>of("question", a.getQuestion() != null ? a.getQuestion() : "",
-                        "answer_text", a.getAnswer() != null ? a.getAnswer() : ""))
+                        "answer", a.getAnswer() != null ? a.getAnswer() : ""))
                 .toList();
     }
 
@@ -381,6 +397,7 @@ public class InterviewV3Service {
                 .difficulty(i.getDifficulty())
                 .persona(i.getPersona())
                 .roundType(i.getRoundType())
+                .governmentExamType(i.getGovernmentExamType())
                 .status(i.getStatus() != null ? i.getStatus().name() : null)
                 .questions(readQuestions(i))
                 .answers(readAnswers(i))

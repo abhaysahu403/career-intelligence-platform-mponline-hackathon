@@ -89,6 +89,46 @@ ROLE_QUESTION_BANK = {
 }
 
 
+GOVERNMENT_QUESTION_BANK = {
+    "ssb": [
+        {"topic": "Leadership", "difficulty": "medium", "question": "Describe a time you had to motivate a demoralized team to complete a task."},
+        {"topic": "Situation Reaction", "difficulty": "hard", "question": "Two of your teammates are arguing loudly during an exercise. What do you do?"},
+        {"topic": "Self Confidence", "difficulty": "medium", "question": "What would you do if you were blamed for a mistake you didn't make?"},
+    ],
+    "upsc": [
+        {"topic": "Governance", "difficulty": "hard", "question": "How would you handle a situation where local political pressure conflicts with administrative rules?"},
+        {"topic": "Current Affairs", "difficulty": "medium", "question": "What recent policy change do you think will have the biggest impact on your home state?"},
+        {"topic": "Ethics", "difficulty": "medium", "question": "How would you respond if a senior colleague asked you to overlook a minor procedural violation?"},
+    ],
+    "bank_po": [
+        {"topic": "Banking Awareness", "difficulty": "medium", "question": "What is the difference between a scheduled and non-scheduled bank?"},
+        {"topic": "Financial Literacy", "difficulty": "medium", "question": "How would you explain the benefits of a fixed deposit to a first-time customer?"},
+        {"topic": "Current Affairs", "difficulty": "hard", "question": "How do changes in the repo rate typically affect EMI amounts for existing loan customers?"},
+    ],
+    "ssc_railway": [
+        {"topic": "General Awareness", "difficulty": "medium", "question": "What do you know about the organizational structure of the department you are applying to?"},
+        {"topic": "Work Approach", "difficulty": "medium", "question": "How would you handle a backlog of pending applications in your role?"},
+        {"topic": "Technical", "difficulty": "hard", "question": "What basic safety checks would you perform before starting work on site?"},
+    ],
+    "research_org": [
+        {"topic": "Technical", "difficulty": "hard", "question": "How would you debug a simulation that produces inconsistent results across runs?"},
+        {"topic": "Research Aptitude", "difficulty": "medium", "question": "How do you decide whether a research approach is worth pursuing further or should be abandoned?"},
+        {"topic": "Project Deep-Dive", "difficulty": "hard", "question": "What is the most technically difficult part of a project you've worked on, and how did you solve it?"},
+    ],
+}
+
+
+def _government_fallback_question(persona_mode: str, previous_answers: list) -> dict:
+    bank = GOVERNMENT_QUESTION_BANK[persona_mode]
+    item = bank[len(previous_answers) % len(bank)]
+    return {
+        "question": item["question"],
+        "difficulty": item["difficulty"],
+        "topic": item["topic"],
+        "expected_answer": f"Look for depth and genuineness in how the candidate addresses {item['topic'].lower()}.",
+    }
+
+
 def _get_gemini_model():
     api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not api_key or genai is None:
@@ -133,6 +173,27 @@ def _persona_instruction(persona_mode: str) -> str:
         return "Tone: strict, concise, demanding, and professional."
     if persona == "faang":
         return "Tone: FAANG-level technical interviewer. Prioritize correctness, edge cases, complexity, tradeoffs, and scale."
+    # Government exam interview personas (Module 2: SSB/UPSC/Bank PO/SSC-Railway/Research Org)
+    if persona == "ssb":
+        return ("Tone: senior army officer conducting an SSB interview. Ask questions that test "
+                "leadership, patriotism, situational awareness, and officer-like qualities. Give "
+                "feedback in a direct, military-style manner focused on decisiveness and integrity.")
+    if persona == "upsc":
+        return ("Tone: UPSC civil services board member. Ask questions probing governance, policy "
+                "reasoning, ethics, and awareness of the candidate's home state/background. Give "
+                "balanced, formal feedback focused on clarity of thought and administrative judgment.")
+    if persona == "bank_po":
+        return ("Tone: bank PO panel interviewer. Ask questions on banking awareness, RBI policy, "
+                "financial literacy, and motivation for a banking career. Give practical feedback "
+                "focused on financial-sector awareness and customer-facing judgment.")
+    if persona == "ssc_railway":
+        return ("Tone: SSC/Railway recruitment board member. Ask questions on general awareness, "
+                "current affairs, and department-specific knowledge (technical for JE roles). Give "
+                "feedback focused on breadth of general awareness and procedural discipline.")
+    if persona == "research_org":
+        return ("Tone: senior scientist at a defence/research organisation (DRDO/ISRO/NIC). Ask "
+                "deep technical and research-aptitude questions, harder than a typical FAANG interview. "
+                "Give feedback focused on technical rigor, research aptitude, and precision.")
     return "Tone: friendly, concise, supportive, and direct."
 
 
@@ -194,26 +255,34 @@ def _fallback_question(resume_data: dict, job_role: str, previous_answers: list)
 
 
 def _generate_question(resume_data: dict, job_role: str, previous_answers: list, persona_mode: str) -> dict:
-    fallback = _fallback_question(resume_data, job_role, previous_answers)
+    is_government_persona = (persona_mode or "").lower() in GOVERNMENT_QUESTION_BANK
+    fallback = (
+        _government_fallback_question((persona_mode or "").lower(), previous_answers)
+        if is_government_persona
+        else _fallback_question(resume_data, job_role, previous_answers)
+    )
     model = _get_gemini_model()
     if model is None:
         return fallback
 
     skills = _normalize_skills(resume_data)
-    role_key = _role_key(job_role)
-    role_bank = ROLE_QUESTION_BANK.get(role_key, ROLE_QUESTION_BANK["sde"])
+    seed_bank = GOVERNMENT_QUESTION_BANK[(persona_mode or "").lower()] if is_government_persona \
+        else ROLE_QUESTION_BANK.get(_role_key(job_role), ROLE_QUESTION_BANK["sde"])
     seed_questions = [
         f"- [{item['difficulty']}] {item['topic']}: {item['question']}"
-        for item in role_bank[:6]
+        for item in seed_bank[:6]
     ]
+    context_line = (
+        f"Government Exam Type: {persona_mode.upper()}" if is_government_persona
+        else f"Role: {job_role}\nResume Skills: {', '.join(skills[:10]) or 'general programming'}"
+    )
     prompt = f"""You are generating the next interview question.
 {_persona_instruction(persona_mode)}
 
-Role: {job_role}
-Resume Skills: {", ".join(skills[:10]) or "general programming"}
+{context_line}
 Weak Topics From Last 3 Answers: {", ".join(_weak_topics(previous_answers)) or "none"}
 Questions Already Asked: {len(previous_answers)}
-Role Question Bank:
+Seed Question Bank:
 {chr(10).join(seed_questions)}
 
 Return JSON only:

@@ -17,6 +17,7 @@ public class InterviewV3Dtos {
         private String difficulty;
         private String persona;
         private String roundType;
+        private String governmentExamType; // SSB, UPSC, BANK_PO, SSC_RAILWAY, RESEARCH_ORG (mode=GOVERNMENT only)
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor
@@ -25,9 +26,10 @@ public class InterviewV3Dtos {
         private String topic;
         private String difficulty;
         private String ideal;
-        private String source; // company_bank, branch_bank, ai_generated, fallback
+        private String source; // company_bank, branch_bank, government_bank, ai_generated, fallback
         private String company;
         private String branch;
+        private String governmentExamType;
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor
@@ -54,6 +56,7 @@ public class InterviewV3Dtos {
         private String difficulty;
         private String persona;
         private String roundType;
+        private String governmentExamType;
         private String status;
         private List<QuestionDto> questions;
         private List<AnswerEntryDto> answers;
