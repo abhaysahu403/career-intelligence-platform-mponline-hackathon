@@ -223,6 +223,14 @@ export const jobsApi = {
     api.get('/jobs/filter', { params }),
   recommended: (params?: { readiness?: number; skills?: string[] }) => api.get('/jobs/recommended', { params }),
   getById:     (id: number) => api.get(`/jobs/${id}`),
+
+  // ─── Government Jobs ──────────────────────────────────────────────────────
+  government: {
+    list:        (params?: { category?: string }) => api.get('/jobs/government', { params }),
+    getById:     (id: number) => api.get(`/jobs/government/${id}`),
+    recommended: (params?: { branch?: string; cgpa?: number; graduationYear?: number; preferences?: string[] }) =>
+      api.get('/jobs/government/recommended', { params }),
+  },
 };
 
 // ─── Roadmap / Recommendations ────────────────────────────────────────────────

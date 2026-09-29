@@ -1,6 +1,8 @@
 // lib/api/certificates.ts
 // Certificate API client — connects to certificate-service via API Gateway
 
+import Cookies from 'js-cookie';
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export interface UploadResponse {
@@ -92,9 +94,7 @@ export interface UserCertificatesResponse {
 }
 
 function getAuthHeader(): Record<string, string> {
-  const token = typeof window !== 'undefined' 
-    ? localStorage.getItem('authToken') || sessionStorage.getItem('authToken')
-    : null;
+  const token = Cookies.get('cip_token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 

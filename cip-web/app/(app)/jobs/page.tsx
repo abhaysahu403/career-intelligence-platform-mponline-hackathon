@@ -6,6 +6,7 @@ import { Search, Filter, Zap, X, Share2 } from 'lucide-react';
 import { jobsApi } from '@/lib/api';
 import JobCard from '@/components/ui/JobCard';
 import ScoreCircle from '@/components/ui/ScoreCircle';
+import JobsTabSwitcher from '@/components/ui/JobsTabSwitcher';
 import { useAppStore } from '@/store';
 import type { Job } from '@/types';
 import ShareReportModal from '@/components/ui/ShareReportModal';
@@ -203,6 +204,8 @@ export default function JobsPage() {
 
   return (
     <div className="space-y-6 pb-12 max-w-7xl">
+      <JobsTabSwitcher active="private" />
+
       {/* Header + Score mini */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         <div className="flex-1">

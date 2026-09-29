@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class AppConfig implements WebMvcConfigurer {
+public class AppConfig {
 
     @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
     private String bootstrapServers;
@@ -46,14 +46,8 @@ public class AppConfig implements WebMvcConfigurer {
         return om;
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedOriginPatterns("*")
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true);
-    }
+    // CORS is configured once, in WebConfig — a second addCorsMappings() here
+    // duplicated the Access-Control-Allow-Origin header and browsers rejected it.
 
     // ── Kafka Beans ─────────────────────────────────────────────────────────
 

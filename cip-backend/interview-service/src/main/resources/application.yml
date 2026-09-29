@@ -10,10 +10,15 @@ spring:
     password: ${DB_PASSWORD:cip_password_123}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -31,6 +36,9 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "com.cip.common.events"
+
+ml:
+  service-url: ${ML_SERVICE_URL:http://localhost:8000}
 
 management:
   endpoints:

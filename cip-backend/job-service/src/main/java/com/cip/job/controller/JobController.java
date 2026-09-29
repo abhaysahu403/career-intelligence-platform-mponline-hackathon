@@ -1,7 +1,9 @@
 package com.cip.job.controller;
 
 import com.cip.common.dto.ApiResponse;
+import com.cip.job.entity.GovernmentJob;
 import com.cip.job.entity.Job;
+import com.cip.job.service.GovernmentJobService;
 import com.cip.job.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,28 @@ import java.util.Map;
 public class JobController {
 
     private final JobService jobService;
+    private final GovernmentJobService governmentJobService;
+
+    @GetMapping("/government")
+    public ResponseEntity<ApiResponse<List<GovernmentJob>>> getGovernmentJobs(
+            @RequestParam(required = false) String category) {
+        return ResponseEntity.ok(ApiResponse.success(governmentJobService.getAll(category)));
+    }
+
+    @GetMapping("/government/{id}")
+    public ResponseEntity<ApiResponse<GovernmentJob>> getGovernmentJob(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(governmentJobService.getById(id)));
+    }
+
+    @GetMapping("/government/recommended")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getRecommendedGovernmentJobs(
+            @RequestParam(required = false) String branch,
+            @RequestParam(required = false) Double cgpa,
+            @RequestParam(required = false) Integer graduationYear,
+            @RequestParam(required = false) List<String> preferences) {
+        return ResponseEntity.ok(ApiResponse.success(
+                governmentJobService.recommend(branch, cgpa, graduationYear, preferences)));
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Job>>> getAllJobs(

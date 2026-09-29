@@ -276,6 +276,33 @@ export interface Job {
   mode?: string;
 }
 
+// ─── Government Jobs ─────────────────────────────────────────────────────────
+export type GovernmentJobCategory = 'CENTRAL_GOVT' | 'STATE_GOVT' | 'PSU' | 'BANKING' | 'RAILWAY' | 'DEFENCE';
+export type EligibilityStatus = 'ELIGIBLE' | 'PARTIALLY_ELIGIBLE' | 'NOT_ELIGIBLE';
+
+export interface GovernmentJob {
+  id: number;
+  code: string;
+  title: string;
+  organization: string;
+  category: GovernmentJobCategory;
+  eligibleBranches: string[];
+  minCgpa?: number;
+  examName?: string;
+  applicationLink: string;
+  examCycle?: string;
+  salary?: string;
+  eligibility?: string;
+  tags?: string[];
+  active: boolean;
+}
+
+export interface GovernmentJobRecommendation {
+  job: GovernmentJob;
+  matchScore: number;
+  eligibilityStatus: EligibilityStatus;
+}
+
 // ─── Roadmap ─────────────────────────────────────────────────────────────────
 export interface RoadmapTask {
   id: string;

@@ -2,12 +2,18 @@ package com.cip.interview.controller;
 
 import com.cip.common.dto.ApiResponse;
 import com.cip.interview.dto.InterviewDtos;
+import com.cip.interview.dto.InterviewV3Dtos;
+import com.cip.interview.entity.BranchQuestion;
+import com.cip.interview.entity.CompanyQuestion;
 import com.cip.interview.service.InterviewService;
+import com.cip.interview.service.InterviewV3Service;
+import com.cip.interview.service.QuestionBankService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/interview")
@@ -15,6 +21,34 @@ import java.util.List;
 public class InterviewController {
 
     private final InterviewService interviewService;
+    private final InterviewV3Service interviewV3Service;
+    private final QuestionBankService questionBankService;
+
+    @GetMapping("/questions/companies")
+    public ResponseEntity<ApiResponse<List<String>>> listCompanies() {
+        return ResponseEntity.ok(ApiResponse.success(questionBankService.getCompanies()));
+    }
+
+    @GetMapping("/questions/company/{companyName}")
+    public ResponseEntity<ApiResponse<List<CompanyQuestion>>> companyQuestions(
+            @PathVariable String companyName,
+            @RequestParam(required = false) String difficulty) {
+        return ResponseEntity.ok(ApiResponse.success(
+                questionBankService.getCompanyQuestions(companyName, difficulty)));
+    }
+
+    @GetMapping("/questions/branches")
+    public ResponseEntity<ApiResponse<List<String>>> listBranches() {
+        return ResponseEntity.ok(ApiResponse.success(questionBankService.getBranches()));
+    }
+
+    @GetMapping("/questions/branch/{branch}")
+    public ResponseEntity<ApiResponse<List<BranchQuestion>>> branchQuestions(
+            @PathVariable String branch,
+            @RequestParam(required = false) String difficulty) {
+        return ResponseEntity.ok(ApiResponse.success(
+                questionBankService.getBranchQuestions(branch, difficulty)));
+    }
 
     @PostMapping("/start")
     public ResponseEntity<ApiResponse<InterviewDtos.InterviewResponse>> start(
@@ -25,11 +59,72 @@ public class InterviewController {
     }
 
     @PostMapping("/v3/start")
-    public ResponseEntity<ApiResponse<InterviewDtos.InterviewResponse>> startV3(
+    public ResponseEntity<ApiResponse<InterviewV3Dtos.SessionResponse>> startV3(
             @RequestHeader("X-User-Id") Long userId,
-            @RequestBody InterviewDtos.StartRequest request) {
+            @RequestBody InterviewV3Dtos.StartRequest request) {
         return ResponseEntity.ok(ApiResponse.success("Interview started",
-                interviewService.startInterview(userId, request)));
+                interviewV3Service.start(userId, request)));
+    }
+
+    @GetMapping("/v3/tips")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getTipsV3(
+            @RequestParam(required = false) String roundType,
+            @RequestParam(required = false) String difficulty,
+            @RequestParam(required = false) Integer duration) {
+        return ResponseEntity.ok(ApiResponse.success(
+                interviewV3Service.getTips(roundType, difficulty, duration)));
+    }
+
+    @GetMapping("/v3/session/{id}")
+    public ResponseEntity<ApiResponse<InterviewV3Dtos.SessionResponse>> getSessionV3(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(interviewV3Service.getSession(userId, id)));
+    }
+
+    @GetMapping("/v3/{id}/next-question")
+    public ResponseEntity<ApiResponse<InterviewV3Dtos.QuestionDto>> getNextQuestionV3(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(interviewV3Service.getNextQuestion(userId, id)));
+    }
+
+    @PostMapping("/v3/{id}/evaluate")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> evaluateV3(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id,
+            @RequestBody InterviewV3Dtos.SubmitAndEvaluateRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(interviewV3Service.evaluateAnswer(
+                userId, id, request.getQuestion(), request.getAnswer(), request.getTopic(), request.getIdeal())));
+    }
+
+    @PostMapping("/v3/{id}/submit-and-evaluate")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> submitAndEvaluateV3(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id,
+            @RequestBody InterviewV3Dtos.SubmitAndEvaluateRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(interviewV3Service.submitAndEvaluate(userId, id, request)));
+    }
+
+    @PostMapping("/v3/answer")
+    public ResponseEntity<ApiResponse<InterviewV3Dtos.SessionResponse>> submitAnswerV3(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestBody InterviewV3Dtos.SubmitAnswerRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(interviewV3Service.submitAnswer(userId, request)));
+    }
+
+    @PostMapping("/v3/analytics/facial")
+    public ResponseEntity<ApiResponse<String>> saveFacialAnalyticsV3(
+            @RequestBody InterviewV3Dtos.FacialAnalyticsRequest request) {
+        interviewV3Service.saveFacialAnalytics(request);
+        return ResponseEntity.ok(ApiResponse.success("saved"));
+    }
+
+    @GetMapping("/v3/report/{id}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getReportV3(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(interviewV3Service.getReport(userId, id)));
     }
 
     @GetMapping("/v3/config")

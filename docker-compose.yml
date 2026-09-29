@@ -51,8 +51,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      # Only DB/user creation belongs here — actual table schemas and seed data
+      # are owned by each microservice's own Flyway migrations (db/migration),
+      # since each service connects to its own database (cip_auth, cip_jobs, etc.),
+      # not this container's default 'career_intelligence' DB.
       - ./database/create_dbs.sql:/docker-entrypoint-initdb.d/01-create_dbs.sql
-      - ./database/seed_real_jobs.sql:/docker-entrypoint-initdb.d/02-seed_jobs.sql
     networks:
       - cip-network
     healthcheck:
@@ -352,7 +355,8 @@ services:
       - ml-service
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      # node:18-alpine has no curl; use the image's own node-based HEALTHCHECK (cip-web/Dockerfile) instead of overriding it here
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
       timeout: 10s
       retries: 3

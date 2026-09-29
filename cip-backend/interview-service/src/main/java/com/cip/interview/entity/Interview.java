@@ -32,6 +32,15 @@ public class Interview {
 
     private String jobRole; // context: "Backend Engineer", "Data Scientist", etc.
 
+    // ─── V3 session fields ──────────────────────────────────────────────────
+    private String interviewMode; // RESUME_BASED, COMPANY_SPECIFIC, ROLE_BASED, BRANCH_BASED, TIME_BASED
+    private String company;
+    private String branch;
+    private Integer duration; // minutes
+    private String difficulty; // EASY, MEDIUM, HARD, FAANG
+    private String persona; // FRIENDLY_HR, STRICT_TECHNICAL, ...
+    private String roundType; // TECHNICAL, HR, BEHAVIORAL
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private String questions; // List of question objects as JSON string

@@ -30,6 +30,7 @@ RUN mvn clean package -DskipTests -T 4
 
 # API Gateway
 FROM eclipse-temurin:17-jre-alpine AS api-gateway
+RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=build /workspace/api-gateway/target/*.jar app.jar
 EXPOSE 8080
