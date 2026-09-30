@@ -149,6 +149,7 @@ services:
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8082
+      SCORE_SERVICE_URL: http://score-service:8088
     networks:
       - cip-network
     depends_on:

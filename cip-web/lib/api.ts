@@ -79,7 +79,33 @@ export const studentApi = {
     console.log('📤 [API] Starting resume text upload:', fileName, text.length, 'chars');
     return api.post('/resume/upload-text', { text, fileName });
   },
+
+  // ─── Academic Profile ──────────────────────────────────────────────────────
+  academic: {
+    save:          (data: AcademicProfileInput) => api.post('/student/academic', data),
+    update:        (data: AcademicProfileInput) => api.put('/student/academic', data),
+    get:           () => api.get('/student/academic'),
+    getCompleteness: () => api.get('/student/academic/completeness'),
+  },
 };
+
+export interface AcademicProfileInput {
+  collegeName?: string;
+  branch?: string;
+  yearOfStudy?: number;
+  graduationYear?: number;
+  currentCgpa?: number;
+  tenthPercentage?: number;
+  tenthBoard?: string;
+  twelfthPercentage?: number;
+  twelfthStream?: string;
+  activeBacklogs?: number;
+  gapYear?: boolean;
+  internshipsCount?: number;
+  hackathonWins?: number;
+  targetRoleType?: string;
+  willingToRelocate?: boolean;
+}
 
 // ─── Score ────────────────────────────────────────────────────────────────────
 // Gateway routes: /score/** → score-service:8084
@@ -231,6 +257,8 @@ export const jobsApi = {
     getById:     (id: number) => api.get(`/jobs/government/${id}`),
     recommended: (params?: { branch?: string; cgpa?: number; graduationYear?: number; preferences?: string[] }) =>
       api.get('/jobs/government/recommended', { params }),
+    eligibleCount: (branch: string, cgpa: number) =>
+      api.get('/jobs/government/eligible-count', { params: { branch, cgpa } }),
   },
 };
 

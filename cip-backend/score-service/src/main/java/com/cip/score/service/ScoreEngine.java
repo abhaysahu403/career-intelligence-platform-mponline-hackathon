@@ -20,7 +20,8 @@ import java.util.Map;
 /**
  * CORE ENGINE — Career Readiness Score Computation
  *
- * Formula: Readiness = 0.4 * ResumeScore + 0.6 * InterviewScore
+ * Formula: Readiness = 0.25 * AcademicScore + 0.30 * SkillsScore(resumeScore) +
+ *                      0.25 * InterviewScore + 0.10 * CertificationsScore + 0.10 * ExperienceScore
  *
  * Levels:
  *   0-30   → "Beginner"
@@ -34,8 +35,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ScoreEngine {
 
-    private static final double RESUME_WEIGHT   = 0.40;
-    private static final double INTERVIEW_WEIGHT = 0.60;
+    private static final double ACADEMIC_WEIGHT       = 0.25;
+    private static final double SKILLS_WEIGHT          = 0.30; // resumeScore doubles as skills score
+    private static final double INTERVIEW_WEIGHT        = 0.25;
+    private static final double CERTIFICATIONS_WEIGHT   = 0.10;
+    private static final double EXPERIENCE_WEIGHT        = 0.10;
 
     private final ScoreRepository scoreRepository;
     private final KafkaTemplate kafkaTemplate;
@@ -55,8 +59,11 @@ public class ScoreEngine {
 
         if (request.getResumeScore() != null)   score.setResumeScore(clamp(request.getResumeScore()));
         if (request.getInterviewScore() != null) score.setInterviewScore(clamp(request.getInterviewScore()));
+        if (request.getAcademicScore() != null) score.setAcademicScore(clamp(request.getAcademicScore()));
+        if (request.getCertificationsScore() != null) score.setCertificationsScore(clamp(request.getCertificationsScore()));
+        if (request.getExperienceScore() != null) score.setExperienceScore(clamp(request.getExperienceScore()));
 
-        double readiness = compute(score.getResumeScore(), score.getInterviewScore());
+        double readiness = compute(score);
         score.setReadiness(readiness);
         score.setLevel(resolveLevel(readiness));
         score.setRecommendation(generateRecommendation(score));
@@ -74,14 +81,22 @@ public class ScoreEngine {
                 "domain_scores", Map.of(
                     "resume", score.getResumeScore(),
                     "academic", score.getAcademicScore(),
-                    "interview", score.getInterviewScore()
+                    "interview", score.getInterviewScore(),
+                    "certifications", score.getCertificationsScore(),
+                    "experience", score.getExperienceScore()
                 ),
                 "trend", "up"  // TODO: Calculate actual trend
             ),
             "timestamp", System.currentTimeMillis() / 1000.0
         );
         
-        kafkaTemplate.send(KafkaTopics.SCORE_EVENTS, score.getUserId().toString(), scoreEvent);
+        try {
+            kafkaTemplate.send(KafkaTopics.SCORE_EVENTS, score.getUserId().toString(), scoreEvent);
+        } catch (Exception e) {
+            // No Kafka broker runs in this deployment — the score is already saved, so a failed
+            // publish shouldn't fail the request. Downstream consumers of this topic are optional.
+            log.warn("Failed to publish score-updated event for userId={}: {}", score.getUserId(), e.getMessage());
+        }
         log.info("Score updated for userId={}: readiness={}, level={}", score.getUserId(), readiness, score.getLevel());
 
         return toResponse(score);
@@ -93,9 +108,11 @@ public class ScoreEngine {
         ScoreDtos.UpdateScoreRequest req = new ScoreDtos.UpdateScoreRequest();
         req.setUserId(userId);
         switch (scoreType) {
-            case "resume"    -> req.setResumeScore(value);
-            case "academic"  -> req.setAcademicScore(value);
-            case "interview" -> req.setInterviewScore(value);
+            case "resume"         -> req.setResumeScore(value);
+            case "academic"       -> req.setAcademicScore(value);
+            case "interview"      -> req.setInterviewScore(value);
+            case "certifications" -> req.setCertificationsScore(value);
+            case "experience"     -> req.setExperienceScore(value);
         }
         updateScore(req);
     }
@@ -106,8 +123,14 @@ public class ScoreEngine {
 
     // ── Private helpers ────────────────────────────────────────────────────────
 
-    private double compute(double resume, double interview) {
-        return clamp(RESUME_WEIGHT * resume + INTERVIEW_WEIGHT * interview);
+    private double compute(Score score) {
+        return clamp(
+                ACADEMIC_WEIGHT * score.getAcademicScore()
+                        + SKILLS_WEIGHT * score.getResumeScore()
+                        + INTERVIEW_WEIGHT * score.getInterviewScore()
+                        + CERTIFICATIONS_WEIGHT * score.getCertificationsScore()
+                        + EXPERIENCE_WEIGHT * score.getExperienceScore()
+        );
     }
 
     private String resolveLevel(double readiness) {
@@ -143,6 +166,8 @@ public class ScoreEngine {
                 .resumeScore(s.getResumeScore())
                 .academicScore(s.getAcademicScore())
                 .interviewScore(s.getInterviewScore())
+                .certificationsScore(s.getCertificationsScore())
+                .experienceScore(s.getExperienceScore())
                 .recommendation(s.getRecommendation())
                 .calculatedAt(s.getCalculatedAt())
                 .build();

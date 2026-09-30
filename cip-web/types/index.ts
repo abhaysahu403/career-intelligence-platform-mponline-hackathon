@@ -355,6 +355,35 @@ export interface UserCourseProgress {
   updatedAt?: string;
 }
 
+// ─── Academic Profile ─────────────────────────────────────────────────────────
+export interface AcademicProfile {
+  userId: number;
+  collegeName?: string;
+  branch?: string;
+  yearOfStudy?: number;
+  graduationYear?: number;
+  currentCgpa?: number;
+  tenthPercentage?: number;
+  tenthBoard?: string;
+  twelfthPercentage?: number;
+  twelfthStream?: string;
+  activeBacklogs?: number;
+  gapYear?: boolean;
+  internshipsCount?: number;
+  hackathonWins?: number;
+  targetRoleType?: string;
+  willingToRelocate?: boolean;
+  academicScore: number;
+  experienceScore: number;
+}
+
+export interface AcademicProfileCompleteness {
+  completenessPercent: number;
+  filledFields: number;
+  totalFields: number;
+  message: string;
+}
+
 // ─── Roadmap ─────────────────────────────────────────────────────────────────
 export interface RoadmapTask {
   id: string;

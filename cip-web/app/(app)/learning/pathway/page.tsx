@@ -1,12 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { X, Sparkles, Award, Calendar, TrendingUp, GraduationCap } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { courseApi } from '@/lib/api';
+import { courseApi, studentApi } from '@/lib/api';
 import { useAppStore } from '@/store';
 import CourseCard from '@/components/ui/CourseCard';
-import type { CourseRecommendations, CourseRecommendationEntry, UserCourseProgress } from '@/types';
+import type { AcademicProfile, CourseRecommendations, CourseRecommendationEntry, UserCourseProgress } from '@/types';
 
 const BRANCHES = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'ALL'];
 const PREFERENCES = [
@@ -23,6 +23,20 @@ export default function LearningPathwayPage() {
   const [skillInput, setSkillInput] = useState('');
   const [branch, setBranch] = useState('CSE');
   const [preference, setPreference] = useState('government_platform_first');
+
+  // Personalize the default branch from the student's academic profile (year of study also
+  // available on `academicProfile.yearOfStudy` for future fundamentals-vs-advanced filtering).
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await studentApi.academic.get();
+        const profile = response.data?.data as AcademicProfile | undefined;
+        if (profile?.branch) setBranch(profile.branch);
+      } catch {
+        // No academic profile yet — keep the default branch selection.
+      }
+    })();
+  }, []);
 
   const addSkill = () => {
     const skill = skillInput.trim();

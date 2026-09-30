@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
 import { CheckCircle2, FileText, GraduationCap, Plus, Save, Upload, User } from 'lucide-react';
 import { studentApi, mlServiceApi } from '@/lib/api';
 import { useAppStore } from '@/store';
@@ -213,6 +214,12 @@ export default function ProfilePage() {
           <h2 className="text-3xl font-syne font-black text-slate-900 dark:text-white">{user?.name}</h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-1">{user?.branch} - {user?.college}</p>
         </div>
+        <Link
+          href="/profile/academic"
+          className="flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-black uppercase tracking-widest transition-all border border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+        >
+          <GraduationCap size={15} /> Academic Profile
+        </Link>
         <button
           type="submit"
           disabled={uploading}

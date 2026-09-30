@@ -42,6 +42,18 @@ public class JobController {
                 governmentJobService.recommend(branch, cgpa, graduationYear, preferences)));
     }
 
+    /** GET /jobs/government/eligible-count — live "improve CGPA -> more jobs" demo endpoint */
+    @GetMapping("/government/eligible-count")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getEligibleCount(
+            @RequestParam String branch,
+            @RequestParam Double cgpa) {
+        return ResponseEntity.ok(ApiResponse.success(Map.of(
+                "branch", branch,
+                "cgpa", cgpa,
+                "eligibleCount", governmentJobService.getEligibleCount(branch, cgpa)
+        )));
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Job>>> getAllJobs(
             @RequestParam(defaultValue = "0") int page,

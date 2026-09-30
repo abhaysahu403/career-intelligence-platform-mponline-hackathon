@@ -47,12 +47,30 @@ public class GovernmentJobService {
                     entry.put("job", job);
                     entry.put("matchScore", Math.round(score));
                     entry.put("eligibilityStatus", score >= 60 ? "ELIGIBLE" : score >= 40 ? "PARTIALLY_ELIGIBLE" : "NOT_ELIGIBLE");
+                    entry.put("cgpaGapMessage", cgpaGapMessage(job, cgpa));
                     return entry;
                 })
                 .sorted((a, b) -> Long.compare((Long) b.get("matchScore"), (Long) a.get("matchScore")))
                 .limit(10)
                 .toList();
         return scored;
+    }
+
+    /**
+     * Count of active jobs the student is currently eligible for by branch + CGPA alone —
+     * powers the "6.8 CGPA -> 28 jobs, 7.5 CGPA -> 47 jobs" live demo moment.
+     */
+    public long getEligibleCount(String branch, Double cgpa) {
+        return governmentJobRepository.findByActiveTrue().stream()
+                .filter(job -> branchScore(job, branch) > 0)
+                .filter(job -> job.getMinCgpa() == null || (cgpa != null && cgpa >= job.getMinCgpa()))
+                .count();
+    }
+
+    private String cgpaGapMessage(GovernmentJob job, Double cgpa) {
+        if (job.getMinCgpa() == null || cgpa == null || cgpa >= job.getMinCgpa()) return null;
+        double gap = Math.round((job.getMinCgpa() - cgpa) * 10) / 10.0;
+        return "You need " + gap + " more CGPA to be eligible for " + job.getOrganization();
     }
 
     private double branchScore(GovernmentJob job, String branch) {

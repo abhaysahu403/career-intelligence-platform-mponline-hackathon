@@ -28,6 +28,14 @@ public class Score {
 
     @Column(nullable = false)
     @Builder.Default
+    private Double certificationsScore = 0.0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Double experienceScore = 0.0;
+
+    @Column(nullable = false)
+    @Builder.Default
     private Double readiness = 0.0;
 
     @Column(nullable = false)

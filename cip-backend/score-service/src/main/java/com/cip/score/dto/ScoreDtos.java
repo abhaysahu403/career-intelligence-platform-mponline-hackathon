@@ -13,6 +13,8 @@ public class ScoreDtos {
         private Double resumeScore;
         private Double academicScore;
         private Double interviewScore;
+        private Double certificationsScore;
+        private Double experienceScore;
         private String recommendation;
         private LocalDateTime calculatedAt;
     }
@@ -23,5 +25,7 @@ public class ScoreDtos {
         private Double resumeScore;
         private Double academicScore;
         private Double interviewScore;
+        private Double certificationsScore;
+        private Double experienceScore;
     }
 }

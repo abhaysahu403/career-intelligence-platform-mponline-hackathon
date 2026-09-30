@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { analyticsApi, jobsApi, scoreApi } from '@/lib/api';
 import { useAppStore } from '@/store';
 import type { Analytics, Job, ReadinessScore } from '@/types';
+import AcademicProfileWidget from '@/components/dashboard/AcademicProfileWidget';
 
 const unwrapPayload = <T,>(response: { data: T } | { data: { data: T } }) =>
   'data' in (response.data as Record<string, unknown>)
@@ -214,6 +215,8 @@ export default function DashboardPage() {
           Let's continue your journey to landing your dream job
         </p>
       </motion.div>
+
+      <AcademicProfileWidget />
 
       {/* Hero Section - Next Action */}
       <motion.div
