@@ -83,7 +83,8 @@ export default function ShareReportModal({ isOpen, onClose, reportType, reportDa
           break;
       }
 
-      const response = await axios.post(`http://localhost:8080${endpoint}`, payload);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+      const response = await axios.post(`${apiUrl}${endpoint}`, payload);
 
       if (response.data.success) {
         toast.success(`Report shared successfully with ${recipientEmail}!`);

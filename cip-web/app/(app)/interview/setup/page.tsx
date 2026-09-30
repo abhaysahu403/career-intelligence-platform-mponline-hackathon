@@ -108,10 +108,10 @@ export default function InterviewSetupPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#000814] via-[#01030F] to-[#020617] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-[#000814] dark:via-[#01030F] dark:to-[#020617] flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#38BDF8] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading interview configuration...</p>
+          <p className="text-slate-500 dark:text-gray-400">Loading interview configuration...</p>
         </div>
       </div>
     );
@@ -291,7 +291,7 @@ export default function InterviewSetupPage() {
                 
                 {/* Custom Interview Info */}
                 <div className="mt-4 p-4 bg-gradient-to-r from-[#F59E0B]/10 to-[#F59E0B]/5 rounded-lg border border-[#F59E0B]/20">
-                  <p className="text-sm text-gray-300 font-medium flex items-center gap-2">
+                  <p className="text-sm text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <Users size={16} className="text-[#F59E0B]" />
                     <span><strong>Custom Interview:</strong> Create your own questions or join an interview created by your teacher/recruiter using a code</span>
                   </p>
@@ -312,8 +312,8 @@ export default function InterviewSetupPage() {
                     {roundType === 'HR' ? 'General HR Interview' : 'General Behavioral Interview'}
                   </h3>
                 </div>
-                <p className="text-gray-300">
-                  {roundType === 'HR' 
+                <p className="text-slate-700 dark:text-gray-300">
+                  {roundType === 'HR'
                     ? 'You will get standard HR questions that are asked in all companies. These questions are the same for everyone and cover topics like strengths, weaknesses, motivation, and career goals.'
                     : 'You will get standard behavioral questions using the STAR method. These questions are the same for everyone and cover topics like teamwork, leadership, problem-solving, and conflict resolution.'}
                 </p>

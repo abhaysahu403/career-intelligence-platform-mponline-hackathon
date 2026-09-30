@@ -19,6 +19,14 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
+# NEXT_PUBLIC_* vars are inlined into the browser bundle at build time, not read
+# at container runtime — they must come in as build args, not just `environment:`
+# in docker-compose, or every deployment ships a bundle pointing at localhost.
+ARG NEXT_PUBLIC_API_URL=http://localhost:8080
+ARG NEXT_PUBLIC_ML_URL=http://localhost:8000
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_ML_URL=${NEXT_PUBLIC_ML_URL}
+
 # Build the application
 RUN npm run build
 

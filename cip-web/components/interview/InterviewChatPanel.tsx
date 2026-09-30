@@ -34,7 +34,8 @@ export default function InterviewChatPanel({ question, lastUserAnswer }: Intervi
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/ml/interview/coach", {
+      const mlUrl = process.env.NEXT_PUBLIC_ML_URL || "http://localhost:8000";
+      const response = await fetch(`${mlUrl}/ml/interview/coach`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
