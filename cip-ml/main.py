@@ -5,6 +5,7 @@ All ML modules exposed as REST APIs.
 import base64
 import json
 import os
+import re
 import sys
 import time
 from typing import Optional
@@ -32,6 +33,10 @@ from shared.models import (  # noqa: E402
     RecommendResponse,
     ResumeAnalyzeRequest,
     ResumeAnalyzeResponse,
+    ResumeObjectiveRequest,
+    ResumeObjectiveResponse,
+    ResumeImproveRequest,
+    ResumeImproveResponse,
 )
 from services.career_readiness.engine import compute_readiness, recommend_jobs  # noqa: E402
 from services.interview_evaluator.engine import evaluate_interview  # noqa: E402
@@ -127,6 +132,110 @@ def _government_fallback_question(persona_mode: str, previous_answers: list) -> 
         "topic": item["topic"],
         "expected_answer": f"Look for depth and genuineness in how the candidate addresses {item['topic'].lower()}.",
     }
+
+
+RESUME_ACTION_VERBS = ["Developed", "Architected", "Engineered", "Implemented", "Designed", "Optimized", "Led", "Automated", "Built", "Deployed"]
+RESUME_WEAK_PHRASES = {
+    "made": "developed",
+    "did": "executed",
+    "worked on": "contributed to",
+    "helped with": "independently executed",
+    "used": "leveraged",
+    "i think": "",
+    "maybe": "",
+}
+
+
+def _fallback_resume_objective(request) -> str:
+    skills_str = ", ".join(request.skills[:3]) if request.skills else "modern software development practices"
+    achievements_str = f" Demonstrated impact through {', '.join(request.achievements[:2])}." if request.achievements else ""
+    cgpa_str = f" with a {request.cgpa} CGPA" if request.cgpa else ""
+    branch = request.branch or "Computer Science"
+    role = request.target_role or "Software Engineer"
+    return (
+        f"Motivated {branch} student{cgpa_str} seeking a {role} role. "
+        f"Proficient in {skills_str} with hands-on project experience.{achievements_str}"
+    ).strip()
+
+
+def _generate_resume_objective(request) -> str:
+    fallback = _fallback_resume_objective(request)
+    model = _get_gemini_model()
+    if model is None:
+        return fallback
+    prompt = f"""Write a concise, confident 3-line professional resume career objective for a student.
+Branch: {request.branch or "Computer Science"}
+Skills: {", ".join(request.skills) or "general programming"}
+Target Role: {request.target_role or "Software Engineer"}
+Achievements: {", ".join(request.achievements) or "none listed"}
+CGPA: {request.cgpa if request.cgpa is not None else "not provided"}
+
+Return ONLY the objective text (no preamble, no quotes, no markdown)."""
+    try:
+        response = model.generate_content(prompt)
+        text = (response.text or "").strip()
+        return text if text else fallback
+    except Exception:
+        return fallback
+
+
+def _fallback_improve_resume_text(request) -> dict:
+    text = request.original_content or ""
+    keywords_added: list[str] = []
+    action_verbs_used: list[str] = []
+
+    for weak, strong in RESUME_WEAK_PHRASES.items():
+        if weak in text.lower():
+            pattern = re.compile(re.escape(weak), re.IGNORECASE)
+            text = pattern.sub(strong, text)
+            if strong:
+                action_verbs_used.append(strong)
+    text = re.sub(r"\s+", " ", text).strip(" ,.")
+
+    first_word = text.split(" ")[0] if text else ""
+    if first_word.lower() not in {v.lower() for v in RESUME_ACTION_VERBS}:
+        chosen_verb = RESUME_ACTION_VERBS[abs(hash(text)) % len(RESUME_ACTION_VERBS)]
+        rest = text[0].lower() + text[1:] if text else text
+        text = f"{chosen_verb} {rest}"
+        action_verbs_used.append(chosen_verb)
+
+    if not re.search(r"\d", text):
+        text = text.rstrip(".") + ", improving efficiency by 30%"
+        keywords_added.append("quantified impact")
+
+    if not text.endswith("."):
+        text += "."
+
+    return {
+        "improved_content": text,
+        "keywords_added": keywords_added,
+        "action_verbs_used": list(dict.fromkeys(action_verbs_used)),
+    }
+
+
+def _improve_resume_text(request) -> dict:
+    fallback = _fallback_improve_resume_text(request)
+    model = _get_gemini_model()
+    if model is None:
+        return fallback
+    prompt = f"""Rewrite this resume {request.section_type} bullet point to be more professional for a
+{request.target_role or "Software Engineer"} role. Add quantification, strong action verbs, and relevant
+industry keywords. Keep it to 1-2 sentences.
+
+Original: "{request.original_content}"
+
+Return JSON only:
+{{"improved_content": "string", "keywords_added": ["string"], "action_verbs_used": ["string"]}}"""
+    try:
+        response = model.generate_content(prompt)
+        data = _json_from_response(response.text)
+        return {
+            "improved_content": data.get("improved_content") or fallback["improved_content"],
+            "keywords_added": data.get("keywords_added", []),
+            "action_verbs_used": data.get("action_verbs_used", []),
+        }
+    except Exception:
+        return fallback
 
 
 def _get_gemini_model():
@@ -740,6 +849,22 @@ async def upload_resume(student_id: str, job_role: str = "SDE", file: UploadFile
         raise HTTPException(status_code=400, detail="Could not read file content")
     result = analyze_resume(text=text, student_id=student_id, job_role=job_role)
     return JSONResponse(content=result)
+
+
+@app.post("/ml/resume/generate-objective", response_model=ResumeObjectiveResponse, tags=["Resume Builder"])
+async def generate_resume_objective(request: ResumeObjectiveRequest):
+    try:
+        return ResumeObjectiveResponse(objective=_generate_resume_objective(request))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Objective generation failed: {exc}")
+
+
+@app.post("/ml/resume/improve-text", response_model=ResumeImproveResponse, tags=["Resume Builder"])
+async def improve_resume_text(request: ResumeImproveRequest):
+    try:
+        return ResumeImproveResponse(**_improve_resume_text(request))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Text improvement failed: {exc}")
 
 
 @app.post("/ml/interview/question", response_model=InterviewQuestionResponse, tags=["Interview"])

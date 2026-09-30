@@ -57,6 +57,33 @@ class ResumeAnalyzeResponse(BaseModel):
     processing_time_ms: float
 
 
+# ─── Resume Builder Models ──────────────────────────────────────────────────────
+
+class ResumeObjectiveRequest(BaseModel):
+    branch: Optional[str] = None
+    skills: List[str] = []
+    target_role: Optional[str] = "Software Engineer"
+    achievements: List[str] = []
+    cgpa: Optional[float] = None
+    year_of_study: Optional[int] = None
+
+
+class ResumeObjectiveResponse(BaseModel):
+    objective: str
+
+
+class ResumeImproveRequest(BaseModel):
+    section_type: str  # objective, project, experience
+    original_content: str
+    target_role: Optional[str] = "Software Engineer"
+
+
+class ResumeImproveResponse(BaseModel):
+    improved_content: str
+    keywords_added: List[str]
+    action_verbs_used: List[str]
+
+
 # ─── Academic Models ───────────────────────────────────────────────────────────
 
 class SubjectMark(BaseModel):

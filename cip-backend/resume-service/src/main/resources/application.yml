@@ -40,6 +40,13 @@ storage:
     bucket: ${S3_BUCKET:cip-resumes}
     region: ${AWS_REGION:ap-south-1}
 
+student:
+  service-url: ${STUDENT_SERVICE_URL:http://localhost:8082}
+certificate:
+  service-url: ${CERTIFICATE_SERVICE_URL:http://localhost:8085}
+ml:
+  service-url: ${ML_SERVICE_URL:http://localhost:8000}
+
 management:
   endpoints:
     web:

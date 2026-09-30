@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, User, LineChart, Video, Briefcase,
-  Map, Users, Zap, ChevronLeft, LogOut, Settings, ShieldCheck, GraduationCap
+  Map, Users, Zap, ChevronLeft, LogOut, Settings, ShieldCheck, GraduationCap, FileText
 } from 'lucide-react';
 import { useAppStore } from '@/store';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,7 @@ const studentNav = [
   { href: '/analytics', icon: LineChart,       label: 'Progress'   },
   { href: '/roadmap',   icon: Map,             label: 'Roadmap'    },
   { href: '/learning/pathway', icon: GraduationCap, label: 'Learning' },
+  { href: '/resume/builder', icon: FileText, label: 'Resume Builder' },
 ];
 
 const navItems = studentNav;

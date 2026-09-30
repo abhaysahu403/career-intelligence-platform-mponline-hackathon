@@ -475,3 +475,56 @@ export interface StudentRecord {
   lastActive: string;
   interviewScore?: number;
 }
+
+// ─── Resume Builder ─────────────────────────────────────────────────────────────
+export type ResumeTemplateId = 'CLEAN_PROFESSIONAL' | 'MODERN_TECH' | 'EXECUTIVE';
+
+export interface ResumeProjectInput {
+  name: string;
+  techStack: string;
+  description: string;
+  githubLink?: string;
+}
+
+export interface ResumeInternshipInput {
+  company: string;
+  duration: string;
+  role: string;
+  bullets: string[];
+}
+
+export interface ResumeHeader {
+  name: string;
+  email: string;
+  phone?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  branch?: string;
+  college?: string;
+  cgpa?: number;
+}
+
+export interface ResumeEducationEntry {
+  level: string;
+  institution: string;
+  score: string;
+  year: string;
+}
+
+export interface ResumeContent {
+  header: ResumeHeader;
+  objective: string;
+  education: ResumeEducationEntry[];
+  skills: Record<string, string[]>;
+  projects: (ResumeProjectInput & { description: string })[];
+  experience: (ResumeInternshipInput & { bullets: string[] })[];
+  achievements: string[];
+  certifications: { name: string; authenticityScore: number }[];
+}
+
+export interface GeneratedResumeResult {
+  templateId: ResumeTemplateId;
+  content: ResumeContent;
+  atsScore: number;
+  atsFeedback: string[];
+}

@@ -289,6 +289,20 @@ export const campusToCorporateApi = {
     api.post('/recommendations/campus-to-corporate/milestone', { targetCode, milestoneIndex, completed }),
 };
 
+// ─── Resume Builder ───────────────────────────────────────────────────────────
+// Gateway routes: /resume/** → resume-service:8084
+export const resumeBuilderApi = {
+  generate: (data: {
+    templateId: string;
+    targetRole?: string;
+    projects: { name: string; techStack: string; description: string; githubLink?: string }[];
+    internships: { company: string; duration: string; role: string; bullets: string[] }[];
+  }) => api.post('/resume/generate', data),
+  getBuilder: () => api.get('/resume/builder'),
+  improveSection: (sectionType: string, originalContent: string, targetRole?: string) =>
+    api.post('/resume/improve-section', { sectionType, originalContent, targetRole }),
+};
+
 // ─── Certificates ─────────────────────────────────────────────────────────────
 // Gateway routes: /certificates/** → certificate-service (integrated in backend)
 export const certificateApi = {

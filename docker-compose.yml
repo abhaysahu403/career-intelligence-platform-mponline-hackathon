@@ -190,6 +190,8 @@ services:
       <<: *common-backend-env
       SERVER_PORT: 8084
       ML_SERVICE_URL: http://ml-service:8000
+      STUDENT_SERVICE_URL: http://student-service:8082
+      CERTIFICATE_SERVICE_URL: http://certificate-service:8085
       STORAGE_PATH: /app/uploads
     volumes:
       - uploads-data:/app/uploads

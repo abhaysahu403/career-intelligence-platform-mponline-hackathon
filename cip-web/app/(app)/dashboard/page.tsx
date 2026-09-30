@@ -234,6 +234,22 @@ export default function DashboardPage() {
         <ArrowRight className="text-sky-500 flex-shrink-0" size={20} />
       </motion.button>
 
+      <motion.button
+        onClick={() => router.push('/resume/builder')}
+        whileHover={{ scale: 1.01 }}
+        className="w-full flex items-center justify-between gap-4 rounded-2xl p-5 border text-left transition-all"
+        style={{ background: 'linear-gradient(135deg, rgba(74,222,128,0.1), rgba(56,189,248,0.1))', borderColor: 'rgba(74,222,128,0.3)' }}
+      >
+        <div className="flex items-center gap-3">
+          <FileText className="text-emerald-500" size={24} />
+          <div>
+            <p className="font-black text-slate-900 dark:text-white">Build Your Resume in 5 Minutes</p>
+            <p className="text-xs text-slate-500">Auto-filled from your profile, AI-polished, ATS-scored, one-click PDF.</p>
+          </div>
+        </div>
+        <ArrowRight className="text-emerald-500 flex-shrink-0" size={20} />
+      </motion.button>
+
       {/* Hero Section - Next Action */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
