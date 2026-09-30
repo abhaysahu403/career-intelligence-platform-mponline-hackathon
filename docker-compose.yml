@@ -26,13 +26,16 @@ x-common-backend-env: &common-backend-env
   DB_HOST: postgres
   DB_PORT: 5432
   DB_USER: cip_user
-  DB_PASSWORD: cip_password_123
+  DB_PASSWORD: ${DB_PASSWORD:-cip_password_123}
   REDIS_HOST: redis
   REDIS_PORT: 6379
-  REDIS_PASSWORD: cip-redis-pass
-  JWT_SECRET: cip-super-secret-jwt-key-minimum-256-bits-for-hs256-algorithm
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-cip-redis-pass}
+  JWT_SECRET: ${JWT_SECRET:-cip-super-secret-jwt-key-minimum-256-bits-for-hs256-algorithm}
   SPRING_PROFILES_ACTIVE: docker
   KAFKA_BROKERS: ""
+  # Caps each JVM's heap — 10 Spring Boot services on a single small instance
+  # will OOM the host without this (JVM reads this env var natively at startup).
+  JAVA_TOOL_OPTIONS: "-Xmx512m"
 
 services:
 
@@ -45,10 +48,10 @@ services:
     container_name: cip-postgres
     environment:
       POSTGRES_USER: cip_user
-      POSTGRES_PASSWORD: cip_password_123
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cip_password_123}
       POSTGRES_DB: career_intelligence
-    ports:
-      - "5432:5432"
+    # Not published to the host at all — every consumer is on the internal
+    # docker network; a database should never be reachable from outside it.
     volumes:
       - postgres-data:/var/lib/postgresql/data
       # Only DB/user creation belongs here — actual table schemas and seed data
@@ -68,9 +71,9 @@ services:
   redis:
     image: redis:7-alpine
     container_name: cip-redis
-    command: redis-server --requirepass cip-redis-pass --maxmemory 512mb --maxmemory-policy allkeys-lru --appendonly yes
+    command: redis-server --requirepass ${REDIS_PASSWORD:-cip-redis-pass} --maxmemory 512mb --maxmemory-policy allkeys-lru --appendonly yes
     ports:
-      - "6380:6379"
+      - "127.0.0.1:6380:6379"
     volumes:
       - redis-data:/data
     networks:
@@ -93,9 +96,10 @@ services:
       target: api-gateway
     container_name: cip-api-gateway
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       <<: *common-backend-env
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000}
       AUTH_SERVICE_URL: http://auth-service:8081
       STUDENT_SERVICE_URL: http://student-service:8082
       INTERVIEW_SERVICE_URL: http://interview-service:8083
@@ -127,7 +131,7 @@ services:
       target: auth-service
     container_name: cip-auth-service
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8081
@@ -145,7 +149,7 @@ services:
       target: student-service
     container_name: cip-student-service
     ports:
-      - "8082:8082"
+      - "127.0.0.1:8082:8082"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8082
@@ -165,7 +169,7 @@ services:
       target: interview-service
     container_name: cip-interview-service
     ports:
-      - "8083:8083"
+      - "127.0.0.1:8083:8083"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8083
@@ -187,7 +191,7 @@ services:
       target: resume-service
     container_name: cip-resume-service
     ports:
-      - "8084:8084"
+      - "127.0.0.1:8084:8084"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8084
@@ -213,7 +217,7 @@ services:
       target: certificate-service
     container_name: cip-certificate-service
     ports:
-      - "8085:8085"
+      - "127.0.0.1:8085:8085"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8085
@@ -238,7 +242,7 @@ services:
       target: job-service
     container_name: cip-job-service
     ports:
-      - "8086:8086"
+      - "127.0.0.1:8086:8086"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8086
@@ -256,7 +260,7 @@ services:
       target: recommendation-service
     container_name: cip-recommendation-service
     ports:
-      - "8087:8087"
+      - "127.0.0.1:8087:8087"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8087
@@ -280,7 +284,7 @@ services:
       target: score-service
     container_name: cip-score-service
     ports:
-      - "8088:8088"
+      - "127.0.0.1:8088:8088"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8088
@@ -301,7 +305,7 @@ services:
       target: analytics-service
     container_name: cip-analytics-service
     ports:
-      - "8089:8089"
+      - "127.0.0.1:8089:8089"
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8089
@@ -322,12 +326,11 @@ services:
       dockerfile: Dockerfile
     container_name: cip-ml-service
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
-      # Gemini AI API Key
-      GEMINI_API_KEY: AIzaSyAQ.Ab8RN6KdvfB7EUufOjb7cm4Mux5hVsZpTdrobKiYDdDt6PEblwth
-      DATABASE_URL: postgresql://cip_user:cip_password_123@postgres:5432/career_intelligence
-      REDIS_URL: redis://redis:6379/0
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      DATABASE_URL: postgresql://cip_user:${DB_PASSWORD:-cip_password_123}@postgres:5432/career_intelligence
+      REDIS_URL: redis://:${REDIS_PASSWORD:-cip-redis-pass}@redis:6379/0
       ENV: docker
     networks:
       - cip-network
@@ -355,7 +358,7 @@ services:
         NEXT_PUBLIC_ML_URL: ${NEXT_PUBLIC_ML_URL:-http://localhost:8000}
     container_name: cip-frontend
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
       NEXT_PUBLIC_ML_URL: ${NEXT_PUBLIC_ML_URL:-http://localhost:8000}

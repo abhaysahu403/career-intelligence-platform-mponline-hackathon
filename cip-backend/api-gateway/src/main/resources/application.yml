@@ -12,8 +12,9 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: 
+            allowedOrigins:
               - "http://localhost:3000"
+              - "${FRONTEND_ORIGIN:https://app.100-55-150-199.sslip.io}"
             allowCredentials: true
             allowedMethods:
               - GET
