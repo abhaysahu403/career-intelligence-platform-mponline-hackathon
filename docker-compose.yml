@@ -256,6 +256,9 @@ services:
       <<: *common-backend-env
       SERVER_PORT: 8087
       ML_SERVICE_URL: http://ml-service:8000
+      STUDENT_SERVICE_URL: http://student-service:8082
+      SCORE_SERVICE_URL: http://score-service:8088
+      JOB_SERVICE_URL: http://job-service:8086
     networks:
       - cip-network
     depends_on:

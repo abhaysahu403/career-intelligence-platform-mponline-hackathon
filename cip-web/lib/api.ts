@@ -281,6 +281,14 @@ export const courseApi = {
   getPathway: () => api.get('/recommendations/courses/pathway'),
 };
 
+// ─── Campus to Corporate ──────────────────────────────────────────────────────
+export const campusToCorporateApi = {
+  getTargets: (type?: string) => api.get('/recommendations/campus-to-corporate/targets', { params: { type } }),
+  analyze: (targetCode: string) => api.get('/recommendations/campus-to-corporate', { params: { targetCode } }),
+  toggleMilestone: (targetCode: string, milestoneIndex: number, completed: boolean) =>
+    api.post('/recommendations/campus-to-corporate/milestone', { targetCode, milestoneIndex, completed }),
+};
+
 // ─── Certificates ─────────────────────────────────────────────────────────────
 // Gateway routes: /certificates/** → certificate-service (integrated in backend)
 export const certificateApi = {

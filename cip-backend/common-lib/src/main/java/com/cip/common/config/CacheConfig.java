@@ -1,7 +1,9 @@
 package com.cip.common.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -25,10 +27,16 @@ public class CacheConfig {
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
         // GenericJackson2JsonRedisSerializer's no-arg constructor builds its own plain ObjectMapper
         // with no modules registered — LocalDateTime fields (e.g. Score.calculatedAt) throw on
-        // cache write unless JavaTimeModule is registered explicitly here.
+        // cache write unless JavaTimeModule is registered explicitly here. Default typing must also
+        // be activated (as the no-arg constructor does internally) so a cache hit can deserialize
+        // back into the original response class instead of a raw LinkedHashMap.
         ObjectMapper redisObjectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        redisObjectMapper.activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder().allowIfSubType(Object.class).build(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY);
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(30))

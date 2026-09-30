@@ -2,8 +2,10 @@ package com.cip.recommendation.controller;
 
 import com.cip.common.dto.ApiResponse;
 import com.cip.recommendation.dto.CourseDtos;
+import com.cip.recommendation.entity.CareerTarget;
 import com.cip.recommendation.entity.Course;
 import com.cip.recommendation.entity.UserCourseProgress;
+import com.cip.recommendation.service.CampusToCorporateService;
 import com.cip.recommendation.service.CourseService;
 import com.cip.recommendation.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,34 @@ public class RecommendationController {
 
     private final RecommendationService recommendationService;
     private final CourseService courseService;
+    private final CampusToCorporateService campusToCorporateService;
+
+    /** GET /recommendations/campus-to-corporate/targets — dropdown data, optionally filtered by type */
+    @GetMapping("/recommendations/campus-to-corporate/targets")
+    public ResponseEntity<ApiResponse<List<CareerTarget>>> getCareerTargets(
+            @RequestParam(required = false) String type) {
+        return ResponseEntity.ok(ApiResponse.success(campusToCorporateService.getTargets(type)));
+    }
+
+    /** GET /recommendations/campus-to-corporate?targetCode=GOOGLE_SWE — the full gap analysis */
+    @GetMapping("/recommendations/campus-to-corporate")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getCampusToCorporate(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestParam String targetCode) {
+        return ResponseEntity.ok(ApiResponse.success(campusToCorporateService.analyze(userId, targetCode)));
+    }
+
+    /** POST /recommendations/campus-to-corporate/milestone — toggle a 90-day plan milestone */
+    @PostMapping("/recommendations/campus-to-corporate/milestone")
+    public ResponseEntity<ApiResponse<String>> toggleMilestone(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestBody Map<String, Object> request) {
+        String targetCode = String.valueOf(request.get("targetCode"));
+        Integer index = ((Number) request.get("milestoneIndex")).intValue();
+        boolean completed = Boolean.TRUE.equals(request.get("completed"));
+        campusToCorporateService.toggleMilestone(userId, targetCode, index, completed);
+        return ResponseEntity.ok(ApiResponse.success("updated"));
+    }
 
     /** GET /recommendations/courses — AI-style course recommendations from skill gaps */
     @GetMapping("/recommendations/courses")

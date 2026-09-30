@@ -395,6 +395,73 @@ export interface RoadmapTask {
   resources?: { title: string; url: string }[];
 }
 
+// ─── Campus to Corporate ────────────────────────────────────────────────────────
+export type CareerTargetType = 'PRIVATE_TECH' | 'GOVERNMENT' | 'PSU' | 'BANKING' | 'DEFENCE' | 'HIGHER_STUDIES' | 'ENTREPRENEURSHIP';
+
+export interface CareerTarget {
+  id: number;
+  targetCode: string;
+  name: string;
+  targetType: CareerTargetType;
+  minCgpa?: number;
+  requiredSkills: string[];
+  preferredSkills?: string[];
+  interviewRounds?: number;
+  avgPackageLpa?: number;
+  hiringMonths?: string[];
+  readinessRequired: number;
+  preparationWeeks: number;
+  active: boolean;
+}
+
+export interface SkillGapEntry {
+  skill: string;
+  status: 'GREEN' | 'YELLOW' | 'RED';
+  required: boolean;
+}
+
+export interface ActionPlanMilestone {
+  index: number;
+  phase: string;
+  title: string;
+  description?: string;
+  courseUrl?: string;
+  completed: boolean;
+}
+
+export interface CampusToCorporateAnalysis {
+  currentProfile: {
+    branch?: string;
+    cgpa?: number;
+    yearOfStudy?: number;
+    activeBacklogs?: number;
+    skills: string[];
+    readiness: number;
+    technicalScore?: number;
+    communicationScore?: number;
+    domainScore?: number;
+  };
+  targetRequirements: {
+    targetCode: string;
+    name: string;
+    type: CareerTargetType;
+    minCgpa?: number;
+    cgpaMet: boolean;
+    requiredSkills: string[];
+    preferredSkills?: string[];
+    interviewRounds?: number;
+    avgPackageLpa?: number;
+    hiringMonths?: string[];
+    readinessRequired: number;
+  };
+  gapAnalysis: SkillGapEntry[];
+  gapPoints: number;
+  actionPlan: ActionPlanMilestone[];
+  readinessPercentage: number;
+  estimatedDaysToReady: number;
+  matchingJobsCount: number;
+}
+
 // ─── Admin ───────────────────────────────────────────────────────────────────
 export interface StudentRecord {
   id: string;

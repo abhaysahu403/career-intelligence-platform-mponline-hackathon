@@ -28,6 +28,13 @@ spring:
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:cip-redis-pass}
 
+student:
+  service-url: ${STUDENT_SERVICE_URL:http://localhost:8082}
+score:
+  service-url: ${SCORE_SERVICE_URL:http://localhost:8088}
+job:
+  service-url: ${JOB_SERVICE_URL:http://localhost:8086}
+
 management:
   endpoints:
     web:

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, Briefcase, FileText, Target, Video, TrendingUp, Rocket, CheckCircle, Lock, Award, Clock, Star } from 'lucide-react';
+import { ArrowRight, Briefcase, FileText, Target, Video, TrendingUp, Rocket, CheckCircle, Lock, Award, Clock, Star, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { analyticsApi, jobsApi, scoreApi } from '@/lib/api';
 import { useAppStore } from '@/store';
@@ -217,6 +217,22 @@ export default function DashboardPage() {
       </motion.div>
 
       <AcademicProfileWidget />
+
+      <motion.button
+        onClick={() => router.push('/dashboard/campus-to-corporate')}
+        whileHover={{ scale: 1.01 }}
+        className="w-full flex items-center justify-between gap-4 rounded-2xl p-5 border text-left transition-all"
+        style={{ background: 'linear-gradient(135deg, rgba(56,189,248,0.1), rgba(74,222,128,0.1))', borderColor: 'rgba(56,189,248,0.3)' }}
+      >
+        <div className="flex items-center gap-3">
+          <MapPin className="text-sky-500" size={24} />
+          <div>
+            <p className="font-black text-slate-900 dark:text-white">See Your Campus to Corporate Journey</p>
+            <p className="text-xs text-slate-500">Where you are today vs. what your target needs — and the exact path to close the gap.</p>
+          </div>
+        </div>
+        <ArrowRight className="text-sky-500 flex-shrink-0" size={20} />
+      </motion.button>
 
       {/* Hero Section - Next Action */}
       <motion.div
