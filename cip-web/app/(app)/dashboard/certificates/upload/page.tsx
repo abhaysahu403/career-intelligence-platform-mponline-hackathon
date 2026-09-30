@@ -4,7 +4,9 @@
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { uploadCertificate, pollForResult } from '@/lib/api/certificates';
+import { scoreApi } from '@/lib/api';
 import { Upload, FileText, Search, Shield, ShieldCheck, AlertCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const ACCEPTED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 const MAX_SIZE = 10 * 1024 * 1024;
@@ -63,6 +65,10 @@ export default function UploadPage() {
     setStatusMsg('Uploading certificate...');
 
     try {
+      const scoreBefore = await scoreApi.get().then(
+        (res) => res.data?.data?.readiness ?? res.data?.readiness ?? null
+      ).catch(() => null);
+
       const resp = await uploadCertificate(file, userId);
       setStage('processing');
       setStatusMsg('Analyzing certificate with AI...');
@@ -79,6 +85,14 @@ export default function UploadPage() {
       );
 
       setStage('done');
+      if (typeof scoreBefore === 'number') {
+        const scoreAfter = await scoreApi.get().then(
+          (res) => res.data?.data?.readiness ?? res.data?.readiness ?? null
+        ).catch(() => null);
+        if (typeof scoreAfter === 'number' && scoreAfter > scoreBefore) {
+          toast.success(`+${Math.round(scoreAfter - scoreBefore)} Readiness Points! 🎯`);
+        }
+      }
       router.push(`/dashboard/certificates/${resp.certificateId}`);
     } catch (err: unknown) {
       setStage('error');

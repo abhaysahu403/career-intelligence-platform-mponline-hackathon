@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { interviewApi, mlServiceApi } from '@/lib/api';
+import { interviewApi, mlServiceApi, scoreApi } from '@/lib/api';
 import { InterviewV3Session, FacialAnalytics } from '@/types';
 import PreInterviewTips from '@/components/PreInterviewTips';
 import {
@@ -62,6 +62,20 @@ function LiveInterviewContent() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'ai'; message: string }>>([]);
+  const readinessBeforeRef = useRef<number | null>(null);
+
+  const celebrateReadinessGain = async () => {
+    try {
+      const res = await scoreApi.get();
+      const after = res.data?.data?.readiness ?? res.data?.readiness;
+      const before = readinessBeforeRef.current;
+      if (typeof after === 'number' && typeof before === 'number' && after > before) {
+        toast.success(`+${Math.round(after - before)} Readiness Points! 🎯`);
+      }
+    } catch {
+      // Score refresh is a nice-to-have here — silently skip if it fails
+    }
+  };
 
   // Real-time analytics
   const [confidence, setConfidence] = useState(75);
@@ -84,6 +98,9 @@ function LiveInterviewContent() {
       return;
     }
     loadInterviewAndTips();
+    scoreApi.get().then(res => {
+      readinessBeforeRef.current = res.data?.data?.readiness ?? res.data?.readiness ?? null;
+    }).catch(() => {});
     return () => {
       stopCamera();
       stopListening();
@@ -352,6 +369,8 @@ function LiveInterviewContent() {
           // Check if interview is completed
           if (completed) {
             toast.success('Interview completed!');
+          celebrateReadinessGain();
+            celebrateReadinessGain();
             setTimeout(() => {
               router.push(`/interview/report/${interviewId}`);
             }, 2000);
@@ -369,6 +388,8 @@ function LiveInterviewContent() {
           } else {
             // All questions answered
             toast.success('Interview completed!');
+          celebrateReadinessGain();
+            celebrateReadinessGain();
             setTimeout(() => {
               router.push(`/interview/report/${interviewId}`);
             }, 2000);
@@ -382,6 +403,7 @@ function LiveInterviewContent() {
         
         if (completed) {
           toast.success('Interview completed!');
+          celebrateReadinessGain();
           setTimeout(() => {
             router.push(`/interview/report/${interviewId}`);
           }, 2000);
@@ -398,6 +420,7 @@ function LiveInterviewContent() {
           }
         } else {
           toast.success('Interview completed!');
+          celebrateReadinessGain();
           setTimeout(() => {
             router.push(`/interview/report/${interviewId}`);
           }, 2000);
