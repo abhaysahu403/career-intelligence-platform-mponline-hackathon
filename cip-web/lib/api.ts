@@ -66,6 +66,7 @@ export const authApi = {
 export const studentApi = {
   getProfile:    () => api.get('/student/profile'),
   updateProfile: (data: unknown) => api.put('/student/profile', data),
+  getPublicProfile: (slug: string) => api.get(`/student/public/${slug}`),
   uploadResume:  (file: File) => {
     console.log('📤 [API] Starting resume upload:', file.name, file.size, 'bytes');
     const fd = new FormData();

@@ -34,6 +34,9 @@ public class StudentProfile {
     private String linkedinUrl;
     private String githubUrl;
 
+    @Column(unique = true, length = 120)
+    private String slug;
+
     @Column(columnDefinition = "text")
     private String skills; // JSON array as string
 

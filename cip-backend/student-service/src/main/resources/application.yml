@@ -28,6 +28,9 @@ spring:
 score:
   service-url: ${SCORE_SERVICE_URL:http://localhost:8088}
 
+certificate:
+  service-url: ${CERTIFICATE_SERVICE_URL:http://localhost:8085}
+
 management:
   endpoints:
     web:

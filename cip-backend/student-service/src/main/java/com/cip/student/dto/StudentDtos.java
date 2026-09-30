@@ -31,10 +31,29 @@ public class StudentDtos {
         private Integer graduationYear;
         private String linkedinUrl;
         private String githubUrl;
+        private String slug;
         private Object skills;
         private Object academicData;
         private Object workExperience;
         private Object certifications;
+    }
+
+    @Data @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class PublicProfileResponse {
+        private String name;
+        private String slug;
+        private String collegeName;
+        private String branch;
+        private Integer graduationYear;
+        private String linkedinUrl;
+        private String githubUrl;
+        private List<String> skills;
+        private Double readiness;
+        private String level;
+        private Integer certificationsCount;
+        private List<String> certificationNames;
+        private Integer hackathonWins;
+        private Integer internshipsCount;
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor

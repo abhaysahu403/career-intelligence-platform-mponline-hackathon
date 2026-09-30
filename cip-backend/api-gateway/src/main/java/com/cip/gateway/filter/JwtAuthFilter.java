@@ -23,7 +23,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
     private long jwtExpiration;
 
     private static final List<String> PUBLIC_PATHS = List.of(
-            "/auth/signup", "/auth/login", "/actuator", "/interview/v3/config"
+            "/auth/signup", "/auth/login", "/actuator", "/interview/v3/config", "/student/public"
     );
 
     public JwtAuthFilter() {

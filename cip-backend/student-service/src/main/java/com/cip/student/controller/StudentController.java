@@ -62,6 +62,13 @@ public class StudentController {
         return ResponseEntity.ok(ApiResponse.success("Profile updated", updated));
     }
 
+    // Public, unauthenticated endpoint — shareable profile link (no PII: no email/phone)
+    @GetMapping("/public/{slug}")
+    public ResponseEntity<ApiResponse<StudentDtos.PublicProfileResponse>> getPublicProfile(
+            @PathVariable String slug) {
+        return ResponseEntity.ok(ApiResponse.success(studentService.getPublicProfile(slug)));
+    }
+
     // Admin endpoint - get any student profile by ID
     @GetMapping("/profile/{userId}")
     public ResponseEntity<ApiResponse<StudentDtos.ProfileResponse>> getProfileById(

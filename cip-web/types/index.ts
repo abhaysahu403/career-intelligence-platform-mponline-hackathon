@@ -528,3 +528,20 @@ export interface GeneratedResumeResult {
   atsScore: number;
   atsFeedback: string[];
 }
+
+export interface PublicProfile {
+  name: string;
+  slug: string;
+  collegeName?: string;
+  branch?: string;
+  graduationYear?: number;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  skills: string[];
+  readiness?: number;
+  level?: string;
+  certificationsCount: number;
+  certificationNames: string[];
+  hackathonWins?: number;
+  internshipsCount?: number;
+}

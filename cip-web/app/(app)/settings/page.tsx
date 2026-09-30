@@ -1,15 +1,57 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Bell, Shield, Save } from 'lucide-react';
+import { Bell, Shield, Save, Link2, Copy } from 'lucide-react';
+import { studentApi } from '@/lib/api';
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState({ email: true, score: true, jobs: true, interview: false });
   const [privacy, setPrivacy]             = useState({ public: false, analytics: true });
+  const [profileSlug, setProfileSlug]     = useState<string | null>(null);
+
+  useEffect(() => {
+    studentApi.getProfile()
+      .then(res => setProfileSlug(res.data?.data?.slug ?? null))
+      .catch(() => {});
+  }, []);
+
+  const publicLink = profileSlug && typeof window !== 'undefined'
+    ? `${window.location.origin}/p/${profileSlug}`
+    : null;
+
+  const copyLink = () => {
+    if (!publicLink) return;
+    navigator.clipboard.writeText(publicLink);
+    toast.success('Link copied!');
+  };
 
   return (
     <div className="space-y-6 pb-12 max-w-2xl">
       <h2 className="text-3xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">Settings</h2>
+
+      <div className="rounded-[32px] border overflow-hidden backdrop-blur-[20px] bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+        <div className="flex items-center gap-2 px-6 py-5 border-b border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+          <Link2 size={16} className="text-sky" />
+          <h3 className="font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest text-sm">Shareable Profile Link</h3>
+        </div>
+        <div className="px-6 py-5">
+          <p className="text-xs font-medium text-slate-400 mb-3">
+            Share your public readiness score, skills, and certifications — no login required to view.
+          </p>
+          {publicLink ? (
+            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-[rgba(255,255,255,0.08)] px-4 py-3 bg-slate-50 dark:bg-white/5">
+              <span className="flex-1 text-sm font-mono text-slate-700 dark:text-slate-200 truncate">{publicLink}</span>
+              <button onClick={copyLink}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest flex-shrink-0 transition-all hover:-translate-y-0.5"
+                style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)', color: '#fff' }}>
+                <Copy size={12} /> Copy
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-slate-400">Complete your profile to generate a shareable link.</p>
+          )}
+        </div>
+      </div>
 
       {[
         {
