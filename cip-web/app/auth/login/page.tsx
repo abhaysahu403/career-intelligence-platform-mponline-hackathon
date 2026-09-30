@@ -72,6 +72,9 @@ export default function LoginPage() {
           </div>
           <h1 className="mb-1 text-2xl font-bold text-slate-900 dark:text-white font-syne">Welcome back</h1>
           <p className="text-sm font-medium text-[#94A3B8]">Sign in to your Career Intelligence Platform</p>
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">
+            Built for Madhya Pradesh Students · Aligned with NEP 2020
+          </div>
         </div>
 
         {/* Card */}
