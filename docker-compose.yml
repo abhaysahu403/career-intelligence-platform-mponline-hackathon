@@ -169,6 +169,7 @@ services:
       <<: *common-backend-env
       SERVER_PORT: 8083
       ML_SERVICE_URL: http://ml-service:8000
+      SCORE_SERVICE_URL: http://score-service:8088
     networks:
       - cip-network
     depends_on:
@@ -216,6 +217,7 @@ services:
       <<: *common-backend-env
       SERVER_PORT: 8085
       ML_SERVICE_URL: http://ml-service:8000
+      SCORE_SERVICE_URL: http://score-service:8088
       STORAGE_PATH: /app/storage/certificates
     volumes:
       - storage-data:/app/storage

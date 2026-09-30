@@ -62,6 +62,9 @@ ml:
     url: ${ML_SERVICE_URL:http://localhost:8000}
     timeout-seconds: 30
 
+score:
+  service-url: ${SCORE_SERVICE_URL:http://localhost:8088}
+
 # Storage
 storage:
   type: ${STORAGE_TYPE:local}

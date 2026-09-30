@@ -1,10 +1,14 @@
 FROM python:3.11-slim
 
 # System dependencies
+# libgl1 + libglib2.0-0 are required at runtime by opencv-python (cv2 import
+# fails with "ImportError: libGL.so.1" without them on the slim base image).
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
+    libgl1 \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

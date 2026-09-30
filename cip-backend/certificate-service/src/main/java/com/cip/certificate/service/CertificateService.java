@@ -38,6 +38,7 @@ public class CertificateService {
 
     private final CertificateRepository certificateRepository;
     private final CertificateResultRepository resultRepository;
+    private final ScoreClient scoreClient;
     private final StorageService storageService;
     private final CertificateEventProducer eventProducer;
     private final RestTemplate restTemplate;
@@ -137,6 +138,12 @@ public class CertificateService {
 
             // Publish result event
             eventProducer.publishProcessed(certId, userId, mlResult);
+
+            // Push score-service update so readiness score reflects the new certificate
+            Object authenticityScore = mlResult.get("authenticity_score");
+            if (authenticityScore != null) {
+                scoreClient.pushCertificationScore(userId, toInt(authenticityScore));
+            }
 
             log.info("[ML] Processing complete: certId={}, score={}", certId,
                 mlResult.get("authenticity_score"));

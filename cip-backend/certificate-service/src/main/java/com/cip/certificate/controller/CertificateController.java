@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/certificates")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
 public class CertificateController {
 
     private final CertificateService certificateService;

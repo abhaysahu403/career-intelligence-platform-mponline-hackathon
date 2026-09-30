@@ -58,6 +58,10 @@ public class AppConfig {
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         config.put(ProducerConfig.RETRIES_CONFIG, 3);
+        // No Kafka broker runs in this deployment — without a short max.block.ms, send()
+        // blocks the calling thread for the default 60s waiting on topic metadata.
+        config.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 2000);
+        config.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 2000);
         return new DefaultKafkaProducerFactory<>(config);
     }
 

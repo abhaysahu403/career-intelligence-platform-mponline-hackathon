@@ -31,6 +31,10 @@ public class KafkaConfig {
         config.put(ProducerConfig.ACKS_CONFIG, "all");
         config.put(ProducerConfig.RETRIES_CONFIG, 3);
         config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        // No Kafka broker runs in this deployment — without a short max.block.ms, send()
+        // blocks the calling thread for the default 60s waiting on topic metadata.
+        config.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 2000);
+        config.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 2000);
         return new DefaultKafkaProducerFactory<>(config);
     }
 

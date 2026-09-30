@@ -30,6 +30,7 @@ public class InterviewV3Service {
     private final QuestionBankService questionBankService;
     private final MlClient mlClient;
     private final FacialAnalyticsRepository facialAnalyticsRepository;
+    private final ScoreClient scoreClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
@@ -230,6 +231,7 @@ public class InterviewV3Service {
             interview.setCompletedAt(LocalDateTime.now());
             double avg = answers.stream().mapToDouble(a -> a.getScore() != null ? a.getScore() : 0).average().orElse(0);
             interview.setTotalScore(avg);
+            scoreClient.pushInterviewScore(userId, avg);
         }
         interviewRepository.save(interview);
 
