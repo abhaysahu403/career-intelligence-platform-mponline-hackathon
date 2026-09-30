@@ -4,20 +4,21 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { interviewApi } from '@/lib/api';
-import { InterviewV3Config, InterviewMode, InterviewDifficulty, InterviewPersona, RoundType } from '@/types';
-import { 
-  FileText, 
-  Building2, 
-  Briefcase, 
-  GraduationCap, 
-  Clock, 
-  Target, 
+import { InterviewV3Config, InterviewMode, InterviewDifficulty, InterviewPersona, RoundType, GovernmentExamType } from '@/types';
+import {
+  FileText,
+  Building2,
+  Briefcase,
+  GraduationCap,
+  Clock,
+  Target,
   Users,
   Sparkles,
   TrendingUp,
   Zap,
   Brain,
-  Rocket
+  Rocket,
+  Landmark
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -32,6 +33,7 @@ export default function InterviewSetupPage() {
   const [company, setCompany] = useState<string>('');
   const [role, setRole] = useState<string>('');
   const [branch, setBranch] = useState<string>('');
+  const [governmentExamType, setGovernmentExamType] = useState<GovernmentExamType | ''>('');
   const [duration, setDuration] = useState<number>(30);
   const [difficulty, setDifficulty] = useState<InterviewDifficulty>('MEDIUM');
   const [persona, setPersona] = useState<InterviewPersona>('FRIENDLY_HR');
@@ -73,6 +75,10 @@ export default function InterviewSetupPage() {
         toast.error('Please select a branch for Branch-Based mode');
         return;
       }
+      if (finalInterviewMode === 'GOVERNMENT' && !governmentExamType) {
+        toast.error('Please select a government exam type');
+        return;
+      }
     }
 
     setStarting(true);
@@ -82,6 +88,7 @@ export default function InterviewSetupPage() {
         company: roundType === 'TECHNICAL' && finalInterviewMode === 'COMPANY_SPECIFIC' ? company : undefined,
         role: roundType === 'TECHNICAL' && finalInterviewMode === 'ROLE_BASED' ? role : undefined,
         branch: roundType === 'TECHNICAL' && finalInterviewMode === 'BRANCH_BASED' ? branch : undefined,
+        governmentExamType: roundType === 'TECHNICAL' && finalInterviewMode === 'GOVERNMENT' ? governmentExamType || undefined : undefined,
         duration: duration,
         difficulty,
         persona,
@@ -139,7 +146,22 @@ export default function InterviewSetupPage() {
       description: 'Domain-specific questions for your branch',
       color: 'from-orange-500 to-red-500',
     },
+    {
+      id: 'GOVERNMENT' as InterviewMode,
+      icon: Landmark,
+      title: 'Government Exam',
+      description: 'SSB, UPSC, Bank PO, SSC/Railway, Research Org',
+      color: 'from-amber-500 to-red-600',
+    },
   ];
+
+  const GOVERNMENT_EXAM_LABELS: Record<string, string> = {
+    SSB: 'SSB (Defence)',
+    UPSC: 'UPSC Civil Services',
+    BANK_PO: 'Bank PO (IBPS/SBI)',
+    SSC_RAILWAY: 'SSC / Railway',
+    RESEARCH_ORG: 'DRDO / ISRO / NIC',
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-[#000814] dark:via-[#01030F] dark:to-[#020617] relative overflow-hidden">
@@ -220,7 +242,7 @@ export default function InterviewSetupPage() {
                 <p className="text-slate-600 dark:text-gray-400 text-sm mb-3">
                   Choose the source of questions based on your interview preparation goal
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                   {interviewModes.map((mode) => {
                     const Icon = mode.icon;
                     return (
@@ -354,6 +376,28 @@ export default function InterviewSetupPage() {
                   <option value="">Choose a branch...</option>
                   {config?.branches.map((b) => (
                     <option key={b} value={b} className="bg-[#01030F]">{b}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
+
+            {roundType === 'TECHNICAL' && interviewMode === 'GOVERNMENT' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-white/10 p-4"
+              >
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Select Government Exam</h3>
+                <select
+                  value={governmentExamType}
+                  onChange={(e) => setGovernmentExamType(e.target.value as GovernmentExamType)}
+                  className="w-full bg-white dark:bg-white/10 border border-slate-300 dark:border-white/20 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-[#38BDF8]"
+                >
+                  <option value="">Choose an exam type...</option>
+                  {config?.governmentExamTypes.map((examType) => (
+                    <option key={examType} value={examType} className="bg-[#01030F]">
+                      {GOVERNMENT_EXAM_LABELS[examType] || examType}
+                    </option>
                   ))}
                 </select>
               </motion.div>

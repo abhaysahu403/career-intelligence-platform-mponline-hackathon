@@ -126,7 +126,7 @@ export const interviewApi = {
     getTips: (params?: { roundType?: string; difficulty?: string; duration?: number }) =>
       api.get('/interview/v3/tips', { params }),
     start: (data: {
-      interviewMode: 'RESUME_BASED' | 'COMPANY_SPECIFIC' | 'ROLE_BASED' | 'BRANCH_BASED' | 'TIME_BASED';
+      interviewMode: 'RESUME_BASED' | 'COMPANY_SPECIFIC' | 'ROLE_BASED' | 'BRANCH_BASED' | 'TIME_BASED' | 'GOVERNMENT';
       company?: string;
       role?: string;
       branch?: string;
@@ -134,6 +134,7 @@ export const interviewApi = {
       difficulty?: 'EASY' | 'MEDIUM' | 'HARD' | 'FAANG';
       persona?: 'FRIENDLY_HR' | 'STRICT_TECHNICAL' | 'STARTUP_FOUNDER' | 'FAANG_INTERVIEWER' | 'SENIOR_ARCHITECT';
       roundType?: 'TECHNICAL' | 'HR' | 'BEHAVIORAL';
+      governmentExamType?: 'SSB' | 'UPSC' | 'BANK_PO' | 'SSC_RAILWAY' | 'RESEARCH_ORG';
     }) => api.post('/interview/v3/start', data),
     getSession: (id: number) => api.get(`/interview/v3/session/${id}`),
     // NEW: Get next question (dynamic for RESUME_BASED)
@@ -238,6 +239,18 @@ export const jobsApi = {
 export const roadmapApi = {
   get:          () => api.get('/roadmap'),
   downloadRoadmap: (data: { tasks: unknown[] }) => api.post('/analytics/download/roadmap', data, { responseType: 'blob' }),
+};
+
+// ─── Courses ──────────────────────────────────────────────────────────────────
+// Gateway routes: /recommendations/** → recommendation-service:8087
+export const courseApi = {
+  recommend: (params?: { skillGaps?: string[]; branch?: string; currentReadiness?: number; preference?: string }) =>
+    api.get('/recommendations/courses', { params }),
+  governmentCertified: () => api.get('/recommendations/courses/government-certified'),
+  save: (courseId: number) => api.post('/recommendations/courses/save', { courseId }),
+  updateProgress: (courseId: number, status: 'SAVED' | 'IN_PROGRESS' | 'COMPLETED') =>
+    api.put('/recommendations/courses/progress', { courseId, status }),
+  getPathway: () => api.get('/recommendations/courses/pathway'),
 };
 
 // ─── Certificates ─────────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, User, LineChart, Video, Briefcase,
-  Map, Users, Zap, ChevronLeft, LogOut, Settings, ShieldCheck
+  Map, Users, Zap, ChevronLeft, LogOut, Settings, ShieldCheck, GraduationCap
 } from 'lucide-react';
 import { useAppStore } from '@/store';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,7 @@ const studentNav = [
   { href: '/jobs',      icon: Briefcase,       label: 'Jobs'       },
   { href: '/analytics', icon: LineChart,       label: 'Progress'   },
   { href: '/roadmap',   icon: Map,             label: 'Roadmap'    },
+  { href: '/learning/pathway', icon: GraduationCap, label: 'Learning' },
 ];
 
 const navItems = studentNav;

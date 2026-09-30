@@ -145,10 +145,11 @@ export interface ResumeParsingStatus {
 }
 
 // ─── Interview V3 Types ──────────────────────────────────────────────────────
-export type InterviewMode = 'RESUME_BASED' | 'COMPANY_SPECIFIC' | 'ROLE_BASED' | 'BRANCH_BASED' | 'TIME_BASED';
+export type InterviewMode = 'RESUME_BASED' | 'COMPANY_SPECIFIC' | 'ROLE_BASED' | 'BRANCH_BASED' | 'TIME_BASED' | 'GOVERNMENT';
 export type InterviewDifficulty = 'EASY' | 'MEDIUM' | 'HARD' | 'FAANG';
 export type InterviewPersona = 'FRIENDLY_HR' | 'STRICT_TECHNICAL' | 'STARTUP_FOUNDER' | 'FAANG_INTERVIEWER' | 'SENIOR_ARCHITECT';
 export type RoundType = 'TECHNICAL' | 'HR' | 'BEHAVIORAL';
+export type GovernmentExamType = 'SSB' | 'UPSC' | 'BANK_PO' | 'SSC_RAILWAY' | 'RESEARCH_ORG';
 export type EyeContact = 'GOOD' | 'AVERAGE' | 'POOR';
 export type Posture = 'STABLE' | 'UNSTABLE';
 export type HiringVerdict = 'STRONG_HIRE' | 'CONSIDER' | 'REJECT';
@@ -160,6 +161,7 @@ export interface InterviewV3Config {
   difficulties: InterviewDifficulty[];
   personas: InterviewPersona[];
   durations: number[];
+  governmentExamTypes: GovernmentExamType[];
 }
 
 export interface InterviewV3Question {
@@ -170,6 +172,7 @@ export interface InterviewV3Question {
   source: string;
   company?: string;
   branch?: string;
+  governmentExamType?: string;
 }
 
 export interface InterviewV3Session {
@@ -178,6 +181,7 @@ export interface InterviewV3Session {
   interviewMode: InterviewMode;
   company?: string;
   role?: string;
+  governmentExamType?: GovernmentExamType;
   branch?: string;
   duration?: number;
   difficulty: InterviewDifficulty;
@@ -301,6 +305,54 @@ export interface GovernmentJobRecommendation {
   job: GovernmentJob;
   matchScore: number;
   eligibilityStatus: EligibilityStatus;
+}
+
+// ─── Courses ─────────────────────────────────────────────────────────────────
+export type CoursePlatformType = 'GOVERNMENT' | 'INTERNATIONAL' | 'INDIAN' | 'PAID';
+export type CourseProgressStatus = 'SAVED' | 'IN_PROGRESS' | 'COMPLETED';
+
+export interface Course {
+  id: number;
+  code: string;
+  title: string;
+  platform: string;
+  platformType: CoursePlatformType;
+  url: string;
+  skillsCovered: string[];
+  branches: string[];
+  durationWeeks?: number;
+  cost: string;
+  certification: boolean;
+  certificationBody?: string;
+  difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+  rating?: number;
+  governmentRecognized: boolean;
+  tags?: string[];
+  active: boolean;
+}
+
+export interface CourseRecommendationEntry {
+  course: Course;
+  matchedSkillsCount: number;
+  matchScore: number;
+}
+
+export interface CourseRecommendations {
+  startThisWeek: CourseRecommendationEntry[];
+  nextMonth: CourseRecommendationEntry[];
+  longTerm: CourseRecommendationEntry[];
+  learningPathWeeks: number;
+  currentReadiness: number;
+  estimatedReadinessAfter: number;
+}
+
+export interface UserCourseProgress {
+  id: number;
+  userId: number;
+  courseId: number;
+  status: CourseProgressStatus;
+  savedAt: string;
+  updatedAt?: string;
 }
 
 // ─── Roadmap ─────────────────────────────────────────────────────────────────
