@@ -150,17 +150,17 @@ export default function InterviewSetupPage() {
       id: 'GOVERNMENT' as InterviewMode,
       icon: Landmark,
       title: 'Government Exam',
-      description: 'SSB, UPSC, Bank PO, SSC/Railway, Research Org',
+      description: 'UPSC Personality Test, SSC Interview, Bank PO, SSB, DRDO/ISRO',
       color: 'from-amber-500 to-red-600',
     },
   ];
 
   const GOVERNMENT_EXAM_LABELS: Record<string, string> = {
-    SSB: 'SSB (Defence)',
-    UPSC: 'UPSC Civil Services',
-    BANK_PO: 'Bank PO (IBPS/SBI)',
-    SSC_RAILWAY: 'SSC / Railway',
-    RESEARCH_ORG: 'DRDO / ISRO / NIC',
+    SSB: 'SSB (Defence) Personality Test',
+    UPSC: 'UPSC Personality Test',
+    BANK_PO: 'Bank PO Interview (IBPS/SBI)',
+    SSC_RAILWAY: 'SSC Interview / Railway',
+    RESEARCH_ORG: 'DRDO / ISRO / Research Org Interview',
   };
 
   return (
