@@ -22,7 +22,6 @@ export class InterviewAudioManager {
   async playQuestion(questionText: string): Promise<void> {
     // Prevent multiple plays of same question
     if (this.hasPlayedQuestion) {
-      console.log("Question already played, skipping audio");
       return;
     }
 
@@ -58,12 +57,10 @@ export class InterviewAudioManager {
       utterance.onstart = () => {
         this.isPlaying = true;
         this.hasPlayedQuestion = true;
-        console.log("🔊 Question audio started");
       };
 
       utterance.onend = () => {
         this.isPlaying = false;
-        console.log("🔇 Question audio ended");
       };
 
       utterance.onerror = (event) => {
@@ -85,7 +82,6 @@ export class InterviewAudioManager {
   async playFeedback(feedbackText: string): Promise<void> {
     // Prevent multiple plays of same feedback
     if (this.hasPlayedFeedback) {
-      console.log("Feedback already played, skipping audio");
       return;
     }
 
@@ -97,7 +93,6 @@ export class InterviewAudioManager {
 
     // Don't play if question is still playing
     if (this.isPlaying) {
-      console.log("Question still playing, waiting...");
       setTimeout(() => this.playFeedback(feedbackText), 1000);
       return;
     }
@@ -127,12 +122,10 @@ export class InterviewAudioManager {
       utterance.onstart = () => {
         this.isPlaying = true;
         this.hasPlayedFeedback = true;
-        console.log("🔊 Feedback audio started");
       };
 
       utterance.onend = () => {
         this.isPlaying = false;
-        console.log("🔇 Feedback audio ended");
       };
 
       utterance.onerror = (event) => {
@@ -166,7 +159,6 @@ export class InterviewAudioManager {
     this.hasPlayedQuestion = false;
     this.hasPlayedFeedback = false;
     this.stopAudio();
-    console.log("🔄 Audio state reset for next question");
   }
 
   /**
@@ -223,7 +215,6 @@ export class InterviewAudioManager {
       const loadVoices = () => {
         const voices = speechSynthesis.getVoices();
         if (voices.length > 0) {
-          console.log("🎤 Available voices:", voices.map(v => v.name));
           resolve();
         } else {
           // Voices not loaded yet, wait a bit

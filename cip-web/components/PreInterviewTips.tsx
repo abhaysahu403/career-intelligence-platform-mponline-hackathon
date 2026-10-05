@@ -32,8 +32,7 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
     // Auto-start with welcome message only once
     if (!hasStartedRef.current && !isSkipped) {
       hasStartedRef.current = true;
-      console.log('🎤 PreInterviewTips mounted, starting welcome message');
-      
+
       const timer = setTimeout(() => {
         if (voiceEnabled && 'speechSynthesis' in window) {
           speakText(welcomeMessage);
@@ -55,14 +54,10 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
 
   const speakText = (text: string) => {
     if (isSkipped) {
-      console.log('⏭️ Skipped, not speaking');
       return;
     }
-    
-    console.log('🎤 Speaking text:', text.substring(0, 50) + '...');
-    
+
     if (!voiceEnabled || !('speechSynthesis' in window)) {
-      console.log('⚠️ Voice disabled or not supported, auto-advancing');
       setTimeout(() => {
         advanceToNextTip();
       }, 2000);
@@ -71,7 +66,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
 
     // Cancel any ongoing speech first
     if (window.speechSynthesis.speaking) {
-      console.log('⏹️ Canceling previous speech');
       window.speechSynthesis.cancel();
       
       // Wait a bit for cancellation to complete
@@ -85,7 +79,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
 
   const startSpeaking = (text: string) => {
     if (isSkipped) {
-      console.log('⏭️ Skipped, not starting speech');
       return;
     }
     
@@ -95,13 +88,11 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
     utterance.volume = 1.0;
 
     utterance.onstart = () => {
-      console.log('✅ Speech started');
       setIsSpeaking(true);
       setIsPlaying(true);
     };
 
     utterance.onend = () => {
-      console.log('✅ Speech ended, will advance to next');
       setIsSpeaking(false);
       setIsPlaying(false);
       // Advance after speech ends (unless skipped)
@@ -126,19 +117,14 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
 
   const advanceToNextTip = () => {
     if (isSkipped) {
-      console.log('⏭️ Skipped, not advancing');
       return;
     }
-    
-    console.log('⏭️ advanceToNextTip called, current index:', currentTipIndex);
-    
+
     // Calculate next index
     const nextIndex = currentTipIndex + 1;
-    console.log('📍 Next index will be:', nextIndex, 'Total tips:', tips.length);
-    
+
     if (nextIndex >= tips.length) {
       // All instructions completed - start interview
-      console.log('🎉 All instructions completed! Starting interview...');
       setTimeout(() => {
         onComplete();
       }, 1000);
@@ -147,7 +133,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
     
     // Move to next instruction
     setTimeout(() => {
-      console.log('📝 Moving to instruction', nextIndex + 1, 'of', tips.length);
       setCurrentTipIndex(nextIndex);
       
       // Speak the next instruction after state updates
@@ -163,8 +148,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
   };
 
   const handleSkip = () => {
-    console.log('⏭️ User clicked skip - stopping all audio and starting interview');
-    
     // Set skipped flag to stop all operations
     setIsSkipped(true);
     
@@ -189,7 +172,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
   const toggleVoice = () => {
     if (voiceEnabled) {
       // Disable voice
-      console.log('🔇 Disabling voice');
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
@@ -198,7 +180,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
       setIsPlaying(false);
     } else {
       // Enable voice
-      console.log('🔊 Enabling voice');
       setVoiceEnabled(true);
       // Speak current tip
       if (currentTipIndex === -1) {
@@ -297,7 +278,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
                 {/* Manual Next Button */}
                 <button
                   onClick={() => {
-                    console.log('⏭️ Manual next clicked');
                     if (window.speechSynthesis) {
                       window.speechSynthesis.cancel();
                     }
@@ -345,7 +325,6 @@ export default function PreInterviewTips({ tips, welcomeMessage, onComplete, onS
                     {/* Manual Next Button */}
                     <button
                       onClick={() => {
-                        console.log('⏭️ Manual next clicked from instruction');
                         if (window.speechSynthesis) {
                           window.speechSynthesis.cancel();
                         }

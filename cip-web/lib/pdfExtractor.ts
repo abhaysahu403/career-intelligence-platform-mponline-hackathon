@@ -13,37 +13,29 @@ if (typeof window !== 'undefined') {
  */
 export async function extractTextFromPDF(file: File): Promise<string> {
   try {
-    console.log('📄 [PDF Extractor] Starting extraction:', file.name);
-    
     // Read file as ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
-    
+
     // Load PDF document
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     const pdf = await loadingTask.promise;
-    
-    console.log(`📄 [PDF Extractor] PDF loaded: ${pdf.numPages} pages`);
-    
+
     let fullText = '';
-    
+
     // Extract text from each page
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       const page = await pdf.getPage(pageNum);
       const textContent = await page.getTextContent();
-      
+
       // Combine text items with spaces
       const pageText = textContent.items
         .map((item: any) => item.str)
         .join(' ');
-      
+
       fullText += pageText + '\n\n';
-      console.log(`📄 [PDF Extractor] Page ${pageNum}/${pdf.numPages} extracted: ${pageText.length} chars`);
     }
-    
-    const cleanedText = fullText.trim();
-    console.log(`✅ [PDF Extractor] Extraction complete: ${cleanedText.length} total chars`);
-    
-    return cleanedText;
+
+    return fullText.trim();
   } catch (error) {
     console.error('❌ [PDF Extractor] Extraction failed:', error);
     throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);

@@ -23,7 +23,6 @@ class SocketService {
 
       this.socket.on('connect', () => {
         this.isConnected = true
-        console.log('[WS] Connected:', this.socket?.id)
         resolve()
       })
 

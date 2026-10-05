@@ -273,7 +273,6 @@ function LiveInterviewContent() {
         try {
           recognition.start(); // Restart if still listening
         } catch (e) {
-          console.log('Could not restart recognition:', e);
           setIsListening(false);
           isListeningRef.current = false;
         }
@@ -301,7 +300,6 @@ function LiveInterviewContent() {
         recognitionRef.current.stop();
       } catch (e) {
         // Ignore errors if already stopped
-        console.log('Recognition already stopped');
       }
       recognitionRef.current = null;
     }

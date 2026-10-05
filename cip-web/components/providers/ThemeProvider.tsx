@@ -22,10 +22,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     // Add the current theme class
     root.classList.add(theme);
-    
-    console.log('Theme changed to:', theme);
-    console.log('HTML classes:', root.className);
-    
+
     // Update meta theme-color for mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {

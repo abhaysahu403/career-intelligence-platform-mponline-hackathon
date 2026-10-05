@@ -14,9 +14,7 @@ export function ThemeToggle({ variant = 'default', className = '' }: ThemeToggle
   const isDark = theme === 'dark';
 
   const handleToggle = () => {
-    console.log('Toggle clicked! Current theme:', theme);
     toggleTheme();
-    console.log('After toggle, theme should be:', theme === 'dark' ? 'light' : 'dark');
   };
 
   if (variant === 'minimal') {

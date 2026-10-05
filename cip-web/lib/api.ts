@@ -68,16 +68,13 @@ export const studentApi = {
   updateProfile: (data: unknown) => api.put('/student/profile', data),
   getPublicProfile: (slug: string) => api.get(`/student/public/${slug}`),
   uploadResume:  (file: File) => {
-    console.log('📤 [API] Starting resume upload:', file.name, file.size, 'bytes');
     const fd = new FormData();
     fd.append('file', file);
     // Note: userId is sent via X-User-Id header by the interceptor
     // Don't set Content-Type manually - let axios set it with boundary
-    console.log('📤 [API] Sending FormData to /resume/upload');
     return api.post('/resume/upload', fd);
   },
   uploadResumeText: (text: string, fileName: string) => {
-    console.log('📤 [API] Starting resume text upload:', fileName, text.length, 'chars');
     return api.post('/resume/upload-text', { text, fileName });
   },
 

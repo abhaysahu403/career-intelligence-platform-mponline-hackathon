@@ -594,8 +594,8 @@ export default function DashboardPage() {
               { icon: FileText, label: 'Resume', unlocked: hasResume, color: '#818CF8' },
               { icon: Video, label: 'Interview', unlocked: hasInterview, color: '#4ADE80' },
               { icon: Award, label: 'Certified', unlocked: isJobReady, color: '#FBBF24' },
-              { icon: Briefcase, label: 'Job Offer', unlocked: false, color: '#F87171' },
-              { icon: Star, label: 'Expert', unlocked: false, color: '#A78BFA' },
+              { icon: Briefcase, label: 'Job Offer', unlocked: false, color: '#F87171', comingSoon: true },
+              { icon: Star, label: 'Expert', unlocked: false, color: '#A78BFA', comingSoon: true },
             ].map((badge, idx) => (
               <motion.div
                 key={badge.label}
@@ -627,6 +627,9 @@ export default function DashboardPage() {
                 }`}>
                   {badge.label}
                 </span>
+                {badge.comingSoon && (
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-600">Coming Soon</span>
+                )}
               </motion.div>
             ))}
           </div>

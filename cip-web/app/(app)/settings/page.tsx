@@ -4,16 +4,35 @@ import toast from 'react-hot-toast';
 import { Bell, Shield, Save, Link2, Copy } from 'lucide-react';
 import { studentApi } from '@/lib/api';
 
+const SETTINGS_STORAGE_KEY = 'cip_settings';
+
+const defaultNotifications = { email: true, score: true, jobs: true, interview: false };
+const defaultPrivacy = { public: false, analytics: true };
+
 export default function SettingsPage() {
-  const [notifications, setNotifications] = useState({ email: true, score: true, jobs: true, interview: false });
-  const [privacy, setPrivacy]             = useState({ public: false, analytics: true });
+  const [notifications, setNotifications] = useState(defaultNotifications);
+  const [privacy, setPrivacy]             = useState(defaultPrivacy);
   const [profileSlug, setProfileSlug]     = useState<string | null>(null);
 
   useEffect(() => {
     studentApi.getProfile()
       .then(res => setProfileSlug(res.data?.data?.slug ?? null))
       .catch(() => {});
+
+    try {
+      const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.notifications) setNotifications(parsed.notifications);
+        if (parsed.privacy) setPrivacy(parsed.privacy);
+      }
+    } catch {}
   }, []);
+
+  const saveSettings = () => {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ notifications, privacy }));
+    toast.success('Settings saved!');
+  };
 
   const publicLink = profileSlug && typeof window !== 'undefined'
     ? `${window.location.origin}/p/${profileSlug}`
@@ -95,7 +114,7 @@ export default function SettingsPage() {
         </div>
       ))}
 
-      <button onClick={() => toast.success('Settings saved!')}
+      <button onClick={saveSettings}
         className="flex items-center gap-2 px-6 py-3.5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:-translate-y-1"
         style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)', color: '#fff' }}>
         <Save size={16} /> Save Settings
