@@ -11,6 +11,9 @@ import { Eye, EyeOff, Zap, ArrowRight, BookOpen, GraduationCap } from 'lucide-re
 import Cookies from 'js-cookie';
 import { useAppStore } from '@/store';
 import { authApi } from '@/lib/api';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import Card from '@/components/ui/Card';
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -78,11 +81,8 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="relative rounded-2xl border backdrop-blur-[20px] p-6 transition-all duration-300 bg-white/90 dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-white/5 shadow-xl dark:shadow-[0_8px_30px_-10px_rgba(56,189,248,0.2)]"
-          style={{
-            boxShadow: 'var(--card-shadow, 0 8px 30px -10px rgba(56,189,248,0.15))'
-          }}>
-          
+        <Card radius="xl" padding="md" className="relative shadow-xl dark:shadow-[0_8px_30px_-10px_rgba(56,189,248,0.2)]">
+
           {/* Top shimmer line */}
           <div className="absolute top-0 left-0 right-0 h-[2px] opacity-70"
             style={{ background: 'linear-gradient(90deg, transparent, #38BDF8, transparent)', boxShadow: '0 0 15px #38BDF8' }} />
@@ -106,91 +106,52 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-bold text-slate-600 dark:text-[#94A3B8]">Email</label>
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="you@college.edu"
-                className="w-full rounded-xl border px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#64748B] transition-all focus:outline-none bg-slate-50 dark:bg-white/5 border-slate-300 dark:border-white/10"
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#38BDF8';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(56,189,248,0.15)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-              {errors.email && <p className="mt-1 text-xs font-bold text-[#EF4444]">{errors.email.message}</p>}
-            </div>
+            <Input
+              {...register('email')}
+              type="email"
+              label="Email"
+              placeholder="you@college.edu"
+              error={errors.email?.message}
+            />
 
             <div>
-              <label className="mb-1.5 block text-sm font-bold text-slate-600 dark:text-[#94A3B8]">Password</label>
+              <label className="mb-1.5 block text-sm font-bold text-slate-600 dark:text-slate-400">Password</label>
               <div className="relative">
-                <input
+                <Input
                   {...register('password')}
                   type={showPw ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border px-4 py-3 pr-11 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#64748B] transition-all focus:outline-none bg-slate-50 dark:bg-white/5 border-slate-300 dark:border-white/10"
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#38BDF8';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(56,189,248,0.15)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '';
-                    e.target.style.boxShadow = 'none';
-                  }}
+                  className="pr-11"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 transition-opacity hover:opacity-100 text-slate-600 dark:text-[#94A3B8]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 transition-opacity hover:opacity-100 text-slate-600 dark:text-slate-400"
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs font-bold text-[#EF4444]">{errors.password.message}</p>}
+              {errors.password && <p className="mt-1 text-xs font-bold text-red-500">{errors.password.message}</p>}
             </div>
 
             <div className="flex justify-end">
-              <Link href="/auth/forgot-password" className="text-xs font-bold text-[#38BDF8] hover:underline">
+              <Link href="/auth/forgot-password" className="text-xs font-bold text-sky hover:underline">
                 Forgot password?
               </Link>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all duration-300 hover:shadow-lg disabled:opacity-60 text-slate-900 dark:text-white"
-              style={{
-                background: 'linear-gradient(135deg, #38BDF8, #4ADE80)',
-                boxShadow: '0 8px 20px -5px rgba(56,189,248,0.4)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 12px 30px -5px rgba(56,189,248,0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 8px 20px -5px rgba(56,189,248,0.4)';
-              }}
-            >
-              {loading ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              ) : (
-                <>Sign In <ArrowRight size={15} /></>
-              )}
-            </button>
+            <Button type="submit" loading={loading} className="w-full">
+              {!loading && <>Sign In <ArrowRight size={15} /></>}
+            </Button>
           </form>
 
           <div className="mt-4 text-center">
             <span className="text-sm font-medium text-slate-600 dark:text-[#94A3B8]">Don&apos;t have an account? </span>
-            <Link href="/auth/signup" className="text-sm font-bold text-[#38BDF8] hover:underline">
+            <Link href="/auth/signup" className="text-sm font-bold text-sky hover:underline">
               Sign up
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
