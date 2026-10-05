@@ -58,13 +58,13 @@ export default function CertificateDetailPage() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 mb-8 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all"
+          className="flex items-center gap-2 mb-8 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all"
         >
           <ArrowLeft size={16} /> Back
         </button>
-        <div className="rounded-[32px] border p-12 text-center backdrop-blur-[20px]" style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(239,68,68,0.2)' }}>
+        <div className="rounded-[32px] border p-12 text-center backdrop-blur-[20px] bg-white dark:bg-[rgba(8,12,20,0.7)]" style={{ borderColor: 'rgba(239,68,68,0.2)' }}>
           <XCircle size={64} className="mx-auto mb-6 text-red-400" />
-          <h3 className="text-2xl font-syne font-black mb-2 text-white uppercase tracking-widest">Load Failed</h3>
+          <h3 className="text-2xl font-syne font-black mb-2 text-slate-900 dark:text-white uppercase tracking-widest">Load Failed</h3>
           <p className="text-sm font-bold text-red-400 uppercase tracking-widest">{error}</p>
           <button
             onClick={() => router.push('/dashboard/certificates')}
@@ -92,7 +92,7 @@ export default function CertificateDetailPage() {
       <div className="flex items-center justify-between">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all"
+          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all"
         >
           <ArrowLeft size={16} /> Back to Certificates
         </button>
@@ -105,8 +105,7 @@ export default function CertificateDetailPage() {
             <Share2 size={16} /> Share Report
           </button>
           <button
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all hover:bg-white/5"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.05)', color: '#fff' }}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all hover:bg-slate-100 dark:hover:bg-white/5 bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)] text-slate-900 dark:text-white"
           >
             <Download size={16} /> Download Report
           </button>
@@ -114,16 +113,15 @@ export default function CertificateDetailPage() {
       </div>
 
       {/* Hero Score Card */}
-      <div className="rounded-[40px] border p-10 relative overflow-hidden backdrop-blur-[30px] shadow-2xl" 
-        style={{ background: 'rgba(8,12,20,0.8)', borderColor: 'rgba(255,255,255,0.08)' }}>
+      <div className="rounded-[40px] border p-10 relative overflow-hidden backdrop-blur-[30px] shadow-2xl bg-white dark:bg-[rgba(8,12,20,0.8)] border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
         <div className="absolute top-0 right-0 w-80 h-80 rounded-full pointer-events-none opacity-20 bg-[radial-gradient(circle,#38BDF8,transparent_70%)] -translate-y-1/3 translate-x-1/3" />
-        
+
         <div className="relative flex flex-col md:flex-row items-center gap-10">
           {/* Score Circle */}
           <div className="flex-shrink-0">
             <div className="relative w-44 h-44">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 160 160">
-                <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
+                <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(100,116,139,0.15)" strokeWidth="12" />
                 <circle
                   cx="80" cy="80" r="70"
                   fill="none"
@@ -152,14 +150,14 @@ export default function CertificateDetailPage() {
                 <StatusIcon size={16} />
                 {result.status}
               </span>
-              <span className="px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest bg-white/5 text-slate-400 border border-white/10">
+              <span className="px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10">
                 {result.confidenceLevel} Confidence
               </span>
             </div>
-            <h1 className="text-3xl font-syne font-black mb-3 text-white uppercase tracking-widest">
+            <h1 className="text-3xl font-syne font-black mb-3 text-slate-900 dark:text-white uppercase tracking-widest">
               {result.fileName}
             </h1>
-            <p className="text-sm mb-6 font-medium text-slate-400">
+            <p className="text-sm mb-6 font-medium text-slate-600 dark:text-slate-400">
               Verified on {new Date(result.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest justify-center md:justify-start text-slate-500">
@@ -171,8 +169,8 @@ export default function CertificateDetailPage() {
       </div>
 
       {/* Component Scores */}
-      <div className="rounded-[32px] border backdrop-blur-[20px] p-8" style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)' }}>
-        <h2 className="text-sm font-syne font-black mb-6 text-white uppercase tracking-widest">
+      <div className="rounded-[32px] border backdrop-blur-[20px] p-8 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+        <h2 className="text-sm font-syne font-black mb-6 text-slate-900 dark:text-white uppercase tracking-widest">
           Component Analysis
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
@@ -182,7 +180,7 @@ export default function CertificateDetailPage() {
             { label: 'Identity Proof', score: compScores.id, color: '#4ADE80' },
             { label: 'Forensics', score: compScores.anti_tamper, color: '#FBBF24' },
           ].map((comp) => (
-            <div key={comp.label} className="rounded-2xl p-5 text-center border transition-all hover:bg-white/2" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+            <div key={comp.label} className="rounded-2xl p-5 text-center border transition-all hover:bg-slate-100 dark:hover:bg-white/2 bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-slate-500">{comp.label}</p>
               <p className="text-4xl font-black font-mono tracking-tighter" style={{ color: comp.color }}>{comp.score}</p>
             </div>
@@ -191,8 +189,8 @@ export default function CertificateDetailPage() {
       </div>
 
       {/* Extracted Data */}
-      <div className="rounded-[32px] border backdrop-blur-[20px] p-8" style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)' }}>
-        <h2 className="text-sm font-syne font-black mb-6 flex items-center gap-3 text-white uppercase tracking-widest">
+      <div className="rounded-[32px] border backdrop-blur-[20px] p-8 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+        <h2 className="text-sm font-syne font-black mb-6 flex items-center gap-3 text-slate-900 dark:text-white uppercase tracking-widest">
           <FileText size={20} className="text-sky" />
           Data Extraction Insight
         </h2>
@@ -205,13 +203,13 @@ export default function CertificateDetailPage() {
             { icon: Hash, label: 'Certificate ID', value: extracted.certificate_id },
             { icon: Hash, label: 'Reg Number', value: extracted.registration_number },
           ].map((item) => (
-            <div key={item.label} className="flex items-start gap-4 p-4 rounded-2xl border transition-all hover:bg-white/2" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+            <div key={item.label} className="flex items-start gap-4 p-4 rounded-2xl border transition-all hover:bg-slate-100 dark:hover:bg-white/2 bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-sky/10 border border-sky/20">
                 <item.icon size={18} className="text-sky" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-slate-500">{item.label}</p>
-                <p className="text-sm font-black truncate text-white">
+                <p className="text-sm font-black truncate text-slate-900 dark:text-white">
                   {item.value || '—'}
                 </p>
               </div>
@@ -221,7 +219,7 @@ export default function CertificateDetailPage() {
 
         {/* Signatories */}
         {extracted.signatories && extracted.signatories.length > 0 && (
-          <div className="mt-6 p-5 rounded-2xl border" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+          <div className="mt-6 p-5 rounded-2xl border bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
             <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-slate-500">Signatories</p>
             <div className="flex flex-wrap gap-2">
               {extracted.signatories.map((sig, idx) => (
@@ -235,11 +233,11 @@ export default function CertificateDetailPage() {
 
         {/* QR Code Data */}
         {extracted.qr_code_data && (
-          <div className="mt-6 p-5 rounded-2xl flex items-start gap-4 border" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+          <div className="mt-6 p-5 rounded-2xl flex items-start gap-4 border bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
             <QrCode size={20} className="flex-shrink-0 mt-0.5 text-sky" />
             <div className="flex-1 min-w-0">
               <p className="text-[10px] font-black uppercase tracking-widest mb-2 text-slate-500">Embedded QR Metadata</p>
-              <p className="text-xs font-mono break-all font-medium text-slate-400">
+              <p className="text-xs font-mono break-all font-medium text-slate-600 dark:text-slate-400">
                 {extracted.qr_code_data}
               </p>
             </div>
@@ -247,9 +245,9 @@ export default function CertificateDetailPage() {
         )}
 
         {/* OCR Confidence */}
-        <div className="mt-8 flex items-center gap-4 bg-white/2 p-4 rounded-2xl border border-white/5">
+        <div className="mt-8 flex items-center gap-4 p-4 rounded-2xl border bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/5">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Extraction Precision:</span>
-          <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5">
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/5">
             <div className="h-full rounded-full transition-all"
               style={{ width: `${extracted.ocr_confidence}%`, background: getScoreColor(extracted.ocr_confidence), boxShadow: `0 0 10px ${getScoreColor(extracted.ocr_confidence)}66` }} />
           </div>
@@ -260,8 +258,8 @@ export default function CertificateDetailPage() {
       </div>
 
       {/* Issuer Validation */}
-      <div className="rounded-[32px] border backdrop-blur-[20px] p-8" style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)' }}>
-        <h2 className="text-sm font-syne font-black mb-6 flex items-center gap-3 text-white uppercase tracking-widest">
+      <div className="rounded-[32px] border backdrop-blur-[20px] p-8 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+        <h2 className="text-sm font-syne font-black mb-6 flex items-center gap-3 text-slate-900 dark:text-white uppercase tracking-widest">
           <ShieldCheck size={20} className="text-sky" />
           Issuer Validation Service
         </h2>
@@ -279,19 +277,19 @@ export default function CertificateDetailPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-5 rounded-2xl border" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+            <div className="p-5 rounded-2xl border bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-black uppercase tracking-widest mb-2 text-slate-500">Database Match</p>
-              <p className="text-sm font-black text-white">{issuerVal.matched_name || '—'}</p>
+              <p className="text-sm font-black text-slate-900 dark:text-white">{issuerVal.matched_name || '—'}</p>
             </div>
-            <div className="p-5 rounded-2xl border" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+            <div className="p-5 rounded-2xl border bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-black uppercase tracking-widest mb-2 text-slate-500">Entity Classification</p>
-              <p className="text-sm font-black text-white">{issuerVal.issuer_type || '—'}</p>
+              <p className="text-sm font-black text-slate-900 dark:text-white">{issuerVal.issuer_type || '—'}</p>
             </div>
-            <div className="p-5 rounded-2xl border" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+            <div className="p-5 rounded-2xl border bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-black uppercase tracking-widest mb-2 text-slate-500">Digital Domain</p>
-              <p className="text-sm font-black text-white">{issuerVal.matched_domain || '—'}</p>
+              <p className="text-sm font-black text-slate-900 dark:text-white">{issuerVal.matched_domain || '—'}</p>
             </div>
-            <div className="p-5 rounded-2xl border" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+            <div className="p-5 rounded-2xl border bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-black uppercase tracking-widest mb-2 text-slate-500">Accreditation Status</p>
               <p className={`text-sm font-black uppercase tracking-widest ${issuerVal.accredited ? 'text-mint' : 'text-red-400'}`}>
                 {issuerVal.accredited ? 'Accredited' : 'Non-Accredited'}
@@ -299,9 +297,9 @@ export default function CertificateDetailPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/2 p-4 rounded-2xl border border-white/5 mt-4">
+          <div className="flex items-center gap-4 p-4 rounded-2xl border mt-4 bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Issuer Trust Factor:</span>
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5">
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/5">
               <div className="h-full rounded-full transition-all"
                 style={{ width: `${issuerVal.issuer_confidence}%`, background: getScoreColor(issuerVal.issuer_confidence), boxShadow: `0 0 10px ${getScoreColor(issuerVal.issuer_confidence)}66` }} />
             </div>
@@ -313,8 +311,8 @@ export default function CertificateDetailPage() {
       </div>
 
       {/* Tampering Detection */}
-      <div className="rounded-[32px] border backdrop-blur-[20px] p-8" style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)' }}>
-        <h2 className="text-sm font-syne font-black mb-6 flex items-center gap-3 text-white uppercase tracking-widest">
+      <div className="rounded-[32px] border backdrop-blur-[20px] p-8 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+        <h2 className="text-sm font-syne font-black mb-6 flex items-center gap-3 text-slate-900 dark:text-white uppercase tracking-widest">
           <AlertTriangle size={20} className="text-amber-400" />
           Forensic Tampering Detection
         </h2>
@@ -346,12 +344,12 @@ export default function CertificateDetailPage() {
           )}
 
           {tamperRes.method_scores && Object.keys(tamperRes.method_scores).length > 0 && (
-            <div className="space-y-4 mt-6 p-5 rounded-2xl border" style={{ background: 'rgba(255,255,255,0.01)', borderColor: 'rgba(255,255,255,0.04)' }}>
+            <div className="space-y-4 mt-6 p-5 rounded-2xl border bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Method Analysis Scores:</p>
               {Object.entries(tamperRes.method_scores).map(([method, score]) => (
                 <div key={method} className="flex items-center gap-4">
-                  <span className="text-[10px] font-black uppercase tracking-widest flex-shrink-0 w-36 text-slate-400">{method.replace(/_/g, ' ')}</span>
-                  <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5">
+                  <span className="text-[10px] font-black uppercase tracking-widest flex-shrink-0 w-36 text-slate-600 dark:text-slate-400">{method.replace(/_/g, ' ')}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/5">
                     <div className="h-full rounded-full transition-all"
                       style={{ width: `${score}%`, background: getScoreColor(score as number), boxShadow: `0 0 10px ${getScoreColor(score as number)}44` }} />
                   </div>
@@ -363,9 +361,9 @@ export default function CertificateDetailPage() {
             </div>
           )}
 
-          <div className="flex items-center gap-4 bg-white/2 p-4 rounded-2xl border border-white/5 mt-4">
+          <div className="flex items-center gap-4 p-4 rounded-2xl border mt-4 bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Manipulation Index:</span>
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5">
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/5">
               <div className="h-full rounded-full transition-all"
                 style={{ width: `${tamperRes.tampering_score}%`, background: getScoreColor(100 - tamperRes.tampering_score), boxShadow: `0 0 10px ${getScoreColor(100 - tamperRes.tampering_score)}66` }} />
             </div>
@@ -380,14 +378,14 @@ export default function CertificateDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Reasons */}
         {result.reasons && result.reasons.length > 0 && (
-          <div className="rounded-[32px] border backdrop-blur-[20px] p-8" style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)' }}>
-            <h3 className="text-[10px] font-black mb-5 flex items-center gap-3 text-white uppercase tracking-widest">
+          <div className="rounded-[32px] border backdrop-blur-[20px] p-8 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+            <h3 className="text-[10px] font-black mb-5 flex items-center gap-3 text-slate-900 dark:text-white uppercase tracking-widest">
               <CheckCircle size={16} className="text-mint" />
               Validation Merits
             </h3>
             <ul className="space-y-4">
               {result.reasons.map((reason, idx) => (
-                <li key={idx} className="text-xs flex items-start gap-3 font-medium text-slate-400">
+                <li key={idx} className="text-xs flex items-start gap-3 font-medium text-slate-600 dark:text-slate-400">
                   <span className="text-mint font-black">✓</span>
                   {reason}
                 </li>
@@ -398,14 +396,14 @@ export default function CertificateDetailPage() {
 
         {/* Warnings */}
         {result.warnings && result.warnings.length > 0 && (
-          <div className="rounded-[32px] border backdrop-blur-[20px] p-8" style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)' }}>
-            <h3 className="text-[10px] font-black mb-5 flex items-center gap-3 text-white uppercase tracking-widest">
+          <div className="rounded-[32px] border backdrop-blur-[20px] p-8 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+            <h3 className="text-[10px] font-black mb-5 flex items-center gap-3 text-slate-900 dark:text-white uppercase tracking-widest">
               <AlertTriangle size={16} className="text-amber-400" />
               System Warnings
             </h3>
             <ul className="space-y-4">
               {result.warnings.map((warning, idx) => (
-                <li key={idx} className="text-xs flex items-start gap-3 font-medium text-slate-400">
+                <li key={idx} className="text-xs flex items-start gap-3 font-medium text-slate-600 dark:text-slate-400">
                   <span className="text-amber-400 font-black">⚠</span>
                   {warning}
                 </li>

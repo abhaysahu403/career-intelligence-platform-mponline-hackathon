@@ -120,10 +120,10 @@ export default function GovernmentJobsPage() {
         <Filter size={14} className="text-slate-400" />
         {CATEGORIES.map(c => (
           <button key={c} onClick={() => setCategoryFilter(c)}
-            className="px-3 py-2 rounded-xl text-xs font-bold border transition-all"
+            className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${categoryFilter === c ? '' : 'bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-500 dark:text-[#94A3B8]'}`}
             style={categoryFilter === c
               ? { background: 'rgba(56,189,248,0.12)', borderColor: 'rgba(56,189,248,0.3)', color: '#38BDF8' }
-              : { background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.1)', color: '#94A3B8' }}>
+              : undefined}>
             {CATEGORY_LABELS[c]}
           </button>
         ))}

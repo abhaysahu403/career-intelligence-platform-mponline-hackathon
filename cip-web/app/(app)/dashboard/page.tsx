@@ -299,7 +299,7 @@ export default function DashboardPage() {
               <span className="text-sm font-semibold text-slate-900 dark:text-white">Overall Progress</span>
               <span className="text-sm font-bold text-[#38BDF8]">{progressPercentage}% Complete</span>
             </div>
-            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-3 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercentage}%` }}
@@ -332,11 +332,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + idx * 0.05 }}
-            className="relative rounded-2xl p-6 border backdrop-blur-xl transition-all group"
-            style={{ 
-              background: 'rgba(8,12,20,0.7)',
-              borderColor: 'rgba(255,255,255,0.06)'
-            }}
+            className="relative rounded-2xl p-6 border backdrop-blur-xl transition-all group bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
           >
             <div className="flex flex-col items-center gap-3">
               <div 
@@ -400,11 +396,7 @@ export default function DashboardPage() {
               visible: { y: 0, opacity: 1 }
             }}
             whileHover={{ y: -5 }}
-            className="relative rounded-3xl p-6 border backdrop-blur-xl transition-all cursor-pointer group"
-            style={{ 
-              background: 'rgba(8,12,20,0.7)',
-              borderColor: 'rgba(255,255,255,0.06)'
-            }}
+            className="relative rounded-3xl p-6 border backdrop-blur-xl transition-all cursor-pointer group bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
             onClick={card.action}
           >
             <div className="flex items-start justify-between mb-4">
@@ -434,7 +426,7 @@ export default function DashboardPage() {
               <span className="text-lg text-slate-500">/100</span>
             </div>
 
-            <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-4">
+            <div className="h-2 bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden mb-4">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${card.value}%` }}
@@ -444,10 +436,9 @@ export default function DashboardPage() {
               />
             </div>
 
-            <button 
-              className="w-full py-2 rounded-xl text-sm font-bold transition-all group-hover:bg-white/10"
-              style={{ 
-                background: 'rgba(255,255,255,0.05)',
+            <button
+              className="w-full py-2 rounded-xl text-sm font-bold transition-all bg-slate-100 dark:bg-[rgba(255,255,255,0.05)] group-hover:bg-slate-200 dark:group-hover:bg-white/10"
+              style={{
                 color: card.color
               }}
             >
@@ -462,17 +453,13 @@ export default function DashboardPage() {
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         viewport={{ once: true }}
-        className="relative rounded-3xl p-8 border backdrop-blur-xl"
-        style={{ 
-          background: 'rgba(8,12,20,0.7)',
-          borderColor: 'rgba(255,255,255,0.06)'
-        }}
+        className="relative rounded-3xl p-8 border backdrop-blur-xl bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
       >
         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Your Career Journey</h3>
-        
+
         <div className="flex items-center justify-between relative">
           {/* Progress Line */}
-          <div className="absolute top-6 left-0 right-0 h-1 bg-white/10 rounded-full">
+          <div className="absolute top-6 left-0 right-0 h-1 bg-slate-200 dark:bg-white/10 rounded-full">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
@@ -495,9 +482,9 @@ export default function DashboardPage() {
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.1 * idx }}
                 className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
-                  step.completed 
-                    ? 'bg-gradient-to-br from-[#38BDF8] to-[#0EA5E9] border-[#38BDF8]' 
-                    : 'bg-slate-800 border-slate-700'
+                  step.completed
+                    ? 'bg-gradient-to-br from-[#38BDF8] to-[#0EA5E9] border-[#38BDF8]'
+                    : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700'
                 }`}
               >
                 <step.icon className={`w-6 h-6 ${step.completed ? 'text-white' : 'text-slate-500'}`} />
@@ -526,11 +513,7 @@ export default function DashboardPage() {
           initial={{ x: -20, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           viewport={{ once: true }}
-          className="relative rounded-3xl p-6 border backdrop-blur-xl"
-          style={{ 
-            background: 'rgba(8,12,20,0.7)',
-            borderColor: 'rgba(255,255,255,0.06)'
-          }}
+          className="relative rounded-3xl p-6 border backdrop-blur-xl bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
         >
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">What to Do Next</h3>
           
@@ -568,8 +551,7 @@ export default function DashboardPage() {
                 key={item.number}
                 whileHover={{ x: 5 }}
                 onClick={item.action}
-                className="w-full flex items-start gap-4 p-4 rounded-2xl border transition-all hover:bg-white/5 text-left"
-                style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+                className="w-full flex items-start gap-4 p-4 rounded-2xl border transition-all hover:bg-slate-100 dark:hover:bg-white/5 text-left border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
               >
                 <div 
                   className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"
@@ -602,11 +584,7 @@ export default function DashboardPage() {
           initial={{ x: 20, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           viewport={{ once: true }}
-          className="relative rounded-3xl p-6 border backdrop-blur-xl"
-          style={{ 
-            background: 'rgba(8,12,20,0.7)',
-            borderColor: 'rgba(255,255,255,0.06)'
-          }}
+          className="relative rounded-3xl p-6 border backdrop-blur-xl bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
         >
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Your Achievements</h3>
           
@@ -626,26 +604,26 @@ export default function DashboardPage() {
                 transition={{ delay: 0.1 * idx, type: 'spring' }}
                 className="flex flex-col items-center gap-2"
               >
-                <div 
+                <div
                   className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all ${
-                    badge.unlocked 
-                      ? 'shadow-lg' 
-                      : 'opacity-30'
+                    badge.unlocked
+                      ? 'shadow-lg'
+                      : 'opacity-60 bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/10'
                   }`}
-                  style={{ 
-                    background: badge.unlocked ? `${badge.color}20` : 'rgba(255,255,255,0.05)',
-                    borderColor: badge.unlocked ? badge.color : 'rgba(255,255,255,0.1)',
-                    boxShadow: badge.unlocked ? `0 0 20px ${badge.color}40` : 'none'
-                  }}
+                  style={badge.unlocked ? {
+                    background: `${badge.color}20`,
+                    borderColor: badge.color,
+                    boxShadow: `0 0 20px ${badge.color}40`
+                  } : undefined}
                 >
                   {badge.unlocked ? (
                     <badge.icon className="w-8 h-8" style={{ color: badge.color }} />
                   ) : (
-                    <Lock className="w-8 h-8 text-slate-600" />
+                    <Lock className="w-8 h-8 text-slate-400 dark:text-slate-600" />
                   )}
                 </div>
                 <span className={`text-xs font-semibold text-center ${
-                  badge.unlocked ? 'text-slate-900 dark:text-white' : 'text-slate-600'
+                  badge.unlocked ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-600'
                 }`}>
                   {badge.label}
                 </span>
@@ -660,7 +638,7 @@ export default function DashboardPage() {
                 {[true, hasResume, hasInterview, isJobReady, false, false].filter(Boolean).length}/6
               </span>
             </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-2 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${([true, hasResume, hasInterview, isJobReady, false, false].filter(Boolean).length / 6) * 100}%` }}
@@ -699,11 +677,7 @@ export default function DashboardPage() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 whileHover={{ y: -5 }}
                 transition={{ delay: i * 0.1 }}
-                className="relative rounded-3xl p-6 border backdrop-blur-xl transition-all cursor-pointer group"
-                style={{ 
-                  background: 'rgba(8,12,20,0.7)',
-                  borderColor: 'rgba(255,255,255,0.06)'
-                }}
+                className="relative rounded-3xl p-6 border backdrop-blur-xl transition-all cursor-pointer group bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
                 onClick={() => window.open(job.url, '_blank')}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -746,15 +720,15 @@ export default function DashboardPage() {
                 {job.skills && job.skills.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-4">
                     {job.skills.slice(0, 3).map((skill) => (
-                      <span 
+                      <span
                         key={skill}
-                        className="px-2 py-1 rounded-lg text-xs font-semibold bg-white/5 text-slate-400"
+                        className="px-2 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400"
                       >
                         {skill}
                       </span>
                     ))}
                     {job.skills.length > 3 && (
-                      <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-white/5 text-slate-400">
+                      <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400">
                         +{job.skills.length - 3}
                       </span>
                     )}
@@ -773,7 +747,7 @@ export default function DashboardPage() {
               </motion.div>
             ))
           ) : (
-            <div className="col-span-full py-16 text-center rounded-3xl border border-dashed border-white/10 backdrop-blur-sm" style={{ background: 'rgba(255,255,255,0.01)' }}>
+            <div className="col-span-full py-16 text-center rounded-3xl border border-dashed backdrop-blur-sm bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-300 dark:border-white/10">
               <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-[#38BDF8]/5 border border-[#38BDF8]/10">
                 <Rocket size={32} className="text-[#38BDF8]" />
               </div>
@@ -797,8 +771,7 @@ export default function DashboardPage() {
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         viewport={{ once: true }}
-        className="relative rounded-3xl p-8 border backdrop-blur-xl" 
-        style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)' }}
+        className="relative rounded-3xl p-8 border backdrop-blur-xl bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]"
       >
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -825,8 +798,8 @@ export default function DashboardPage() {
                 <motion.div 
                   key={skill} 
                   whileHover={{ scale: 1.02, y: -5 }}
-                  className="rounded-2xl border p-6 space-y-4 transition-all cursor-pointer" 
-                  style={{ background: 'rgba(255,255,255,0.02)', borderColor: `${prColor}33` }}
+                  className="rounded-2xl border p-6 space-y-4 transition-all cursor-pointer bg-slate-50 dark:bg-[rgba(255,255,255,0.02)]"
+                  style={{ borderColor: `${prColor}33` }}
                   onClick={() => router.push('/interview/setup')}
                 >
                   <div className="flex items-center justify-between">
@@ -848,7 +821,7 @@ export default function DashboardPage() {
                       <span className="text-slate-400">Proficiency</span>
                       <span className="font-bold" style={{ color: prColor }}>{proficiency}%</span>
                     </div>
-                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         whileInView={{ width: `${proficiency}%` }}

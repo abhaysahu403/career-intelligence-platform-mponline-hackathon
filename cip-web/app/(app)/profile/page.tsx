@@ -70,8 +70,6 @@ export default function ProfilePage() {
     try {
       // Upload resume if selected
       if (resumeFile) {
-        console.log('📤 Uploading resume:', resumeFile.name, resumeFile.size, 'bytes');
-        
         // Step 1: Upload
         setParsingStatus({
           status: 'uploading',
@@ -87,9 +85,7 @@ export default function ProfilePage() {
           toast.loading('Extracting text from PDF...', { id: 'pdf-extract' });
           const resumeText = await extractTextFromPDF(resumeFile);
           toast.success('Text extracted successfully!', { id: 'pdf-extract' });
-          
-          console.log('✅ PDF text extracted:', resumeText.length, 'characters');
-          
+
           // Step 2: Parse with RAG
           setParsingStatus({
             status: 'parsing',
@@ -99,8 +95,7 @@ export default function ProfilePage() {
           
           // Call ML service for RAG parsing
           const ragResponse = await mlServiceApi.parseResumeWithRAG({ text: resumeText });
-          console.log('✅ RAG parsing completed:', ragResponse.data);
-          
+
           // Step 3: Generate Embeddings (already done by ML service)
           setParsingStatus({
             status: 'generating_embeddings',
@@ -113,8 +108,7 @@ export default function ProfilePage() {
           
           // Upload extracted text to backend
           const resumeResponse = await studentApi.uploadResumeText(resumeText, resumeFile.name);
-          console.log('✅ Resume upload successful:', resumeResponse.data);
-          
+
           // Step 4: Complete
           setParsingStatus({
             status: 'complete',
@@ -153,7 +147,6 @@ export default function ProfilePage() {
             });
             
             await studentApi.uploadResumeText(profileResumeText, 'profile-resume.txt');
-            console.log('✅ Profile-based resume uploaded as fallback');
             toast.success('Profile data saved as resume!');
           } catch (fallbackError) {
             console.error('❌ Fallback resume upload failed:', fallbackError);
@@ -177,10 +170,8 @@ export default function ProfilePage() {
         }
       };
       
-      console.log('📤 Updating profile:', backendData);
-      const profileResponse = await studentApi.updateProfile(backendData);
-      console.log('✅ Profile update successful:', profileResponse.data);
-      
+      await studentApi.updateProfile(backendData);
+
       // Always update UI state
       setUser({ ...user!, ...data as object, year: Number(data.year), skills });
       setSaved(true);
@@ -266,12 +257,7 @@ export default function ProfilePage() {
                   {...register(field.name as 'name')}
                   type={field.type}
                   placeholder={field.placeholder}
-                  className="w-full rounded-xl border px-4 py-3 text-sm font-medium placeholder-slate-500 focus:ring-2 focus:ring-sky/20 focus:border-sky/40 transition-all outline-none"
-                  style={{ 
-                    background: 'rgba(15,23,42,0.6)', 
-                    borderColor: 'rgba(255,255,255,0.1)', 
-                    color: '#F1F5F9'
-                  }}
+                  className="w-full rounded-xl border px-4 py-3 text-sm font-medium placeholder-slate-500 focus:ring-2 focus:ring-sky/20 focus:border-sky/40 transition-all outline-none bg-white dark:bg-[rgba(15,23,42,0.6)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F1F5F9]"
                 />
               </div>
             ))}
@@ -282,28 +268,18 @@ export default function ProfilePage() {
               <label className="mb-2 block text-[10px] font-black text-slate-500 uppercase tracking-widest">Branch</label>
               <select
                 {...register('branch')}
-                className="w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none focus:border-sky/40 transition-all"
-                style={{ 
-                  background: 'rgba(15,23,42,0.6)', 
-                  borderColor: 'rgba(255,255,255,0.1)', 
-                  color: '#F1F5F9'
-                }}
+                className="w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none focus:border-sky/40 transition-all bg-white dark:bg-[rgba(15,23,42,0.6)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F1F5F9]"
               >
-                {['CSE', 'IT', 'ECE', 'ME', 'CE', 'MCA'].map((branch) => <option key={branch} value={branch} style={{ background: '#0F172A', color: '#F1F5F9' }}>{branch}</option>)}
+                {['CSE', 'IT', 'ECE', 'ME', 'CE', 'MCA'].map((branch) => <option key={branch} value={branch} style={{ background: '#FFFFFF', color: '#0F172A' }}>{branch}</option>)}
               </select>
             </div>
             <div>
               <label className="mb-2 block text-[10px] font-black text-slate-500 uppercase tracking-widest">Year</label>
               <select
                 {...register('year')}
-                className="w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none focus:border-sky/40 transition-all"
-                style={{ 
-                  background: 'rgba(15,23,42,0.6)', 
-                  borderColor: 'rgba(255,255,255,0.1)', 
-                  color: '#F1F5F9'
-                }}
+                className="w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none focus:border-sky/40 transition-all bg-white dark:bg-[rgba(15,23,42,0.6)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F1F5F9]"
               >
-                {[1, 2, 3, 4].map((year) => <option key={year} value={year} style={{ background: '#0F172A', color: '#F1F5F9' }}>Year {year}</option>)}
+                {[1, 2, 3, 4].map((year) => <option key={year} value={year} style={{ background: '#FFFFFF', color: '#0F172A' }}>Year {year}</option>)}
               </select>
             </div>
             <div>
@@ -314,12 +290,7 @@ export default function ProfilePage() {
                 step="0.01"
                 min="0"
                 max="10"
-                className="w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none focus:border-sky/40 transition-all"
-                style={{ 
-                  background: 'rgba(15,23,42,0.6)', 
-                  borderColor: 'rgba(255,255,255,0.1)', 
-                  color: '#F1F5F9'
-                }}
+                className="w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none focus:border-sky/40 transition-all bg-white dark:bg-[rgba(15,23,42,0.6)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F1F5F9]"
               />
             </div>
           </div>
@@ -348,12 +319,7 @@ export default function ProfilePage() {
               onChange={(event) => setNewSkill(event.target.value)}
               onKeyDown={(event) => event.key === 'Enter' && (event.preventDefault(), addSkill())}
               placeholder="Add a new skill (e.g. Docker, Redux)"
-              className="flex-1 rounded-xl border px-4 py-3 text-sm font-medium placeholder-slate-500 outline-none focus:border-sky/40 transition-all"
-              style={{ 
-                background: 'rgba(15,23,42,0.6)', 
-                borderColor: 'rgba(255,255,255,0.1)', 
-                color: '#F1F5F9'
-              }}
+              className="flex-1 rounded-xl border px-4 py-3 text-sm font-medium placeholder-slate-500 outline-none focus:border-sky/40 transition-all bg-white dark:bg-[rgba(15,23,42,0.6)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F1F5F9]"
             />
             <button
               type="button"
@@ -432,8 +398,8 @@ export default function ProfilePage() {
                 CGPA: {user?.cgpa ?? 'Not added'}
               </span>
             </div>
-            <div className="rounded-2xl p-5 border" style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.05)' }}>
-              <p className="text-sm leading-relaxed text-slate-400 font-medium">
+            <div className="rounded-2xl p-5 border bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)]">
+              <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400 font-medium">
                 Keep your branch, year, and CGPA updated here so readiness scoring and job recommendations stay tied to your real profile.
               </p>
             </div>

@@ -190,8 +190,7 @@ export default function RoadmapPage() {
             const catTasks = allTasks.filter(t => t.category === cat);
             const done     = catTasks.filter(t => t.completed).length;
             return (
-              <div key={cat} className="text-center p-2 rounded-xl border backdrop-blur-[10px] transition-all hover:-translate-y-1"
-                style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.05)' }}>
+              <div key={cat} className="text-center p-2 rounded-xl border backdrop-blur-[10px] transition-all hover:-translate-y-1 bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)]">
                 <cfg.icon size={16} className="mx-auto mb-1" style={{ color: cfg.color }} />
                 <p className="text-sm font-black text-slate-900 dark:text-white">{done}/{catTasks.length}</p>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{cfg.label}</p>
@@ -264,11 +263,11 @@ export default function RoadmapPage() {
           const allDone   = weekDone === weekTasks.length;
 
           return (
-            <div key={week} className="rounded-2xl border overflow-hidden backdrop-blur-[20px] transition-all"
-              style={{ background: 'rgba(8,12,20,0.7)', borderColor: allDone ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.06)' }}>
+            <div key={week} className={`rounded-2xl border overflow-hidden backdrop-blur-[20px] transition-all bg-white dark:bg-[rgba(8,12,20,0.7)] ${allDone ? '' : 'border-slate-200 dark:border-[rgba(255,255,255,0.06)]'}`}
+              style={allDone ? { borderColor: 'rgba(74,222,128,0.3)' } : undefined}>
               {/* Week header */}
               <button onClick={() => toggleWeek(week)}
-                className="w-full flex items-center justify-between px-5 py-4 transition-colors hover:bg-white/5"
+                className="w-full flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-100 dark:hover:bg-white/5"
                 style={{ textAlign:'left' }}>
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0 shadow-lg border`}
@@ -283,7 +282,7 @@ export default function RoadmapPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="h-1.5 w-24 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <div className="h-1.5 w-24 rounded-full overflow-hidden bg-slate-200 dark:bg-[rgba(255,255,255,0.05)]">
                     <div className="h-full rounded-full transition-all duration-500"
                       style={{ width:`${weekDone/weekTasks.length*100}%`, background: 'linear-gradient(90deg, #38BDF8, #4ADE80)', boxShadow: '0 0 10px rgba(56,189,248,0.3)' }} />
                   </div>
@@ -293,16 +292,16 @@ export default function RoadmapPage() {
 
               {/* Tasks */}
               {expanded && (
-                <div className="border-t border-white/5 px-4 pb-4 pt-4 space-y-3" style={{ background: 'rgba(255,255,255,0.01)' }}>
+                <div className="border-t border-slate-200 dark:border-white/5 px-4 pb-4 pt-4 space-y-3 bg-slate-50 dark:bg-[rgba(255,255,255,0.01)]">
                   {weekTasks.map(task => {
                     const cfg = categoryConfig[task.category];
                     return (
                       <div key={task.id}
-                        className="flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer hover:-translate-y-1 hover:shadow-xl"
-                        style={{
-                          background: task.completed ? 'rgba(74,222,128,0.05)' : 'rgba(255,255,255,0.02)',
-                          borderColor: task.completed ? 'rgba(74,222,128,0.2)' : 'rgba(255,255,255,0.05)',
-                        }}
+                        className={`flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer hover:-translate-y-1 hover:shadow-xl ${task.completed ? '' : 'bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)]'}`}
+                        style={task.completed ? {
+                          background: 'rgba(74,222,128,0.05)',
+                          borderColor: 'rgba(74,222,128,0.2)',
+                        } : undefined}
                         onClick={() => handleToggle(task)}>
                         {/* Checkbox */}
                         <div className="flex-shrink-0 mt-1">

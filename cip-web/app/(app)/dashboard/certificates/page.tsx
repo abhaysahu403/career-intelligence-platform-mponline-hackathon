@@ -103,7 +103,7 @@ export default function CertificatesPage() {
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="rounded-[32px] h-20 animate-pulse" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }} />
+            <div key={i} className="rounded-[32px] h-20 animate-pulse bg-slate-100 dark:bg-[rgba(255,255,255,0.02)] border border-slate-200 dark:border-[rgba(255,255,255,0.05)]" />
           ))}
         </div>
       ) : certificates.length === 0 ? (
@@ -152,7 +152,7 @@ export default function CertificatesPage() {
                       </span>
                     </div>
                   ) : (
-                    <div className="w-14 h-14 rounded-full flex items-center justify-center border transition-all" style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.05)' }}>
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center border transition-all bg-slate-100 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)]">
                       {cert.status === 'PROCESSING' ? <Clock size={20} className="text-sky animate-pulse" /> :
                        cert.status === 'FAILED' ? <XCircle size={20} className="text-red-400" /> :
                        <FileText size={20} className="text-slate-500 dark:text-slate-500" />}
@@ -216,8 +216,7 @@ export default function CertificatesPage() {
           <button
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="px-6 py-2.5 rounded-xl border backdrop-blur-[20px] text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white disabled:opacity-20 transition-all hover:bg-white/5"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.05)' }}
+            className="px-6 py-2.5 rounded-xl border backdrop-blur-[20px] text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white disabled:opacity-20 transition-all hover:bg-slate-100 dark:hover:bg-white/5 bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)]"
           >
             Previous
           </button>
@@ -227,8 +226,7 @@ export default function CertificatesPage() {
           <button
             onClick={() => setPage(p => p + 1)}
             disabled={(page + 1) * PAGE_SIZE >= total}
-            className="px-6 py-2.5 rounded-xl border backdrop-blur-[20px] text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white disabled:opacity-20 transition-all hover:bg-white/5"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.05)' }}
+            className="px-6 py-2.5 rounded-xl border backdrop-blur-[20px] text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white disabled:opacity-20 transition-all hover:bg-slate-100 dark:hover:bg-white/5 bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)]"
           >
             Next
           </button>

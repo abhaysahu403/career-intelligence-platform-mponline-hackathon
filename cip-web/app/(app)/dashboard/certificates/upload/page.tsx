@@ -129,7 +129,7 @@ export default function UploadPage() {
             ? 'bg-sky/5 border-sky shadow-[0_0_30px_rgba(56,189,248,0.2)]' 
             : file 
               ? 'bg-mint/5 border-mint shadow-[0_0_30px_rgba(74,222,128,0.2)]' 
-              : 'bg-white/2 border-white/10 hover:bg-white/4 hover:border-white/20'
+              : 'bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/4 hover:border-slate-300 dark:hover:border-white/20'
         }`}
       >
         <input
@@ -142,7 +142,7 @@ export default function UploadPage() {
 
         {!file ? (
           <div className="pointer-events-none">
-            <div className={`w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center transition-all ${dragOver ? 'bg-sky/20 text-sky' : 'bg-white/5 text-slate-500'}`}>
+            <div className={`w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center transition-all ${dragOver ? 'bg-sky/20 text-sky' : 'bg-slate-100 dark:bg-white/5 text-slate-500'}`}>
               <Upload size={32} />
             </div>
             <p className="text-xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">
@@ -154,7 +154,7 @@ export default function UploadPage() {
         ) : (
           <div className="pointer-events-none">
             {preview ? (
-              <img src={preview} alt="Preview" className="max-h-56 mx-auto rounded-2xl shadow-2xl mb-4 object-contain border border-white/10" />
+              <img src={preview} alt="Preview" className="max-h-56 mx-auto rounded-2xl shadow-2xl mb-4 object-contain border border-slate-200 dark:border-white/10" />
             ) : (
               <div className="w-20 h-20 mx-auto mb-4 rounded-3xl flex items-center justify-center bg-mint/10 border border-mint/20 shadow-[0_0_15px_rgba(74,222,128,0.2)]">
                 <FileText size={32} className="text-mint" />
@@ -181,7 +181,7 @@ export default function UploadPage() {
             <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin flex-shrink-0 border-sky" />
             <span className="text-sm font-black text-sky uppercase tracking-widest">{statusMsg}</span>
           </div>
-          <div className="mt-4 rounded-full h-1.5 overflow-hidden bg-white/5">
+          <div className="mt-4 rounded-full h-1.5 overflow-hidden bg-slate-200 dark:bg-white/5">
             <div className={`h-full rounded-full transition-all duration-1000 bg-sky shadow-[0_0_10px_rgba(56,189,248,0.5)] ${stage === 'uploading' ? 'w-1/4' : 'w-3/4 animate-pulse'}`} />
           </div>
         </div>
@@ -202,7 +202,7 @@ export default function UploadPage() {
           disabled={!file || isLoading}
           className={`flex-1 py-4 px-6 font-black uppercase tracking-widest rounded-2xl transition-all duration-300 ${
             !file || isLoading
-              ? 'bg-white/5 text-slate-600 cursor-not-allowed border border-white/5'
+              ? 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200 dark:border-white/5'
               : 'bg-gradient-to-r from-sky to-blue-600 text-white shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] hover:-translate-y-1'
           }`}
         >
@@ -217,7 +217,7 @@ export default function UploadPage() {
           { icon: Shield, label: 'Issuer Validation', color: 'text-sky', bg: 'rgba(56,189,248,0.1)' },
           { icon: ShieldCheck, label: 'Tamper Detection', color: 'text-mint', bg: 'rgba(74,222,128,0.1)' },
         ].map((item) => (
-          <div key={item.label} className="p-4 rounded-2xl border backdrop-blur-[20px] transition-all hover:-translate-y-1" style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.05)' }}>
+          <div key={item.label} className="p-4 rounded-2xl border backdrop-blur-[20px] transition-all hover:-translate-y-1 bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.05)]">
             <div className={`w-10 h-10 mx-auto mb-3 rounded-xl flex items-center justify-center`} style={{ background: item.bg }}>
               <item.icon size={20} className={item.color} />
             </div>

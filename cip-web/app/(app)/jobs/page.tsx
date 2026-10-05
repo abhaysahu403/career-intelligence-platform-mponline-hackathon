@@ -36,9 +36,7 @@ export default function JobsPage() {
       try {
         const response = await jobsApi.recommended();
         const data = response.data?.data || response.data || [];
-        
-        console.log('📊 [Jobs] Recommended response:', data);
-        
+
         return data.map((item: any) => ({
           id: item.jobId,
           company: item.company,
@@ -76,9 +74,7 @@ export default function JobsPage() {
         const response = await jobsApi.list({ page: 0, size: 100 });
         const payload = response.data?.data || response.data || {};
         const items = payload.content || [];
-        
-        console.log('📊 [Jobs] All jobs response:', items.length, 'jobs');
-        
+
         return items.map((item: any) => ({
           id: item.id,
           company: item.company,
@@ -106,8 +102,6 @@ export default function JobsPage() {
   const recommendedIds = new Set((recommendedJobs || []).map((j: Job) => j.id));
   const nonRecommendedJobs = (allJobs || []).filter((j: Job) => !recommendedIds.has(j.id));
   const mergedJobs = [...(recommendedJobs || []), ...nonRecommendedJobs];
-
-  console.log('📊 [Jobs] Merged:', mergedJobs.length, 'total (', recommendedJobs?.length, 'recommended +', nonRecommendedJobs.length, 'others)');
 
   // Apply filters with flexible matching
   const filtered = mergedJobs.filter(j => {
@@ -185,23 +179,6 @@ export default function JobsPage() {
 
   const isLoading = loadingRecommended || loadingAll;
 
-  // Debug info
-  console.log('🔍 [Jobs Debug]', {
-    total: mergedJobs.length,
-    recommended: recommendedJobs?.length || 0,
-    nonRecommended: nonRecommendedJobs.length,
-    filtered: filtered.length,
-    filters: {
-      role: roleFilter,
-      location: locationFilter,
-      type: typeFilter,
-      experience: experienceFilter,
-      minMatch,
-      onlyRecommended,
-      search
-    }
-  });
-
   return (
     <div className="space-y-6 pb-12 max-w-7xl">
       <JobsTabSwitcher active="private" />
@@ -259,32 +236,27 @@ export default function JobsPage() {
 
         <div className="flex flex-wrap gap-2">
           <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.1)', color: '#F8FAFC' }}>
-            {ROLES.map(r => <option key={r} value={r} style={{ background: '#0F172A', color: '#F8FAFC' }}>{r}</option>)}
+            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F8FAFC]">
+            {ROLES.map(r => <option key={r} value={r} style={{ background: '#FFFFFF', color: '#0F172A' }}>{r}</option>)}
           </select>
           <select value={locationFilter} onChange={e => setLocationFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.1)', color: '#F8FAFC' }}>
-            {LOCATIONS.map(l => <option key={l} value={l} style={{ background: '#0F172A', color: '#F8FAFC' }}>{l}</option>)}
+            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F8FAFC]">
+            {LOCATIONS.map(l => <option key={l} value={l} style={{ background: '#FFFFFF', color: '#0F172A' }}>{l}</option>)}
           </select>
           <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.1)', color: '#F8FAFC' }}>
-            {TYPES.map(t => <option key={t} value={t} style={{ background: '#0F172A', color: '#F8FAFC' }}>{t}</option>)}
+            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F8FAFC]">
+            {TYPES.map(t => <option key={t} value={t} style={{ background: '#FFFFFF', color: '#0F172A' }}>{t}</option>)}
           </select>
           <select value={experienceFilter} onChange={e => setExperienceFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.1)', color: '#F8FAFC' }}>
-            {EXPERIENCE.map(e => <option key={e} value={e} style={{ background: '#0F172A', color: '#F8FAFC' }}>{e}</option>)}
+            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F8FAFC]">
+            {EXPERIENCE.map(e => <option key={e} value={e} style={{ background: '#FFFFFF', color: '#0F172A' }}>{e}</option>)}
           </select>
           <select value={minMatch} onChange={e => setMinMatch(Number(e.target.value))}
-            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.1)', color: '#F8FAFC' }}>
-            <option value={0} style={{ background: '#0F172A', color: '#F8FAFC' }}>Any Match</option>
-            <option value={60} style={{ background: '#0F172A', color: '#F8FAFC' }}>60%+ Match</option>
-            <option value={75} style={{ background: '#0F172A', color: '#F8FAFC' }}>75%+ Match</option>
-            <option value={85} style={{ background: '#0F172A', color: '#F8FAFC' }}>85%+ Match</option>
+            className="px-3 py-2 rounded-xl text-sm font-bold border appearance-none transition-all outline-none bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F8FAFC]">
+            <option value={0} style={{ background: '#FFFFFF', color: '#0F172A' }}>Any Match</option>
+            <option value={60} style={{ background: '#FFFFFF', color: '#0F172A' }}>60%+ Match</option>
+            <option value={75} style={{ background: '#FFFFFF', color: '#0F172A' }}>75%+ Match</option>
+            <option value={85} style={{ background: '#FFFFFF', color: '#0F172A' }}>85%+ Match</option>
           </select>
           {hasFilters && (
             <button onClick={clearFilters}
