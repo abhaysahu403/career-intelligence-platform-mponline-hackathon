@@ -19,8 +19,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -46,8 +44,9 @@ public class AppConfig {
         return om;
     }
 
-    // CORS is configured once, in WebConfig — a second addCorsMappings() here
-    // duplicated the Access-Control-Allow-Origin header and browsers rejected it.
+    // CORS is handled once, at api-gateway (the only entry point browsers ever hit) —
+    // a per-service addCorsMappings() here duplicated the Access-Control-Allow-Origin
+    // header and browsers rejected the response outright.
 
     // ── Kafka Beans ─────────────────────────────────────────────────────────
 

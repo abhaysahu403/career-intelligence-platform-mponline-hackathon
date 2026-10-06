@@ -20,6 +20,7 @@ COPY job-service ./job-service
 COPY recommendation-service ./recommendation-service
 COPY score-service ./score-service
 COPY analytics-service ./analytics-service
+COPY chatbot-service ./chatbot-service
 
 # Build all at once (faster, resolves dependencies)
 RUN mvn clean package -DskipTests -T 4
@@ -106,5 +107,13 @@ FROM eclipse-temurin:17-jre-alpine AS analytics-service
 WORKDIR /app
 COPY --from=build /workspace/analytics-service/target/*.jar app.jar
 EXPOSE 8089
+ENV SPRING_PROFILES_ACTIVE=docker
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Chatbot Service
+FROM eclipse-temurin:17-jre-alpine AS chatbot-service
+WORKDIR /app
+COPY --from=build /workspace/chatbot-service/target/*.jar app.jar
+EXPOSE 8090
 ENV SPRING_PROFILES_ACTIVE=docker
 ENTRYPOINT ["java", "-jar", "app.jar"]

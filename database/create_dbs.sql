@@ -8,3 +8,4 @@ CREATE DATABASE cip_jobs;
 CREATE DATABASE cip_recommendations;
 CREATE DATABASE cip_certificate;
 CREATE DATABASE cip_analytics;
+CREATE DATABASE cip_chatbot;

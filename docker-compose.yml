@@ -109,6 +109,7 @@ services:
       RECOMMENDATION_SERVICE_URL: http://recommendation-service:8087
       SCORE_SERVICE_URL: http://score-service:8088
       ANALYTICS_SERVICE_URL: http://analytics-service:8089
+      CHATBOT_SERVICE_URL: http://chatbot-service:8090
     networks:
       - cip-network
     depends_on:
@@ -316,6 +317,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  chatbot-service:
+    build:
+      context: ./cip-backend
+      dockerfile: Dockerfile
+      target: chatbot-service
+    container_name: cip-chatbot-service
+    ports:
+      - "127.0.0.1:8090:8090"
+    environment:
+      <<: *common-backend-env
+      SERVER_PORT: 8090
+      ML_SERVICE_URL: http://ml-service:8000
+    networks:
+      - cip-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+    restart: unless-stopped
+
   # ═══════════════════════════════════════════════════════════════════════════
   # ML SERVICE
   # ═══════════════════════════════════════════════════════════════════════════
@@ -329,6 +351,10 @@ services:
       - "127.0.0.1:8000:8000"
     environment:
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      # gemini-2.5-flash was retired by Google ("no longer available to new users");
+      # gemini-3.8-flash is the replacement they point to. Override via .env if this
+      # changes again.
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
       DATABASE_URL: postgresql://cip_user:${DB_PASSWORD:-cip_password_123}@postgres:5432/career_intelligence
       REDIS_URL: redis://:${REDIS_PASSWORD:-cip-redis-pass}@redis:6379/0
       ENV: docker

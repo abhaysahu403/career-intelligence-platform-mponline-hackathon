@@ -24,6 +24,7 @@
         <module>job-service</module>
         <module>recommendation-service</module>
         <module>certificate-service</module>
+        <module>chatbot-service</module>
     </modules>
 
     <parent>

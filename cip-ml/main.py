@@ -978,6 +978,75 @@ async def coach_interview_answer(payload: dict):
     }
     return JSONResponse(content=response)
 
+
+_CHATBOT_SYSTEM_CONTEXT = {
+    "GLOBAL": "You are the CIP Assistant, a helpful guide for the Career Intelligence Platform, a career-readiness app for Madhya Pradesh engineering students covering mock interviews, resume building, certificate validation, and job matching.",
+    "INTERVIEW": "You are the CIP Assistant helping a student currently practicing mock interviews on the platform. Focus answers on interview prep, scoring, and technique.",
+    "JOB": "You are the CIP Assistant helping a student browsing job and government exam listings. Focus answers on job matching, eligibility, and application guidance.",
+    "CERTIFICATE": "You are the CIP Assistant helping a student with certificate upload and validation. Focus answers on how authenticity scoring, OCR, and issuer validation work.",
+    "ANALYTICS": "You are the CIP Assistant helping a student understand their readiness score and analytics dashboard. Focus answers on interpreting scores and what to improve next.",
+}
+
+_CHATBOT_FALLBACK_SUGGESTIONS = {
+    "GLOBAL": ["What should I do next to get job ready?", "How does this platform work?", "What's my current readiness score?"],
+    "INTERVIEW": ["How do I improve my interview score?", "What topics should I practice next?", "Can you explain my last feedback?"],
+    "JOB": ["Which jobs match my skills best?", "How is the match percentage calculated?", "What skills am I missing for top roles?"],
+    "CERTIFICATE": ["How does certificate validation work?", "Why was my certificate flagged?", "What certifications should I add next?"],
+    "ANALYTICS": ["What does my readiness score mean?", "What are my weakest skills right now?", "How do I raise my readiness score?"],
+}
+
+
+@app.post("/ml/chatbot/respond", tags=["Chatbot"])
+async def chatbot_respond(payload: dict):
+    """
+    Stateless single-turn chatbot reply, mirroring the /ml/interview/coach chat-mode
+    pattern: plain prompt -> model.generate_content -> {reply}. Session/history
+    persistence lives in chatbot-service; this endpoint just generates one reply.
+    """
+    message = str(payload.get("message", "")).strip()
+    session_type = str(payload.get("session_type", "GLOBAL")).strip().upper() or "GLOBAL"
+    context = payload.get("context") or {}
+
+    if session_type not in _CHATBOT_SYSTEM_CONTEXT:
+        session_type = "GLOBAL"
+
+    fallback_suggestions = _CHATBOT_FALLBACK_SUGGESTIONS[session_type]
+
+    if not message:
+        return JSONResponse(content={"reply": "Hi! How can I help you today?", "suggestions": fallback_suggestions})
+
+    model = _get_gemini_model()
+    if not model:
+        return JSONResponse(content={
+            "reply": "AI assistant is currently offline. Please try again later.",
+            "suggestions": fallback_suggestions,
+        })
+
+    context_lines = "\n".join(f"- {k}: {v}" for k, v in context.items()) if context else "(none provided)"
+    prompt = f"""
+    {_CHATBOT_SYSTEM_CONTEXT[session_type]}
+
+    Relevant context about the student's current screen:
+    {context_lines}
+
+    Student's message: "{message}"
+
+    Reply helpfully and concisely (2-4 sentences max). Do not invent specific numbers
+    (scores, percentages, counts) you were not given in the context above — speak
+    generally if exact data isn't provided.
+    """
+
+    try:
+        response = model.generate_content(prompt)
+        reply = response.text.strip()
+        return JSONResponse(content={"reply": reply, "suggestions": fallback_suggestions})
+    except Exception:
+        return JSONResponse(content={
+            "reply": "Sorry, I'm having trouble answering that right now. Could you try rephrasing?",
+            "suggestions": fallback_suggestions,
+        })
+
+
 @app.post("/ml/readiness", response_model=CareerReadinessResponse, tags=["Career"])
 async def career_readiness_endpoint(request: CareerReadinessRequest, background_tasks: BackgroundTasks):
     try:
