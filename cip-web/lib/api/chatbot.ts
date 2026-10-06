@@ -1,5 +1,6 @@
 // Chatbot API Service
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -69,9 +70,11 @@ export interface RateLimitInfo {
 class ChatBotAPI {
   private getHeaders() {
     const userId = localStorage.getItem('userId') || '1';
+    const token = Cookies.get('cip_token');
     return {
       'Content-Type': 'application/json',
       'X-User-Id': userId,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   }
 
