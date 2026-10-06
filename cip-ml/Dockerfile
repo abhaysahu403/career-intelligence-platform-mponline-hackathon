@@ -15,7 +15,14 @@ WORKDIR /app
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# Install CPU-only torch BEFORE the rest of requirements.txt — sentence-transformers
+# pulls in torch transitively, and without this it resolves the default CUDA/GPU
+# wheel which drags in ~4GB of unused nvidia/triton packages (this container has
+# no GPU). Pinning the +cpu build here first satisfies that dependency so pip
+# never reaches for the GPU variant.
+RUN pip install --no-cache-dir torch==2.14.0+cpu --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir -r requirements.txt
 
 # Copy application
 COPY . .

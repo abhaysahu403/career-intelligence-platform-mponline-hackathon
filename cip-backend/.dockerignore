@@ -1,0 +1,20 @@
+# Maven build output (each service's target/ can be large; Docker rebuilds from source anyway)
+**/target/
+*.class
+*.jar
+*.war
+
+# IDE
+**/.idea/
+**/.settings/
+**/.classpath
+**/.project
+*.iml
+
+# logs
+*.log
+
+# misc
+.DS_Store
+.git
+.vscode
