@@ -19,7 +19,7 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-16">
       {/* Ambient glow zones */}
-      <div className="absolute top-1/4 left-1/4 w-[700px] h-[700px] bg-sky/8 blur-[140px] pointer-events-none rounded-full" />
+      <div className="absolute top-1/4 left-1/4 w-[700px] h-[700px] bg-sky/[0.08] blur-[140px] pointer-events-none rounded-full" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-mint/10 blur-[120px] pointer-events-none rounded-full" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">

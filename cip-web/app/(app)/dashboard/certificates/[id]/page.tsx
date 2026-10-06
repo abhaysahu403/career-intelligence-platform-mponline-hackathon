@@ -180,7 +180,7 @@ export default function CertificateDetailPage() {
             { label: 'Identity Proof', score: compScores.id, color: '#4ADE80' },
             { label: 'Forensics', score: compScores.anti_tamper, color: '#FBBF24' },
           ].map((comp) => (
-            <div key={comp.label} className="rounded-2xl p-5 text-center border transition-all hover:bg-slate-100 dark:hover:bg-white/2 bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
+            <div key={comp.label} className="rounded-2xl p-5 text-center border transition-all hover:bg-slate-100 dark:hover:bg-white/[0.02] bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-slate-500">{comp.label}</p>
               <p className="text-4xl font-black font-mono tracking-tighter" style={{ color: comp.color }}>{comp.score}</p>
             </div>
@@ -203,7 +203,7 @@ export default function CertificateDetailPage() {
             { icon: Hash, label: 'Certificate ID', value: extracted.certificate_id },
             { icon: Hash, label: 'Reg Number', value: extracted.registration_number },
           ].map((item) => (
-            <div key={item.label} className="flex items-start gap-4 p-4 rounded-2xl border transition-all hover:bg-slate-100 dark:hover:bg-white/2 bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
+            <div key={item.label} className="flex items-start gap-4 p-4 rounded-2xl border transition-all hover:bg-slate-100 dark:hover:bg-white/[0.02] bg-slate-50 dark:bg-[rgba(255,255,255,0.01)] border-slate-200 dark:border-[rgba(255,255,255,0.04)]">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-sky/10 border border-sky/20">
                 <item.icon size={18} className="text-sky" />
               </div>
@@ -245,7 +245,7 @@ export default function CertificateDetailPage() {
         )}
 
         {/* OCR Confidence */}
-        <div className="mt-8 flex items-center gap-4 p-4 rounded-2xl border bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/5">
+        <div className="mt-8 flex items-center gap-4 p-4 rounded-2xl border bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Extraction Precision:</span>
           <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/5">
             <div className="h-full rounded-full transition-all"
@@ -297,7 +297,7 @@ export default function CertificateDetailPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 p-4 rounded-2xl border mt-4 bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/5">
+          <div className="flex items-center gap-4 p-4 rounded-2xl border mt-4 bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Issuer Trust Factor:</span>
             <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/5">
               <div className="h-full rounded-full transition-all"
@@ -361,7 +361,7 @@ export default function CertificateDetailPage() {
             </div>
           )}
 
-          <div className="flex items-center gap-4 p-4 rounded-2xl border mt-4 bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/5">
+          <div className="flex items-center gap-4 p-4 rounded-2xl border mt-4 bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Manipulation Index:</span>
             <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/5">
               <div className="h-full rounded-full transition-all"

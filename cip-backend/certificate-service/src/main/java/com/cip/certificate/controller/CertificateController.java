@@ -83,6 +83,26 @@ public class CertificateController {
     }
 
     /**
+     * DELETE /certificates/{id}
+     * Delete a certificate (owner only)
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteCertificate(
+        @PathVariable Long id,
+        @RequestHeader("X-User-Id") Long userId
+    ) {
+        log.info("[API] DELETE /certificates/{} — user={}", id, userId);
+        try {
+            certificateService.deleteCertificate(id, userId);
+            return ResponseEntity.ok(java.util.Map.of("message", "Certificate deleted"));
+        } catch (java.util.NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    /**
      * GET /certificates/health
      * Service health check
      */

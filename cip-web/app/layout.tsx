@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   description: 'AI-powered candidate intelligence engine. Analyze. Verify. Decide. Real-time interview coaching, OCR certificate validation, and smart job matching.',
   keywords: ['AI interview', 'AI hiring', 'career intelligence', 'certificate validator', 'job matching', 'interview coach', 'recruitment AI'],
   authors: [{ name: 'CIP Intelligence Team' }],
-  icons: { icon: '/favicon.ico' },
   openGraph: {
     title: 'CIP — AI Hiring Intelligence',
     description: 'Recruitment Verdict. Unified AI Decision Engine.',

@@ -120,7 +120,7 @@ export default function Topbar() {
               </div>
               <div className="divide-y divide-slate-200 dark:divide-white/5 max-h-[400px] overflow-y-auto">
                 {notifications.length ? notifications.map(n => (
-                  <div key={n.id} className="px-6 py-5 hover:bg-slate-50 dark:hover:bg-white/2 cursor-pointer transition-colors">
+                  <div key={n.id} className="px-6 py-5 hover:bg-slate-50 dark:hover:bg-white/[0.02] cursor-pointer transition-colors">
                     <div className="flex gap-4 items-start">
                       {n.unread && <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 bg-sky shadow-[0_0_10px_rgba(56,189,248,0.5)]" />}
                       <div className={n.unread ? '' : 'ml-4'}>

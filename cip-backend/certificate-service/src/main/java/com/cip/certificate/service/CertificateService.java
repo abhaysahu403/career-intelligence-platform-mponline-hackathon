@@ -267,6 +267,22 @@ public class CertificateService {
             .build();
     }
 
+    @Transactional
+    public void deleteCertificate(Long certId, Long userId) {
+        Certificate cert = certificateRepository.findById(certId)
+            .orElseThrow(() -> new NoSuchElementException("Certificate not found: " + certId));
+
+        if (!cert.getUserId().equals(userId)) {
+            throw new SecurityException("Certificate does not belong to this user");
+        }
+
+        resultRepository.deleteByCertificateId(certId);
+        certificateRepository.deleteById(certId);
+        storageService.delete(cert.getFileUrl());
+
+        log.info("[Delete] Certificate removed: id={}, user={}", certId, userId);
+    }
+
     public UserCertificatesResponse getUserCertificates(Long userId, int page, int size) {
         Page<Certificate> certPage = certificateRepository.findByUserId(
             userId, PageRequest.of(page, size)

@@ -129,7 +129,7 @@ export default function UploadPage() {
             ? 'bg-sky/5 border-sky shadow-[0_0_30px_rgba(56,189,248,0.2)]' 
             : file 
               ? 'bg-mint/5 border-mint shadow-[0_0_30px_rgba(74,222,128,0.2)]' 
-              : 'bg-slate-50 dark:bg-white/2 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/4 hover:border-slate-300 dark:hover:border-white/20'
+              : 'bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/[0.04] hover:border-slate-300 dark:hover:border-white/20'
         }`}
       >
         <input

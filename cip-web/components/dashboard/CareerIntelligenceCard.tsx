@@ -279,7 +279,7 @@ export default function CareerIntelligenceCard({ userId }: Props) {
             </h1>
           </motion.div>
 
-          <div className="max-w-2xl mx-auto py-4 px-6 rounded-2xl bg-white/1 border border-white/5 backdrop-blur-sm">
+          <div className="max-w-2xl mx-auto py-4 px-6 rounded-2xl bg-white/[0.01] border border-white/5 backdrop-blur-sm">
             <p className="text-base font-medium text-slate-300 leading-relaxed italic">
               "{(career as any).finalRecommendation || career.decisionReason}"
             </p>
