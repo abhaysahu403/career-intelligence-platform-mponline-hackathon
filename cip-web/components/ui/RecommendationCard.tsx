@@ -17,10 +17,9 @@ export default function RecommendationCard({ title, description, icon: Icon, cta
   }[priority];
 
   return (
-    <div className="relative rounded-2xl p-4 border backdrop-blur-[20px] flex items-start gap-3 transition-all duration-300 hover:-translate-y-1"
-      style={{ 
-        background: 'rgba(8,12,20,0.7)',
-        borderColor: colors.border 
+    <div className="relative rounded-2xl p-4 border backdrop-blur-[20px] flex items-start gap-3 transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-[rgba(8,12,20,0.7)]"
+      style={{
+        borderColor: colors.border
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 25px -5px ${colors.dot}40`;
@@ -34,8 +33,8 @@ export default function RecommendationCard({ title, description, icon: Icon, cta
         <Icon size={16} style={{ color: colors.icon }} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold mb-0.5 text-white">{title}</p>
-        <p className="text-xs font-medium text-[#94A3B8]">{description}</p>
+        <p className="text-sm font-bold mb-0.5 text-slate-900 dark:text-white">{title}</p>
+        <p className="text-xs font-medium text-slate-500 dark:text-[#94A3B8]">{description}</p>
         {onClick && (
           <button onClick={onClick}
             className="flex items-center gap-1 text-xs font-medium mt-2 hover:gap-2 transition-all"

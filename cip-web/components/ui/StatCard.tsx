@@ -22,10 +22,8 @@ export default function StatCard({
   return (
     <div
       onClick={onClick}
-      className={cn('relative rounded-2xl p-5 border backdrop-blur-[20px] transition-all duration-300 hover:-translate-y-1', onClick && 'cursor-pointer', className)}
+      className={cn('relative rounded-2xl p-5 border backdrop-blur-[20px] transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]', onClick && 'cursor-pointer', className)}
       style={{
-        background: 'rgba(8,12,20,0.7)',
-        borderColor: 'rgba(255,255,255,0.06)',
         boxShadow: '0 4px 15px -5px rgba(0,0,0,0.3)'
       }}
       onMouseEnter={(e) => {
@@ -33,7 +31,7 @@ export default function StatCard({
         e.currentTarget.style.boxShadow = '0 8px 25px -5px rgba(56,189,248,0.2)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+        e.currentTarget.style.borderColor = '';
         e.currentTarget.style.boxShadow = '0 4px 15px -5px rgba(0,0,0,0.3)';
       }}
     >
@@ -55,10 +53,10 @@ export default function StatCard({
           </span>
         )}
       </div>
-      <p className="text-sm font-semibold mb-1 text-[#94A3B8]">{title}</p>
-      <p className="text-2xl font-bold tabular-nums font-syne text-white">{value}</p>
-      {subtitle && <p className="text-xs mt-1 text-[#94A3B8]">{subtitle}</p>}
-      {trend && <p className="text-xs mt-1 font-medium text-[#94A3B8]">{trend.label}</p>}
+      <p className="text-sm font-semibold mb-1 text-slate-500 dark:text-[#94A3B8]">{title}</p>
+      <p className="text-2xl font-bold tabular-nums font-syne text-slate-900 dark:text-white">{value}</p>
+      {subtitle && <p className="text-xs mt-1 text-slate-500 dark:text-[#94A3B8]">{subtitle}</p>}
+      {trend && <p className="text-xs mt-1 font-medium text-slate-500 dark:text-[#94A3B8]">{trend.label}</p>}
     </div>
   );
 }

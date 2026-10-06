@@ -18,23 +18,22 @@ export default function JobCard({ job }: Props) {
   const jobUrl = job.applyLink || (job.url !== 'local_dataset' && job.url !== '#' ? job.url : null);
 
   return (
-    <div className="relative rounded-2xl p-5 border backdrop-blur-[20px] flex flex-col gap-3 transition-all duration-300 hover:-translate-y-2"
-      style={{ 
-        background: 'rgba(8,12,20,0.7)',
-        borderColor: job.isRecommended ? 'rgba(56,189,248,0.4)' : 'rgba(255,255,255,0.06)',
-        boxShadow: job.isRecommended 
-          ? '0 8px 30px -10px rgba(56,189,248,0.3), inset 0 0 30px rgba(56,189,248,0.1)' 
-          : '0 4px 15px -5px rgba(0,0,0,0.3)'
+    <div className={`relative rounded-2xl p-5 border backdrop-blur-[20px] flex flex-col gap-3 transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-[rgba(8,12,20,0.7)] ${job.isRecommended ? '' : 'border-slate-200 dark:border-[rgba(255,255,255,0.06)]'}`}
+      style={{
+        borderColor: job.isRecommended ? 'rgba(56,189,248,0.4)' : undefined,
+        boxShadow: job.isRecommended
+          ? '0 8px 30px -10px rgba(56,189,248,0.3), inset 0 0 30px rgba(56,189,248,0.1)'
+          : undefined
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'rgba(56,189,248,0.5)';
         e.currentTarget.style.boxShadow = '0 12px 40px -10px rgba(56,189,248,0.4), inset 0 0 40px rgba(56,189,248,0.15)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = job.isRecommended ? 'rgba(56,189,248,0.4)' : 'rgba(255,255,255,0.06)';
-        e.currentTarget.style.boxShadow = job.isRecommended 
-          ? '0 8px 30px -10px rgba(56,189,248,0.3), inset 0 0 30px rgba(56,189,248,0.1)' 
-          : '0 4px 15px -5px rgba(0,0,0,0.3)';
+        e.currentTarget.style.borderColor = job.isRecommended ? 'rgba(56,189,248,0.4)' : '';
+        e.currentTarget.style.boxShadow = job.isRecommended
+          ? '0 8px 30px -10px rgba(56,189,248,0.3), inset 0 0 30px rgba(56,189,248,0.1)'
+          : '';
       }}
     >
       {/* Top shimmer line */}
@@ -73,7 +72,7 @@ export default function JobCard({ job }: Props) {
           {job.company.charAt(0)}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-black text-sm uppercase tracking-wider text-white truncate">{job.role}</p>
+          <p className="font-black text-sm uppercase tracking-wider text-slate-900 dark:text-white truncate">{job.role}</p>
           <p className="text-[11px] font-black uppercase tracking-widest text-[#64748B] mt-0.5">{job.company}</p>
         </div>
         <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl flex-shrink-0"
@@ -84,10 +83,10 @@ export default function JobCard({ job }: Props) {
 
       <div className="flex flex-wrap gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
         <span className="flex items-center gap-1.5"><MapPin size={12} className="text-slate-600" />{job.location}</span>
-        <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">{job.type}</span>
-        {job.experienceLevel && <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">{job.experienceLevel}</span>}
+        <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">{job.type}</span>
+        {job.experienceLevel && <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">{job.experienceLevel}</span>}
         {job.salary && <span className="flex items-center gap-1.5"><Clock size={12} className="text-slate-600"/>{job.salary}</span>}
-        {job.mode && <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">{job.mode}</span>}
+        {job.mode && <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">{job.mode}</span>}
       </div>
 
       {/* Why This Job Matches — Intelligence Layer */}
@@ -129,7 +128,7 @@ export default function JobCard({ job }: Props) {
             <div className="rounded-xl px-3 py-2 mt-2" style={{ background: 'rgba(56,189,248,0.05)', border: '1px solid rgba(56,189,248,0.15)' }}>
               <div className="flex items-start gap-2">
                 <Target size={12} className="text-sky mt-0.5 flex-shrink-0" />
-                <p className="text-[10px] font-bold text-slate-300 leading-relaxed">
+                <p className="text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-relaxed">
                   <span className="text-sky font-black uppercase tracking-wider">Next Step:</span> {job.nextStep}
                 </p>
               </div>
@@ -151,8 +150,7 @@ export default function JobCard({ job }: Props) {
       {!job.isRecommended && (
         <div className="flex flex-wrap gap-2">
           {job.skills.slice(0, 4).map(s => (
-            <span key={s} className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl text-slate-500" 
-              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <span key={s} className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl text-slate-500 bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border border-slate-200 dark:border-[rgba(255,255,255,0.05)]">
               {s}
             </span>
           ))}
@@ -163,15 +161,14 @@ export default function JobCard({ job }: Props) {
       <div className="flex gap-2 mt-2">
         {jobUrl ? (
           <a href={jobUrl} target="_blank" rel="noreferrer"
-            className="flex-1 flex justify-center items-center gap-2 py-3 rounded-2xl border transition-all font-black text-[10px] uppercase tracking-widest text-white hover:bg-sky/10 hover:border-sky/40"
+            className="flex-1 flex justify-center items-center gap-2 py-3 rounded-2xl border transition-all font-black text-[10px] uppercase tracking-widest text-slate-900 dark:text-white hover:bg-sky/10 hover:border-sky/40"
             style={{ borderColor: 'rgba(56,189,248,0.3)', background: 'rgba(56,189,248,0.05)' }}>
             Apply Now <ExternalLink size={14} />
           </a>
         ) : (
           <button
             disabled
-            className="flex-1 flex justify-center items-center gap-2 py-3 rounded-2xl border transition-all font-black text-[10px] uppercase tracking-widest text-slate-600 cursor-not-allowed"
-            style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
+            className="flex-1 flex justify-center items-center gap-2 py-3 rounded-2xl border transition-all font-black text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-600 cursor-not-allowed bg-slate-50 dark:bg-[rgba(255,255,255,0.02)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
             No Link Available
           </button>
         )}
