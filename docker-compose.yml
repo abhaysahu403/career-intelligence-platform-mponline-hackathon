@@ -176,6 +176,7 @@ services:
       SERVER_PORT: 8083
       ML_SERVICE_URL: http://ml-service:8000
       SCORE_SERVICE_URL: http://score-service:8088
+      RESUME_SERVICE_URL: http://resume-service:8084
     networks:
       - cip-network
     depends_on:

@@ -27,9 +27,18 @@ public class MlClient {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> generateQuestion(String jobRole, String persona, List<Map<String, Object>> previousAnswers) {
+        return generateQuestion(jobRole, persona, previousAnswers, List.of());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> generateQuestion(String jobRole, String persona, List<Map<String, Object>> previousAnswers,
+                                                 List<String> skills) {
         try {
             Map<String, Object> body = Map.of(
-                    "resume_data", Map.of("persona_mode", persona != null ? persona.toLowerCase() : "friendly"),
+                    "resume_data", Map.of(
+                            "persona_mode", persona != null ? persona.toLowerCase() : "friendly",
+                            "skills", skills != null ? skills : List.of()
+                    ),
                     "job_role", jobRole != null ? jobRole : "SDE",
                     "previous_answers", previousAnswers != null ? previousAnswers : List.of()
             );

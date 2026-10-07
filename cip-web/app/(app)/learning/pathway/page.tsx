@@ -9,7 +9,16 @@ import { useT } from '@/lib/i18n';
 import CourseCard from '@/components/ui/CourseCard';
 import type { AcademicProfile, CourseRecommendations, CourseRecommendationEntry, UserCourseProgress } from '@/types';
 
-const BRANCHES = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'ALL'];
+const BRANCHES = [
+  { value: 'CSE', label: 'CSE' },
+  { value: 'IT', label: 'IT' },
+  { value: 'ECE', label: 'ECE' },
+  { value: 'EEE', label: 'EEE' },
+  { value: 'MECH', label: 'MECH' },
+  { value: 'CIVIL', label: 'CIVIL' },
+  { value: 'ALL', label: 'All / Government Exam Prep (SSC, UPSC, Banking...)' },
+  { value: 'Other', label: 'Other / Non-Engineering' },
+];
 const PREFERENCES = [
   { value: 'government_platform_first', label: 'Government Platforms First' },
   { value: 'fastest', label: 'Fastest to Complete' },
@@ -53,7 +62,7 @@ export default function LearningPathwayPage() {
     queryKey: ['course-recommendations', skillGaps, branch, preference],
     queryFn: async () => {
       const response = await courseApi.recommend({
-        skillGaps, branch, preference,
+        skillGaps, branch: branch === 'Other' ? 'ALL' : branch, preference,
         currentReadiness: score?.readiness,
       });
       return (response.data?.data || null) as CourseRecommendations | null;
@@ -162,14 +171,14 @@ export default function LearningPathwayPage() {
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Branch</label>
             <select value={branch} onChange={e => setBranch(e.target.value)}
               className="px-3 py-2 rounded-xl text-sm font-bold border outline-none bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
-              {BRANCHES.map(b => <option key={b} value={b}>{b}</option>)}
+              {BRANCHES.map(b => <option key={b.value} value={b.value} style={{ background: '#FFFFFF', color: '#0F172A' }}>{b.label}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Preference</label>
             <select value={preference} onChange={e => setPreference(e.target.value)}
               className="px-3 py-2 rounded-xl text-sm font-bold border outline-none bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
-              {PREFERENCES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+              {PREFERENCES.map(p => <option key={p.value} value={p.value} style={{ background: '#FFFFFF', color: '#0F172A' }}>{p.label}</option>)}
             </select>
           </div>
           <button onClick={() => refetch()}

@@ -67,7 +67,7 @@ public class Interview {
     private LocalDateTime updatedAt;
 
     public enum InterviewType {
-        TECHNICAL, BEHAVIORAL, HR, DSA
+        TECHNICAL, BEHAVIORAL, HR, DSA, HR_BEHAVIORAL, GOVERNMENT
     }
 
     public enum InterviewStatus {

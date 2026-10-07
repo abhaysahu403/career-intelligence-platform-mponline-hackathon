@@ -118,7 +118,7 @@ export default function AcademicProfilePage() {
             <Field label="Branch">
               <select value={form.branch} onChange={e => update({ branch: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl border bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
-                {BRANCHES.map(b => <option key={b} value={b}>{b}</option>)}
+                {BRANCHES.map(b => <option key={b} value={b} style={{ background: '#FFFFFF', color: '#0F172A' }}>{b}</option>)}
               </select>
             </Field>
             <Field label="Year of Study">
@@ -158,7 +158,7 @@ export default function AcademicProfilePage() {
             <Field label="10th Board">
               <select value={form.tenthBoard} onChange={e => update({ tenthBoard: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl border bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
-                {BOARDS.map(b => <option key={b} value={b}>{b}</option>)}
+                {BOARDS.map(b => <option key={b} value={b} style={{ background: '#FFFFFF', color: '#0F172A' }}>{b}</option>)}
               </select>
             </Field>
             <Field label={`12th Percentage: ${form.twelfthPercentage}%`}>
@@ -168,7 +168,7 @@ export default function AcademicProfilePage() {
             <Field label="12th Stream">
               <select value={form.twelfthStream} onChange={e => update({ twelfthStream: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl border bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
-                {STREAMS.map(s => <option key={s} value={s}>{s}</option>)}
+                {STREAMS.map(s => <option key={s} value={s} style={{ background: '#FFFFFF', color: '#0F172A' }}>{s}</option>)}
               </select>
             </Field>
             <ToggleField label="Any Active Backlogs?" checked={(form.activeBacklogs || 0) > 0}
@@ -197,7 +197,7 @@ export default function AcademicProfilePage() {
             <Field label="Target Role Type">
               <select value={form.targetRoleType} onChange={e => update({ targetRoleType: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl border bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
-                {TARGET_ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                {TARGET_ROLES.map(r => <option key={r.value} value={r.value} style={{ background: '#FFFFFF', color: '#0F172A' }}>{r.label}</option>)}
               </select>
             </Field>
             <ToggleField label="Willing to Relocate?" checked={!!form.willingToRelocate} onChange={checked => update({ willingToRelocate: checked })} />

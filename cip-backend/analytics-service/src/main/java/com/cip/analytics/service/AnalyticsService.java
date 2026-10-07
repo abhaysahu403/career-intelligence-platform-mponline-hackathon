@@ -497,4 +497,84 @@ public class AnalyticsService {
     private double toDouble(Object value) {
         return value instanceof Number number ? number.doubleValue() : 0;
     }
+
+    @SuppressWarnings("unchecked")
+    public String generateRoadmapHtml(Map<String, Object> payload) {
+        Object tasksRaw = payload.get("tasks");
+        List<Map<String, Object>> tasks = tasksRaw instanceof List<?> list
+                ? (List<Map<String, Object>>) (List<?>) list
+                : List.of();
+
+        Map<Integer, List<Map<String, Object>>> byWeek = new java.util.TreeMap<>();
+        int completedCount = 0;
+        for (Map<String, Object> task : tasks) {
+            int week = (int) toDouble(task.get("week"));
+            byWeek.computeIfAbsent(week, k -> new ArrayList<>()).add(task);
+            if (Boolean.TRUE.equals(task.get("completed"))) completedCount++;
+        }
+        int total = tasks.size();
+        int pct = total > 0 ? Math.round(completedCount * 100f / total) : 0;
+
+        StringBuilder weeks = new StringBuilder();
+        for (Map.Entry<Integer, List<Map<String, Object>>> entry : byWeek.entrySet()) {
+            weeks.append("<h2>Week ").append(entry.getKey()).append("</h2><ul>");
+            for (Map<String, Object> task : entry.getValue()) {
+                boolean done = Boolean.TRUE.equals(task.get("completed"));
+                String title = htmlEscape(String.valueOf(task.getOrDefault("task", "")));
+                String description = htmlEscape(String.valueOf(task.getOrDefault("description", "")));
+                weeks.append("<li class=\"").append(done ? "done" : "pending").append("\">")
+                        .append("<strong>").append(done ? "✓ " : "○ ").append(title).append("</strong>");
+                if (!description.isBlank() && !"null".equals(description)) {
+                    weeks.append("<div class=\"desc\">").append(description).append("</div>");
+                }
+                Object resourcesRaw = task.get("resources");
+                if (resourcesRaw instanceof List<?> resources) {
+                    for (Object resourceRaw : resources) {
+                        if (resourceRaw instanceof Map<?, ?> resource) {
+                            String resTitle = htmlEscape(String.valueOf(resource.get("title")));
+                            String resUrl = htmlEscape(String.valueOf(resource.get("url")));
+                            weeks.append("<div class=\"resource\"><a href=\"").append(resUrl).append("\">")
+                                    .append(resTitle).append("</a></div>");
+                        }
+                    }
+                }
+                weeks.append("</li>");
+            }
+            weeks.append("</ul>");
+        }
+
+        return """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                <meta charset="UTF-8">
+                <title>My Career Roadmap</title>
+                <style>
+                  body { font-family: -apple-system, Segoe UI, Arial, sans-serif; max-width: 720px; margin: 40px auto; color: #1e293b; }
+                  h1 { color: #0ea5e9; }
+                  h2 { margin-top: 28px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+                  ul { list-style: none; padding: 0; }
+                  li { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+                  li.done strong { color: #16a34a; }
+                  li.pending strong { color: #1e293b; }
+                  .desc { color: #64748b; font-size: 14px; margin-top: 4px; }
+                  .resource { font-size: 13px; margin-top: 4px; }
+                  .resource a { color: #0ea5e9; text-decoration: none; }
+                  .progress { font-size: 18px; font-weight: bold; margin: 16px 0; }
+                  @media print { body { margin: 0; } }
+                </style>
+                </head>
+                <body>
+                <h1>My Career Roadmap</h1>
+                <p class="progress">Progress: %d / %d tasks complete (%d%%)</p>
+                %s
+                </body>
+                </html>
+                """.formatted(completedCount, total, pct, weeks.toString());
+    }
+
+    private String htmlEscape(String value) {
+        if (value == null) return "";
+        return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+    }
 }

@@ -58,12 +58,14 @@ export default function InterviewSetupPage() {
   };
 
   const handleStartInterview = async () => {
-    // For HR and Behavioral rounds, we don't need specific mode - just use RESUME_BASED as default
-    const finalInterviewMode = (roundType === 'HR' || roundType === 'BEHAVIORAL') 
-      ? 'RESUME_BASED'  // Default mode for HR/Behavioral (backend will ignore this and use roundType)
+    // For HR & Behavioral and Government rounds, the mode is implied by roundType —
+    // backend branches question-bank selection on interviewMode, not roundType.
+    const finalInterviewMode =
+      roundType === 'GOVERNMENT' ? 'GOVERNMENT'
+      : roundType === 'HR_BEHAVIORAL' ? 'RESUME_BASED'
       : interviewMode;
 
-    // Validation - only validate if TECHNICAL mode with specific selections
+    // Validation
     if (roundType === 'TECHNICAL') {
       if (finalInterviewMode === 'COMPANY_SPECIFIC' && !company) {
         toast.error('Please select a company for Company-Specific mode');
@@ -77,10 +79,10 @@ export default function InterviewSetupPage() {
         toast.error('Please select a branch for Branch-Based mode');
         return;
       }
-      if (finalInterviewMode === 'GOVERNMENT' && !governmentExamType) {
-        toast.error('Please select a government exam type');
-        return;
-      }
+    }
+    if (roundType === 'GOVERNMENT' && !governmentExamType) {
+      toast.error('Please select a government exam type');
+      return;
     }
 
     setStarting(true);
@@ -90,7 +92,7 @@ export default function InterviewSetupPage() {
         company: roundType === 'TECHNICAL' && finalInterviewMode === 'COMPANY_SPECIFIC' ? company : undefined,
         role: roundType === 'TECHNICAL' && finalInterviewMode === 'ROLE_BASED' ? role : undefined,
         branch: roundType === 'TECHNICAL' && finalInterviewMode === 'BRANCH_BASED' ? branch : undefined,
-        governmentExamType: roundType === 'TECHNICAL' && finalInterviewMode === 'GOVERNMENT' ? governmentExamType || undefined : undefined,
+        governmentExamType: roundType === 'GOVERNMENT' ? (governmentExamType || undefined) : undefined,
         duration: duration,
         difficulty,
         persona,
@@ -148,13 +150,6 @@ export default function InterviewSetupPage() {
       description: 'Domain-specific questions for your branch',
       color: 'from-orange-500 to-red-500',
     },
-    {
-      id: 'GOVERNMENT' as InterviewMode,
-      icon: Landmark,
-      title: 'Government Exam',
-      description: 'UPSC Personality Test, SSC Interview, Bank PO, SSB, DRDO/ISRO',
-      color: 'from-amber-500 to-red-600',
-    },
   ];
 
   const GOVERNMENT_EXAM_LABELS: Record<string, string> = {
@@ -199,7 +194,7 @@ export default function InterviewSetupPage() {
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Step 1: Choose Interview Round Type</h3>
               <p className="text-slate-600 dark:text-gray-400 text-sm mb-4">This is the most important choice - it determines what type of questions you'll get</p>
               <div className="grid grid-cols-3 gap-4">
-                {(['TECHNICAL', 'HR', 'BEHAVIORAL'] as RoundType[]).map((type) => (
+                {(['TECHNICAL', 'HR_BEHAVIORAL', 'GOVERNMENT'] as RoundType[]).map((type) => (
                   <button
                     key={type}
                     onClick={() => setRoundType(type)}
@@ -209,23 +204,22 @@ export default function InterviewSetupPage() {
                         : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-white/20'
                     }`}
                   >
-                    {type === 'TECHNICAL' && '💻 '}
-                    {type === 'HR' && '👔 '}
-                    {type === 'BEHAVIORAL' && '🧠 '}
-                    {type}
+                    {type === 'TECHNICAL' && '💻 TECHNICAL'}
+                    {type === 'HR_BEHAVIORAL' && '👔 HR & BEHAVIORAL'}
+                    {type === 'GOVERNMENT' && '🏛️ GOVERNMENT'}
                   </button>
                 ))}
               </div>
               <div className="mt-4 p-4 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10">
                 <p className="text-sm text-slate-700 dark:text-gray-300 font-medium">
                   {roundType === 'TECHNICAL' && '💻 Technical Round: Algorithms, System Design, Coding, Data Structures, API Design'}
-                  {roundType === 'HR' && '👔 HR Round: Behavioral questions, STAR method, Strengths/Weaknesses, Career goals, Team fit'}
-                  {roundType === 'BEHAVIORAL' && '🧠 Behavioral Round: Past experiences, Problem-solving, Teamwork, Leadership, Conflict resolution'}
+                  {roundType === 'HR_BEHAVIORAL' && '👔 HR & Behavioral Round: STAR method, Strengths/Weaknesses, Career goals, Team fit, Leadership, Conflict resolution'}
+                  {roundType === 'GOVERNMENT' && '🏛️ Government Exam Round: UPSC, SSC, Railways, SSB, Bank PO, DRDO/ISRO Personality Tests & Interviews'}
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
                   {roundType === 'TECHNICAL' && 'Same technical questions for everyone (unless you select Company-Specific below)'}
-                  {roundType === 'HR' && 'Same HR questions for everyone (unless you select Company-Specific below)'}
-                  {roundType === 'BEHAVIORAL' && 'Same behavioral questions for everyone (unless you select Company-Specific below)'}
+                  {roundType === 'HR_BEHAVIORAL' && 'Same HR & behavioral questions for everyone'}
+                  {roundType === 'GOVERNMENT' && 'Pick your exam type below to get exam-specific questions'}
                 </p>
               </div>
             </motion.div>
@@ -301,8 +295,8 @@ export default function InterviewSetupPage() {
               </motion.div>
             )}
 
-            {/* Info message for HR and Behavioral */}
-            {(roundType === 'HR' || roundType === 'BEHAVIORAL') && (
+            {/* Info message for HR & Behavioral */}
+            {roundType === 'HR_BEHAVIORAL' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -310,15 +304,42 @@ export default function InterviewSetupPage() {
               >
                 <div className="flex items-center gap-3 mb-2">
                   <Sparkles className="w-6 h-6 text-[#38BDF8]" />
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {roundType === 'HR' ? 'General HR Interview' : 'General Behavioral Interview'}
-                  </h3>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">General HR & Behavioral Interview</h3>
                 </div>
                 <p className="text-slate-700 dark:text-gray-300">
-                  {roundType === 'HR'
-                    ? 'You will get standard HR questions that are asked in all companies. These questions are the same for everyone and cover topics like strengths, weaknesses, motivation, and career goals.'
-                    : 'You will get standard behavioral questions using the STAR method. These questions are the same for everyone and cover topics like teamwork, leadership, problem-solving, and conflict resolution.'}
+                  You will get standard HR and behavioral questions using the STAR method. These questions are
+                  the same for everyone and cover topics like strengths, weaknesses, motivation, career goals,
+                  teamwork, leadership, problem-solving, and conflict resolution.
                 </p>
+              </motion.div>
+            )}
+
+            {/* Step 2 for GOVERNMENT: exam type picker, no source step needed */}
+            {roundType === 'GOVERNMENT' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-white/10 p-4"
+              >
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                  <Landmark className="w-5 h-5 text-[#38BDF8]" />
+                  Step 2: Select Government Exam
+                </h2>
+                <p className="text-slate-600 dark:text-gray-400 text-sm mb-3">
+                  Choose the exam type to get exam-specific questions
+                </p>
+                <select
+                  value={governmentExamType}
+                  onChange={(e) => setGovernmentExamType(e.target.value as GovernmentExamType)}
+                  className="w-full bg-white dark:bg-white/10 border border-slate-300 dark:border-white/20 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-[#38BDF8]"
+                >
+                  <option value="">Choose an exam type...</option>
+                  {config?.governmentExamTypes.map((examType) => (
+                    <option key={examType} value={examType} className="bg-[#01030F]">
+                      {GOVERNMENT_EXAM_LABELS[examType] || examType}
+                    </option>
+                  ))}
+                </select>
               </motion.div>
             )}
 
@@ -383,28 +404,6 @@ export default function InterviewSetupPage() {
               </motion.div>
             )}
 
-            {roundType === 'TECHNICAL' && interviewMode === 'GOVERNMENT' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-white/10 p-4"
-              >
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Select Government Exam</h3>
-                <select
-                  value={governmentExamType}
-                  onChange={(e) => setGovernmentExamType(e.target.value as GovernmentExamType)}
-                  className="w-full bg-white dark:bg-white/10 border border-slate-300 dark:border-white/20 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-[#38BDF8]"
-                >
-                  <option value="">Choose an exam type...</option>
-                  {config?.governmentExamTypes.map((examType) => (
-                    <option key={examType} value={examType} className="bg-[#01030F]">
-                      {GOVERNMENT_EXAM_LABELS[examType] || examType}
-                    </option>
-                  ))}
-                </select>
-              </motion.div>
-            )}
-
             {/* Duration Selection - Simple */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -413,7 +412,7 @@ export default function InterviewSetupPage() {
             >
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-[#38BDF8]" />
-                {roundType === 'TECHNICAL' ? 'Step 3:' : 'Step 2:'} Interview Duration
+                {roundType === 'HR_BEHAVIORAL' ? 'Step 2:' : 'Step 3:'} Interview Duration
               </h3>
               <div className="grid grid-cols-5 gap-2">
                 {config?.durations.map((d) => (
@@ -443,7 +442,7 @@ export default function InterviewSetupPage() {
             >
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-[#38BDF8]" />
-                {roundType === 'TECHNICAL' ? 'Step 4:' : 'Step 3:'} Difficulty Level
+                {roundType === 'HR_BEHAVIORAL' ? 'Step 3:' : 'Step 4:'} Difficulty Level
               </h3>
               <div className="grid grid-cols-4 gap-2">
                 {config?.difficulties.map((d) => (
@@ -497,10 +496,18 @@ export default function InterviewSetupPage() {
                     <span className="text-slate-900 dark:text-white font-semibold text-xs">{interviewMode.replace('_', ' ')}</span>
                   </div>
                 )}
-                {(roundType === 'HR' || roundType === 'BEHAVIORAL') && (
+                {roundType === 'HR_BEHAVIORAL' && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600 dark:text-gray-400">Question Type:</span>
                     <span className="text-slate-900 dark:text-white font-semibold text-xs">General (Same for Everyone)</span>
+                  </div>
+                )}
+                {roundType === 'GOVERNMENT' && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-600 dark:text-gray-400">Exam Type:</span>
+                    <span className="text-slate-900 dark:text-white font-semibold text-xs">
+                      {governmentExamType ? (GOVERNMENT_EXAM_LABELS[governmentExamType] || governmentExamType) : 'Not selected'}
+                    </span>
                   </div>
                 )}
                 <div className="flex items-center justify-between text-sm">

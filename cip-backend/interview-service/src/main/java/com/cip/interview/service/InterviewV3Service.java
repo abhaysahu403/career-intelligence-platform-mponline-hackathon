@@ -29,6 +29,7 @@ public class InterviewV3Service {
     private final InterviewRepository interviewRepository;
     private final QuestionBankService questionBankService;
     private final MlClient mlClient;
+    private final ResumeClient resumeClient;
     private final FacialAnalyticsRepository facialAnalyticsRepository;
     private final ScoreClient scoreClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -41,7 +42,7 @@ public class InterviewV3Service {
         String difficulty = req.getDifficulty() != null ? req.getDifficulty() : "MEDIUM";
         String mode = req.getInterviewMode() != null ? req.getInterviewMode() : "ROLE_BASED";
 
-        List<InterviewV3Dtos.QuestionDto> questions = buildQuestions(mode, req, difficulty, numQuestions);
+        List<InterviewV3Dtos.QuestionDto> questions = buildQuestions(userId, mode, req, difficulty, numQuestions);
 
         Interview interview = Interview.builder()
                 .userId(userId)
@@ -73,7 +74,7 @@ public class InterviewV3Service {
         return toSessionResponse(interview);
     }
 
-    private List<InterviewV3Dtos.QuestionDto> buildQuestions(String mode, InterviewV3Dtos.StartRequest req,
+    private List<InterviewV3Dtos.QuestionDto> buildQuestions(Long userId, String mode, InterviewV3Dtos.StartRequest req,
                                                               String difficulty, int numQuestions) {
         List<InterviewV3Dtos.QuestionDto> questions = new ArrayList<>();
 
@@ -112,9 +113,27 @@ public class InterviewV3Service {
             String effectivePersona = "GOVERNMENT".equals(mode) && req.getGovernmentExamType() != null
                     ? req.getGovernmentExamType().toLowerCase()
                     : req.getPersona();
+            // Company/branch context has to be smuggled through the "role" field since the ML
+            // question generator has no dedicated company/branch parameter — this keeps any
+            // top-up questions (when the static bank runs short) grounded in the chosen
+            // company/branch instead of silently becoming generic SDE questions.
+            String effectiveRole = req.getRole();
+            if ("COMPANY_SPECIFIC".equals(mode) && req.getCompany() != null) {
+                effectiveRole = (effectiveRole != null ? effectiveRole : "Software Engineer") + " at " + req.getCompany();
+            } else if ("BRANCH_BASED".equals(mode) && req.getBranch() != null) {
+                effectiveRole = (effectiveRole != null ? effectiveRole : "Engineer") + " (branch: " + req.getBranch() + ")";
+            }
+            List<String> resumeSkills = "RESUME_BASED".equals(mode)
+                    ? resumeClient.getLatestResumeSkills(userId)
+                    : List.of();
+            // Seed history with the bank-sourced questions already selected above so the AI
+            // doesn't regenerate something overlapping with them.
             List<Map<String, Object>> history = new ArrayList<>();
+            for (InterviewV3Dtos.QuestionDto q : questions) {
+                history.add(Map.of("question", q.getQuestion(), "answer", ""));
+            }
             while (questions.size() < numQuestions) {
-                Map<String, Object> generated = mlClient.generateQuestion(req.getRole(), effectivePersona, history);
+                Map<String, Object> generated = mlClient.generateQuestion(effectiveRole, effectivePersona, history, resumeSkills);
                 questions.add(InterviewV3Dtos.QuestionDto.builder()
                         .question(String.valueOf(generated.get("question")))
                         .topic(String.valueOf(generated.getOrDefault("topic", "General")))
@@ -134,6 +153,8 @@ public class InterviewV3Service {
         return switch (roundType) {
             case "HR" -> Interview.InterviewType.HR;
             case "BEHAVIORAL" -> Interview.InterviewType.BEHAVIORAL;
+            case "HR_BEHAVIORAL" -> Interview.InterviewType.HR_BEHAVIORAL;
+            case "GOVERNMENT" -> Interview.InterviewType.GOVERNMENT;
             default -> Interview.InterviewType.TECHNICAL;
         };
     }

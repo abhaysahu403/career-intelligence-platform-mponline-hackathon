@@ -85,6 +85,7 @@ function LiveInterviewContent() {
   const [emotion, setEmotion] = useState('CONFIDENT');
   const [posture, setPosture] = useState<'STABLE' | 'UNSTABLE'>('STABLE');
   const [proctorWarning, setProctorWarning] = useState<string | null>(null);
+  const [answerFeedback, setAnswerFeedback] = useState<{ score: number; feedback: string; missing: string; tip: string } | null>(null);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -355,6 +356,8 @@ function LiveInterviewContent() {
       const tip = evalData.tip || "";
       const completed = evalData.completed || false;
 
+      setAnswerFeedback({ score, feedback, missing, tip });
+
       // Build comprehensive feedback message
       let feedbackMessage = `Your score: ${Math.round(score)} out of 100. `;
       if (feedback) feedbackMessage += feedback + ". ";
@@ -382,6 +385,7 @@ function LiveInterviewContent() {
           } else if (currentQuestionIndex < (interview?.questions?.length || 5) - 1) {
             const nextIndex = currentQuestionIndex + 1;
             setCurrentQuestionIndex(nextIndex);
+            setAnswerFeedback(null);
             // Speak the next question
             setTimeout(() => {
               speakQuestion(nextIndex);
@@ -415,6 +419,7 @@ function LiveInterviewContent() {
         } else if (currentQuestionIndex < (interview?.questions?.length || 5) - 1) {
           const nextIndex = currentQuestionIndex + 1;
           setCurrentQuestionIndex(nextIndex);
+          setAnswerFeedback(null);
           // Speak the next question
           setTimeout(() => {
             speakQuestion(nextIndex);
@@ -431,7 +436,7 @@ function LiveInterviewContent() {
           }, 2000);
         }
       }
-      
+
       // Show success toast with scores
       toast.success(`Answer evaluated! Score: ${Math.round(score)}/100 (LLM: ${Math.round(llmScore)}, Semantic: ${Math.round(semanticScore)})`);
     } catch (error) {
@@ -546,6 +551,7 @@ function LiveInterviewContent() {
       stopListening();
       if (analyticsIntervalRef.current) clearInterval(analyticsIntervalRef.current);
       if (proctorIntervalRef.current) clearInterval(proctorIntervalRef.current);
+      setAnswerFeedback(null);
       router.push(`/interview/report/${interviewId}`);
     }
   };
@@ -797,6 +803,46 @@ function LiveInterviewContent() {
                 </button>
               )}
             </motion.div>
+
+            {/* Per-Answer AI Feedback Card */}
+            {answerFeedback && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className={`rounded-xl border p-4 flex-shrink-0 ${
+                  answerFeedback.score >= 70
+                    ? 'bg-green-500/10 border-green-500/30'
+                    : answerFeedback.score >= 50
+                    ? 'bg-yellow-500/10 border-yellow-500/30'
+                    : 'bg-red-500/10 border-red-500/30'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-slate-900 dark:text-white font-semibold text-sm flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[#38BDF8]" />
+                    AI Feedback — Score: {Math.round(answerFeedback.score)}/100
+                  </span>
+                  <button
+                    onClick={() => setAnswerFeedback(null)}
+                    className="text-xs text-gray-400 hover:text-slate-900 dark:hover:text-white"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+                <div className="space-y-1.5 text-sm">
+                  {answerFeedback.feedback && (
+                    <p className="text-slate-900 dark:text-white">{answerFeedback.feedback}</p>
+                  )}
+                  {answerFeedback.missing && (
+                    <p className="text-gray-400"><span className="font-semibold">To improve: </span>{answerFeedback.missing}</p>
+                  )}
+                  {answerFeedback.tip && (
+                    <p className="text-[#38BDF8]"><span className="font-semibold">Tip: </span>{answerFeedback.tip}</p>
+                  )}
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Right: AI Interviewer Section */}

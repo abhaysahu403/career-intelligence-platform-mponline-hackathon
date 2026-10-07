@@ -427,12 +427,17 @@ def _generate_question(resume_data: dict, job_role: str, previous_answers: list,
         f"Government Exam Type: {persona_mode.upper()}" if is_government_persona
         else f"Role: {job_role}\nResume Skills: {', '.join(skills[:10]) or 'general programming'}"
     )
+    asked_questions = [str(item.question) for item in previous_answers if getattr(item, "question", None)]
+    asked_block = (
+        "\n".join(f"- {q}" for q in asked_questions) if asked_questions else "(none yet — this is the first question)"
+    )
     prompt = f"""You are generating the next interview question.
 {_persona_instruction(persona_mode)}
 
 {context_line}
 Weak Topics From Last 3 Answers: {", ".join(_weak_topics(previous_answers)) or "none"}
-Questions Already Asked: {len(previous_answers)}
+Questions Already Asked In This Session (do NOT repeat these or close variants):
+{asked_block}
 Seed Question Bank:
 {chr(10).join(seed_questions)}
 
@@ -447,6 +452,7 @@ Return JSON only:
 Constraints:
 - One question only
 - Technical and realistic
+- Must be meaningfully different from every question listed as already asked above — cover a new topic or a distinctly different angle
 - Start from the role question bank, then refine it using the resume context
 - Use resume context when relevant
 - Prefer repeated weak areas
@@ -513,6 +519,73 @@ Keep it short and actionable.
         payload = _json_from_response(response.text)
         if not all(key in payload for key in ["score", "good", "missing", "ideal", "tip"]):
             return None
+        return payload
+    except Exception:
+        return None
+
+
+_EVALUATE_RESPONSE_REQUIRED_KEYS = [
+    "technical_score", "confidence_score", "communication_score", "overall_score",
+    "feedback", "strengths", "improvements", "key_concepts_covered",
+    "key_concepts_missing", "model_answer_hint",
+]
+
+
+def _evaluate_answer_full_with_claude(
+    question: str, answer: str, expected_answer: Optional[str], domain: str, difficulty: str
+) -> Optional[dict]:
+    """
+    Real interviewer-grade evaluation of one interview answer, grounded in what the
+    candidate actually said. Falls back to the deterministic heuristic engine (see
+    evaluate_interview()) on any failure — same safety contract as _evaluate_with_gemini.
+    """
+    model = _get_gemini_model()
+    if model is None:
+        return None
+
+    prompt = f"""You are a strict, experienced technical interviewer giving a candidate direct,
+specific feedback on ONE answer — the way a real interviewer would, not a generic rubric.
+
+Domain: {domain}
+Difficulty: {difficulty}
+Question: {question}
+Expected answer / ideal points (may be partial): {expected_answer or "(not provided — judge on general correctness and depth)"}
+Candidate's actual answer: {answer or "(no answer provided)"}
+
+Judge the answer on three dimensions:
+1. Technical correctness and depth vs. the expected answer.
+2. Communication: structure, clarity, how well they organized their explanation.
+3. Confidence/vocabulary: look for hedging language ("I think", "maybe", "probably", "I'm not sure"),
+   filler words, vague terms, or imprecise technical vocabulary. Call this out specifically and by
+   name if present (e.g. "You hedged with 'I think' several times — state your answer directly" or
+   "Your vocabulary was vague here — use the precise term X instead of Y").
+
+If no answer was given, score technical/communication/confidence low and say so plainly.
+
+Return ONLY valid JSON, no markdown, matching this exact shape:
+{{
+  "technical_score": 72.0,
+  "confidence_score": 60.0,
+  "communication_score": 68.0,
+  "overall_score": 68.0,
+  "feedback": "2-3 sentence direct assessment, specific to what they actually said",
+  "strengths": ["specific thing they did well", "..."],
+  "improvements": ["specific, actionable fix — call out vocabulary/confidence/hedging if relevant", "..."],
+  "key_concepts_covered": ["concept they correctly mentioned"],
+  "key_concepts_missing": ["concept they should have mentioned"],
+  "model_answer_hint": "short structured ideal answer"
+}}
+
+overall_score should be a reasonable weighted blend of the three sub-scores. All *_score fields
+must be numbers 0-100. Keep list items short and concrete.
+"""
+    try:
+        response = model.generate_content(prompt)
+        payload = _json_from_response(response.text)
+        if not all(key in payload for key in _EVALUATE_RESPONSE_REQUIRED_KEYS):
+            return None
+        for score_key in ("technical_score", "confidence_score", "communication_score", "overall_score"):
+            payload[score_key] = max(0.0, min(100.0, float(payload[score_key])))
         return payload
     except Exception:
         return None
@@ -957,7 +1030,14 @@ async def proctor_check(request: ProctorCheckRequest):
 @app.post("/ml/interview/evaluate", response_model=InterviewEvaluateResponse, tags=["Interview"])
 async def evaluate_interview_endpoint(request: InterviewEvaluateRequest, background_tasks: BackgroundTasks):
     try:
-        result = evaluate_interview({
+        claude_result = _evaluate_answer_full_with_claude(
+            question=request.question,
+            answer=request.answer_text,
+            expected_answer=request.expected_answer,
+            domain=request.domain,
+            difficulty=request.difficulty,
+        )
+        result = claude_result if claude_result is not None else evaluate_interview({
             "student_id": request.student_id,
             "question": request.question,
             "answer_text": request.answer_text,
@@ -966,6 +1046,7 @@ async def evaluate_interview_endpoint(request: InterviewEvaluateRequest, backgro
             "difficulty": request.difficulty,
             "audio_features": request.audio_features,
         })
+        result["student_id"] = request.student_id
         background_tasks.add_task(
             publish_event,
             "score-events",

@@ -272,7 +272,7 @@ export default function ProfilePage() {
                 {...register('branch')}
                 className="w-full rounded-xl border px-4 py-3 text-sm font-medium outline-none focus:border-sky/40 transition-all bg-white dark:bg-[rgba(15,23,42,0.6)] border-slate-200 dark:border-[rgba(255,255,255,0.1)] text-slate-900 dark:text-[#F1F5F9]"
               >
-                {['CSE', 'IT', 'ECE', 'ME', 'CE', 'MCA'].map((branch) => <option key={branch} value={branch} style={{ background: '#FFFFFF', color: '#0F172A' }}>{branch}</option>)}
+                {['CSE', 'IT', 'ECE', 'ME', 'CE', 'MCA', 'Other'].map((branch) => <option key={branch} value={branch} style={{ background: '#FFFFFF', color: '#0F172A' }}>{branch}</option>)}
               </select>
             </div>
             <div>

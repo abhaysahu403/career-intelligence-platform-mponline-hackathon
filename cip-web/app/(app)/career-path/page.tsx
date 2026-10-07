@@ -72,11 +72,8 @@ const APTITUDE_QUESTIONS: { id: string; prompt: string; options: { key: string; 
   },
 ];
 
-const TOTAL_STEPS = 4;
-
 export default function CareerPathDiscoveryPage() {
   const t = useT();
-  const [step, setStep] = useState(1);
   const [branch, setBranch] = useState('CSE');
   const [interests, setInterests] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -106,10 +103,7 @@ export default function CareerPathDiscoveryPage() {
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   };
 
-  const canProceed =
-    (step === 1 && !!branch) ||
-    (step === 2 && interests.length > 0) ||
-    (step === 3 && Object.keys(answers).length === APTITUDE_QUESTIONS.length);
+  const canSubmit = !!branch && interests.length > 0 && Object.keys(answers).length === APTITUDE_QUESTIONS.length;
 
   const runDiscovery = async () => {
     setLoading(true);
@@ -124,7 +118,6 @@ export default function CareerPathDiscoveryPage() {
       for (const s of statsRes.data?.data ?? []) statsByCode[s.code] = s;
 
       setTracks(discoveredTracks.map((t) => ({ ...t, ...statsByCode[t.code] })));
-      setStep(4);
     } catch {
       toast.error('Could not run career path discovery. Please try again.');
     } finally {
@@ -132,9 +125,8 @@ export default function CareerPathDiscoveryPage() {
     }
   };
 
-  const nextStep = () => {
-    if (step === 3) { runDiscovery(); return; }
-    setStep((s) => Math.min(TOTAL_STEPS, s + 1));
+  const startOver = () => {
+    setTracks(null);
   };
 
   return (
@@ -154,56 +146,41 @@ export default function CareerPathDiscoveryPage() {
         </div>
       </div>
 
-      {/* Progress dots */}
-      {step < 4 && (
-        <div className="flex items-center gap-2 mb-2">
-          {Array.from({ length: TOTAL_STEPS - 1 }, (_, i) => i + 1).map((s) => (
-            <div key={s} className={`h-1.5 flex-1 rounded-full ${s <= step ? 'bg-sky' : 'bg-slate-200 dark:bg-white/10'}`} />
-          ))}
-        </div>
-      )}
-
-      {step === 1 && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border backdrop-blur-[20px] p-6 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
-          <h3 className="font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest text-sm mb-4">Your Branch</h3>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-            {BRANCHES.map((b) => (
-              <button key={b} onClick={() => setBranch(b)}
-                className={`py-3 rounded-xl font-bold text-sm transition-all ${
-                  branch === b
-                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] text-white shadow-lg'
-                    : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'
-                }`}>
-                {b}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {step === 2 && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border backdrop-blur-[20px] p-6 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
-          <h3 className="font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest text-sm mb-1">What draws you in?</h3>
-          <p className="text-xs text-slate-500 mb-4">Pick up to 3</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {INTERESTS.map((interest) => (
-              <button key={interest} onClick={() => toggleInterest(interest)}
-                className={`text-left px-4 py-3 rounded-xl font-medium text-sm transition-all ${
-                  interests.includes(interest)
-                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] text-white shadow-lg'
-                    : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'
-                }`}>
-                {interest}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {step === 3 && (
+      {!tracks && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+          <div className="rounded-2xl border backdrop-blur-[20px] p-6 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+            <h3 className="font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest text-sm mb-4">Your Branch</h3>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {BRANCHES.map((b) => (
+                <button key={b} onClick={() => setBranch(b)}
+                  className={`py-3 rounded-xl font-bold text-sm transition-all ${
+                    branch === b
+                      ? 'bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] text-white shadow-lg'
+                      : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'
+                  }`}>
+                  {b}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border backdrop-blur-[20px] p-6 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
+            <h3 className="font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest text-sm mb-1">What draws you in?</h3>
+            <p className="text-xs text-slate-500 mb-4">Pick up to 3</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {INTERESTS.map((interest) => (
+                <button key={interest} onClick={() => toggleInterest(interest)}
+                  className={`text-left px-4 py-3 rounded-xl font-medium text-sm transition-all ${
+                    interests.includes(interest)
+                      ? 'bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] text-white shadow-lg'
+                      : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'
+                  }`}>
+                  {interest}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {APTITUDE_QUESTIONS.map((q) => (
             <div key={q.id} className="rounded-2xl border backdrop-blur-[20px] p-6 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
               <p className="font-bold text-sm text-slate-900 dark:text-white mb-3">{q.prompt}</p>
@@ -221,14 +198,27 @@ export default function CareerPathDiscoveryPage() {
               </div>
             </div>
           ))}
+
+          <div className="flex justify-end pt-2">
+            <button onClick={runDiscovery} disabled={!canSubmit || loading}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] disabled:opacity-40 shadow-lg transition-all">
+              {loading ? 'Analyzing...' : 'Discover My Career Path'} <ArrowRight size={16} />
+            </button>
+          </div>
         </motion.div>
       )}
 
-      {step === 4 && tracks && (
+      {tracks && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles size={16} className="text-sky" />
-            <p className="text-sm font-bold text-slate-900 dark:text-white">Your top-matched career tracks</p>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Sparkles size={16} className="text-sky" />
+              <p className="text-sm font-bold text-slate-900 dark:text-white">Your top-matched career tracks</p>
+            </div>
+            <button onClick={startOver}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+              <ArrowLeft size={14} /> Start Over
+            </button>
           </div>
           {tracks.map((track) => (
             <div key={track.code} className="rounded-2xl border backdrop-blur-[20px] p-6 bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
@@ -265,19 +255,6 @@ export default function CareerPathDiscoveryPage() {
         </motion.div>
       )}
 
-      {/* Navigation */}
-      {step < 4 && (
-        <div className="flex items-center justify-between pt-2">
-          <button onClick={() => setStep((s) => Math.max(1, s - 1))} disabled={step === 1}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-400 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
-            <ArrowLeft size={16} /> Back
-          </button>
-          <button onClick={nextStep} disabled={!canProceed || loading}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] disabled:opacity-40 shadow-lg transition-all">
-            {loading ? 'Analyzing...' : step === 3 ? 'See My Tracks' : 'Continue'} <ArrowRight size={16} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }

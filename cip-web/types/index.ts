@@ -148,7 +148,7 @@ export interface ResumeParsingStatus {
 export type InterviewMode = 'RESUME_BASED' | 'COMPANY_SPECIFIC' | 'ROLE_BASED' | 'BRANCH_BASED' | 'TIME_BASED' | 'GOVERNMENT';
 export type InterviewDifficulty = 'EASY' | 'MEDIUM' | 'HARD' | 'FAANG';
 export type InterviewPersona = 'FRIENDLY_HR' | 'STRICT_TECHNICAL' | 'STARTUP_FOUNDER' | 'FAANG_INTERVIEWER' | 'SENIOR_ARCHITECT';
-export type RoundType = 'TECHNICAL' | 'HR' | 'BEHAVIORAL';
+export type RoundType = 'TECHNICAL' | 'HR_BEHAVIORAL' | 'GOVERNMENT';
 export type GovernmentExamType = 'SSB' | 'UPSC' | 'BANK_PO' | 'SSC_RAILWAY' | 'RESEARCH_ORG';
 export type EyeContact = 'GOOD' | 'AVERAGE' | 'POOR';
 export type Posture = 'STABLE' | 'UNSTABLE';

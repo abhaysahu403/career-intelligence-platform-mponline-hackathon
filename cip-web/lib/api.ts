@@ -159,7 +159,7 @@ export const interviewApi = {
       duration?: number;
       difficulty?: 'EASY' | 'MEDIUM' | 'HARD' | 'FAANG';
       persona?: 'FRIENDLY_HR' | 'STRICT_TECHNICAL' | 'STARTUP_FOUNDER' | 'FAANG_INTERVIEWER' | 'SENIOR_ARCHITECT';
-      roundType?: 'TECHNICAL' | 'HR' | 'BEHAVIORAL';
+      roundType?: 'TECHNICAL' | 'HR_BEHAVIORAL' | 'GOVERNMENT';
       governmentExamType?: 'SSB' | 'UPSC' | 'BANK_PO' | 'SSC_RAILWAY' | 'RESEARCH_ORG';
     }) => api.post('/interview/v3/start', data),
     getSession: (id: number) => api.get(`/interview/v3/session/${id}`),

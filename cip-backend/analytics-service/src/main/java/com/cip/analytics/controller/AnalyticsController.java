@@ -3,9 +3,13 @@ package com.cip.analytics.controller;
 import com.cip.analytics.service.AnalyticsService;
 import com.cip.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RestController
@@ -56,5 +60,15 @@ public class AnalyticsController {
             return ResponseEntity.status(403).body(ApiResponse.error("Admin access required"));
         }
         return ResponseEntity.ok(ApiResponse.success(analyticsService.getStudentAnalytics(userId)));
+    }
+
+    @PostMapping("/download/roadmap")
+    public ResponseEntity<byte[]> downloadRoadmap(@RequestBody Map<String, Object> payload) {
+        byte[] html = analyticsService.generateRoadmapHtml(payload).getBytes(StandardCharsets.UTF_8);
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename("ai-roadmap.html").build().toString())
+                .body(html);
     }
 }
