@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { interviewApi } from '@/lib/api';
+import { useT } from '@/lib/i18n';
 import { InterviewV3Config, InterviewMode, InterviewDifficulty, InterviewPersona, RoundType, GovernmentExamType } from '@/types';
 import {
   FileText,
@@ -24,6 +25,7 @@ import toast from 'react-hot-toast';
 
 export default function InterviewSetupPage() {
   const router = useRouter();
+  const t = useT();
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [config, setConfig] = useState<InterviewV3Config | null>(null);
@@ -180,9 +182,9 @@ export default function InterviewSetupPage() {
         >
           <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-4 flex items-center justify-center gap-3">
             <Sparkles className="w-12 h-12 text-[#38BDF8]" />
-            AI Interview Intelligence
+            {t('page.interview.title')}
           </h1>
-          <p className="text-xl text-slate-600 dark:text-gray-400">Configure your personalized interview experience</p>
+          <p className="text-xl text-slate-600 dark:text-gray-400">{t('page.interview.subtitle')}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

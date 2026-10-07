@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { resumeBuilderApi } from '@/lib/api';
+import { useT } from '@/lib/i18n';
 import type { GeneratedResumeResult, ResumeProjectInput, ResumeInternshipInput, ResumeTemplateId } from '@/types';
 
 const TEMPLATES: { id: ResumeTemplateId; name: string; description: string; accent: string }[] = [
@@ -18,6 +19,7 @@ const TEMPLATES: { id: ResumeTemplateId; name: string; description: string; acce
 const STEPS = ['Review Profile', 'Projects', 'Internships', 'Template', 'Preview & Download'];
 
 export default function ResumeBuilderPage() {
+  const t = useT();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GeneratedResumeResult | null>(null);
@@ -188,7 +190,7 @@ export default function ResumeBuilderPage() {
       <div className="flex items-center gap-3">
         <FileText className="text-sky-500" size={28} />
         <h1 className="text-2xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-wide">
-          AI Resume Builder
+          {t('page.resumeBuilder.title')}
         </h1>
       </div>
 

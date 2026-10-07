@@ -4,11 +4,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserCertificates, getScoreColor, deleteCertificate, CertificateSummary } from '@/lib/api/certificates';
+import { useT } from '@/lib/i18n';
 import { Plus, ChevronRight, ShieldCheck, Clock, XCircle, FileText, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function CertificatesPage() {
   const router = useRouter();
+  const t = useT();
   const [certificates, setCertificates] = useState<CertificateSummary[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -82,7 +84,7 @@ export default function CertificatesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">My Certificates</h1>
+          <h1 className="text-3xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">{t('page.certificates.title')}</h1>
           <p className="text-sm mt-2 text-slate-600 dark:text-slate-400 font-medium">{total} certificate{total !== 1 ? 's' : ''} verified</p>
         </div>
         <button

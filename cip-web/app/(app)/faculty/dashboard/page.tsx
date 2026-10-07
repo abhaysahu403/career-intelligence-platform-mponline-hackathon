@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Plus, Eye, Copy, Users, Clock, BarChart3 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { customInterviewApi } from '@/lib/api';
+import { useT } from '@/lib/i18n';
 
 interface Interview {
   id: number;
@@ -22,6 +23,7 @@ interface Interview {
 
 export default function FacultyDashboardPage() {
   const router = useRouter();
+  const t = useT();
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,8 +76,8 @@ export default function FacultyDashboardPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Faculty Dashboard</h1>
-              <p className="text-gray-400">Manage your custom interviews</p>
+              <h1 className="text-4xl font-bold text-white mb-2">{t('page.facultyDashboard.title')}</h1>
+              <p className="text-gray-400">{t('page.facultyDashboard.subtitle')}</p>
             </div>
             <button
               onClick={() => router.push('/faculty/create-interview')}

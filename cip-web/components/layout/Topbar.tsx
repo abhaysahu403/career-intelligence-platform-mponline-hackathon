@@ -19,7 +19,7 @@ const pageTitles: Record<string, string> = {
 
 export default function Topbar() {
   const pathname      = usePathname();
-  const { user, sidebarOpen, setSidebarOpen, score } = useAppStore();
+  const { user, sidebarOpen, setSidebarOpen, score, language, toggleLanguage } = useAppStore();
   const [showSearch, setShowSearch] = useState(false);
   const [notifOpen, setNotifOpen]   = useState(false);
 
@@ -77,6 +77,31 @@ export default function Topbar() {
         <h1 className="text-xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">
           {title}
         </h1>
+      </div>
+
+      <div className="hidden md:flex items-center rounded-xl p-1 bg-slate-100 dark:bg-white/5">
+        <button
+          onClick={() => language !== 'en' && toggleLanguage()}
+          className={cn(
+            'px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
+            language === 'en'
+              ? 'bg-white dark:bg-[rgba(56,189,248,0.15)] text-sky shadow-sm'
+              : 'text-slate-500 dark:text-[#64748B]'
+          )}
+        >
+          EN
+        </button>
+        <button
+          onClick={() => language !== 'hi' && toggleLanguage()}
+          className={cn(
+            'px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
+            language === 'hi'
+              ? 'bg-white dark:bg-[rgba(56,189,248,0.15)] text-sky shadow-sm'
+              : 'text-slate-500 dark:text-[#64748B]'
+          )}
+        >
+          हिं
+        </button>
       </div>
 
       <div className="hidden md:flex items-center gap-2">

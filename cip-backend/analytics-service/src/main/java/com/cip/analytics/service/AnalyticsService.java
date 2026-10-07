@@ -9,8 +9,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -24,6 +26,15 @@ public class AnalyticsService {
 
     @Value("${service.interview-service:http://interview-service:8086}")
     private String interviewServiceUrl;
+
+    @Value("${service.student-service:http://student-service:8082}")
+    private String studentServiceUrl;
+
+    @Value("${service.auth-service:http://auth-service:8081}")
+    private String authServiceUrl;
+
+    @Value("${service.job-service:http://job-service:8086}")
+    private String jobServiceUrl;
 
     public Map<String, Object> getStudentAnalytics(Long userId) {
         Map<String, Object> score = fetchScore(userId);
@@ -72,6 +83,291 @@ public class AnalyticsService {
                 "averageReadiness", averageReadiness,
                 "topReadiness", leaderboard.stream().mapToDouble(item -> toDouble(item.get("readiness"))).max().orElse(0)
         );
+    }
+
+    /**
+     * Cohort-wide view for faculty/TPO: joins academic profiles (branch), the score
+     * leaderboard (readiness), and user names — all three services have no shared
+     * join, so this is assembled in-memory from three parallel-in-spirit REST calls.
+     */
+    public Map<String, Object> getInstitutionOverview() {
+        List<Map<String, Object>> profiles = fetchAllAcademicProfiles();
+        List<Map<String, Object>> students = fetchAllStudentUsers();
+        List<Map<String, Object>> leaderboard = fetchLeaderboard();
+
+        Map<Long, Map<String, Object>> profileByUserId = new LinkedHashMap<>();
+        for (Map<String, Object> p : profiles) {
+            Long userId = toLong(p.get("userId"));
+            if (userId != null) profileByUserId.put(userId, p);
+        }
+        Map<Long, Map<String, Object>> userById = new LinkedHashMap<>();
+        for (Map<String, Object> u : students) {
+            Long id = toLong(u.get("id"));
+            if (id != null) userById.put(id, u);
+        }
+
+        record Row(Long userId, String name, String branch, Integer year, Double cgpa,
+                   double readiness, double interviewScore, String risk, String lastActive) {}
+
+        List<Row> rows = new ArrayList<>();
+        for (Map<String, Object> score : leaderboard) {
+            Long userId = toLong(score.get("userId"));
+            if (userId == null) continue;
+            Map<String, Object> profile = profileByUserId.getOrDefault(userId, Map.of());
+            Map<String, Object> user = userById.getOrDefault(userId, Map.of());
+            double readiness = toDouble(score.get("readiness"));
+            rows.add(new Row(
+                    userId,
+                    String.valueOf(user.getOrDefault("name", "Student " + userId)),
+                    String.valueOf(profile.getOrDefault("branch", "UNKNOWN")),
+                    profile.get("yearOfStudy") instanceof Number n ? n.intValue() : null,
+                    profile.get("currentCgpa") instanceof Number n ? n.doubleValue() : null,
+                    readiness,
+                    toDouble(score.get("interviewScore")),
+                    resolveRisk(readiness),
+                    String.valueOf(score.getOrDefault("calculatedAt", ""))
+            ));
+        }
+
+        Map<String, List<Row>> byBranch = new LinkedHashMap<>();
+        for (Row r : rows) {
+            byBranch.computeIfAbsent(r.branch(), k -> new ArrayList<>()).add(r);
+        }
+
+        List<Map<String, Object>> branchStats = byBranch.entrySet().stream()
+                .map(e -> {
+                    List<Row> branchRows = e.getValue();
+                    double avgReadiness = branchRows.stream().mapToDouble(Row::readiness).average().orElse(0);
+                    long jobReady = branchRows.stream().filter(r -> r.readiness() >= 70).count();
+                    long atRisk = branchRows.stream().filter(r -> r.readiness() < 50).count();
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("branch", e.getKey());
+                    m.put("studentCount", branchRows.size());
+                    m.put("avgReadiness", Math.round(avgReadiness * 10) / 10.0);
+                    m.put("jobReadyCount", jobReady);
+                    m.put("atRiskCount", atRisk);
+                    return m;
+                })
+                .sorted((a, b) -> Integer.compare((int) b.get("studentCount"), (int) a.get("studentCount")))
+                .toList();
+
+        List<Map<String, Object>> atRiskStudents = rows.stream()
+                .filter(r -> "HIGH".equals(r.risk()))
+                .sorted((a, b) -> Double.compare(a.readiness(), b.readiness()))
+                .limit(20)
+                .map(r -> {
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("id", r.userId());
+                    m.put("name", r.name());
+                    m.put("branch", r.branch());
+                    m.put("year", r.year());
+                    m.put("cgpa", r.cgpa());
+                    m.put("readiness", r.readiness());
+                    m.put("risk", r.risk());
+                    m.put("lastActive", r.lastActive());
+                    m.put("interviewScore", r.interviewScore());
+                    return m;
+                })
+                .toList();
+
+        double avgReadiness = rows.stream().mapToDouble(Row::readiness).average().orElse(0);
+        long jobReadyCount = rows.stream().filter(r -> r.readiness() >= 70).count();
+        long atRiskCount = rows.stream().filter(r -> r.readiness() < 50).count();
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("totalStudents", rows.size());
+        result.put("avgReadiness", Math.round(avgReadiness * 10) / 10.0);
+        result.put("jobReadyCount", jobReadyCount);
+        result.put("atRiskCount", atRiskCount);
+        result.put("branchStats", branchStats);
+        result.put("atRiskStudents", atRiskStudents);
+        return result;
+    }
+
+    /**
+     * Industry Requirement Dashboard: ranks real job-posting skill demand against
+     * how much of the cohort already has each skill, so faculty can see concrete
+     * curriculum gaps instead of guessing. Required skills count double a
+     * nice-to-have skill toward demand, since they're the harder requirement.
+     */
+    public Map<String, Object> getSkillGapOverview() {
+        List<Map<String, Object>> jobs = fetchAllActiveJobs();
+        List<Map<String, Object>> studentSkillRows = fetchAllStudentSkills();
+
+        int totalStudents = studentSkillRows.size();
+        Map<String, Integer> studentCoverage = new LinkedHashMap<>();
+        for (Map<String, Object> row : studentSkillRows) {
+            for (String skill : canonicalSkillSet(row.get("skills"))) {
+                studentCoverage.merge(skill, 1, Integer::sum);
+            }
+        }
+
+        Map<String, Double> demandScore = new LinkedHashMap<>();
+        for (Map<String, Object> job : jobs) {
+            for (String skill : canonicalSkillSet(job.get("requiredSkills"))) {
+                demandScore.merge(skill, 1.0, Double::sum);
+            }
+            for (String skill : canonicalSkillSet(job.get("niceToHaveSkills"))) {
+                demandScore.merge(skill, 0.5, Double::sum);
+            }
+        }
+
+        int totalJobs = jobs.size();
+        List<Map<String, Object>> topDemandedSkills = demandScore.entrySet().stream()
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                .limit(15)
+                .map(entry -> buildSkillDemand(entry.getKey(), entry.getValue(), totalJobs, studentCoverage, totalStudents))
+                .toList();
+
+        List<Map<String, Object>> criticalGaps = topDemandedSkills.stream()
+                .filter(m -> "HIGH".equals(m.get("status")))
+                .sorted((a, b) -> Double.compare((double) b.get("demandCount"), (double) a.get("demandCount")))
+                .limit(10)
+                .toList();
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("totalActiveJobs", totalJobs);
+        result.put("totalStudents", totalStudents);
+        result.put("topDemandedSkills", topDemandedSkills);
+        result.put("criticalGaps", criticalGaps);
+        return result;
+    }
+
+    private Map<String, Object> buildSkillDemand(String skill, double demandScore, int totalJobs,
+                                                  Map<String, Integer> studentCoverage, int totalStudents) {
+        int studentsWithSkill = studentCoverage.getOrDefault(skill, 0);
+        double demandPct = totalJobs == 0 ? 0 : (demandScore / totalJobs) * 100;
+        double coveragePct = totalStudents == 0 ? 0 : (studentsWithSkill * 100.0) / totalStudents;
+        // Reuses the readiness-style tri-band convention (LOW/MEDIUM/HIGH) from
+        // resolveRisk, but here HIGH means "high gap" (low coverage), not high readiness.
+        String status = coveragePct >= 66 ? "LOW" : coveragePct >= 33 ? "MEDIUM" : "HIGH";
+
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("skill", skill);
+        m.put("demandCount", Math.round(demandScore * 10) / 10.0);
+        m.put("demandPct", Math.round(demandPct * 10) / 10.0);
+        m.put("studentsWithSkill", studentsWithSkill);
+        m.put("coveragePct", Math.round(coveragePct * 10) / 10.0);
+        m.put("status", status);
+        return m;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> canonicalSkillSet(Object skillsField) {
+        if (!(skillsField instanceof List<?> list)) return List.of();
+        Set<String> result = new LinkedHashSet<>();
+        for (Object item : list) {
+            if (item instanceof String s && !s.isBlank()) {
+                result.add(s.trim());
+            }
+        }
+        return new ArrayList<>(result);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> fetchAllActiveJobs() {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    jobServiceUrl + "/jobs?size=500",
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+            Object data = response.getBody() != null ? response.getBody().get("data") : null;
+            if (data instanceof Map<?, ?> page) {
+                Object content = page.get("content");
+                if (content instanceof List<?> list) {
+                    List<Map<String, Object>> items = new ArrayList<>();
+                    for (Object entry : list) {
+                        if (entry instanceof Map<?, ?> map) {
+                            items.add((Map<String, Object>) map);
+                        }
+                    }
+                    return items;
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to fetch active jobs for skill-gap overview: {}", e.getMessage());
+        }
+        return List.of();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> fetchAllStudentSkills() {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-User-Role", "FACULTY");
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    studentServiceUrl + "/student/profiles/skills/all",
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+            return extractList(response.getBody());
+        } catch (Exception e) {
+            log.warn("Failed to fetch student skills for skill-gap overview: {}", e.getMessage());
+            return List.of();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> fetchAllAcademicProfiles() {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-User-Role", "FACULTY");
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    studentServiceUrl + "/student/academic/all",
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+            return extractList(response.getBody());
+        } catch (Exception e) {
+            log.warn("Failed to fetch academic profiles for institution overview: {}", e.getMessage());
+            return List.of();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> fetchAllStudentUsers() {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-User-Role", "FACULTY");
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    authServiceUrl + "/auth/users?role=STUDENT",
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+            return extractList(response.getBody());
+        } catch (Exception e) {
+            log.warn("Failed to fetch student users for institution overview: {}", e.getMessage());
+            return List.of();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> extractList(Map<?, ?> wrapper) {
+        Object payload = wrapper != null ? wrapper.get("data") : null;
+        if (payload instanceof List<?> list) {
+            List<Map<String, Object>> items = new ArrayList<>();
+            for (Object entry : list) {
+                if (entry instanceof Map<?, ?> map) {
+                    items.add((Map<String, Object>) map);
+                }
+            }
+            return items;
+        }
+        return List.of();
+    }
+
+    private Long toLong(Object value) {
+        return value instanceof Number number ? number.longValue() : null;
     }
 
     @SuppressWarnings("unchecked")

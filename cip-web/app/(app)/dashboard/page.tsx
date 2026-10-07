@@ -7,6 +7,7 @@ import { ArrowRight, Briefcase, FileText, Target, Video, TrendingUp, Rocket, Che
 import toast from 'react-hot-toast';
 import { analyticsApi, jobsApi, scoreApi } from '@/lib/api';
 import { useAppStore } from '@/store';
+import { useT } from '@/lib/i18n';
 import type { Analytics, Job, ReadinessScore } from '@/types';
 import AcademicProfileWidget from '@/components/dashboard/AcademicProfileWidget';
 
@@ -45,6 +46,7 @@ const normalizeRecommendedJobs = (items: Array<{
 export default function DashboardPage() {
   const router = useRouter();
   const { user, score, setScore } = useAppStore();
+  const t = useT();
 
   const { data: scoreData, isLoading: scoreLoading } = useQuery({
     queryKey: ['score'],
@@ -209,10 +211,10 @@ export default function DashboardPage() {
         className="mb-8"
       >
         <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
-          👋 Welcome back, {user?.name?.split(' ')[0] || 'there'}!
+          👋 {t('page.dashboard.greeting')}, {user?.name?.split(' ')[0] || 'there'}!
         </h1>
         <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base">
-          Let's continue your journey to landing your dream job
+          {t('page.dashboard.subtitle')}
         </p>
       </motion.div>
 
@@ -422,7 +424,7 @@ export default function DashboardPage() {
             
             <h3 className="text-sm font-semibold text-slate-400 mb-2">{card.title}</h3>
             <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-4xl font-bold text-slate-900 dark:text-white">{card.value}</span>
+              <span className="text-4xl font-bold text-slate-900 dark:text-white">{Math.round(card.value * 10) / 10}</span>
               <span className="text-lg text-slate-500">/100</span>
             </div>
 
@@ -473,7 +475,7 @@ export default function DashboardPage() {
             { label: 'Sign Up', icon: CheckCircle, completed: true },
             { label: 'Upload Resume', icon: hasResume ? CheckCircle : FileText, completed: hasResume },
             { label: 'Take Interview', icon: hasInterview ? CheckCircle : Video, completed: hasInterview },
-            { label: 'Get Certified', icon: isJobReady ? CheckCircle : Award, completed: isJobReady },
+            { label: 'Reach Job-Ready Score', icon: isJobReady ? CheckCircle : Award, completed: isJobReady },
             { label: 'Apply to Jobs', icon: Lock, completed: false },
           ].map((step, idx) => (
             <div key={step.label} className="relative z-10 flex flex-col items-center gap-2">

@@ -8,6 +8,7 @@ import JobCard from '@/components/ui/JobCard';
 import ScoreCircle from '@/components/ui/ScoreCircle';
 import JobsTabSwitcher from '@/components/ui/JobsTabSwitcher';
 import { useAppStore } from '@/store';
+import { useT } from '@/lib/i18n';
 import type { Job } from '@/types';
 import ShareReportModal from '@/components/ui/ShareReportModal';
 
@@ -19,6 +20,7 @@ const EXPERIENCE = ['All Levels', 'Fresher', 'Junior', 'Mid', 'Senior'];
 export default function JobsPage() {
   const user = useAppStore(s => s.user);
   const score = useAppStore(s => s.score);
+  const t = useT();
   const [search, setSearch]               = useState('');
   const [roleFilter, setRoleFilter]       = useState('All Roles');
   const [locationFilter, setLocationFilter] = useState('All Locations');
@@ -187,7 +189,7 @@ export default function JobsPage() {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         <div className="flex-1">
           <h2 className="text-3xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">
-            Job Magic Engine
+            {t('page.jobs.title')}
           </h2>
           <p className="text-sm font-medium uppercase tracking-wide text-slate-500 mt-1">
             {isLoading ? 'Loading...' : `${filtered.length} opportunities matched • AI-powered recommendations`}

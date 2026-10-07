@@ -77,6 +77,18 @@ public class AuthService {
                 .build();
     }
 
+    public java.util.List<AuthDtos.UserProfile> listByRole(String role) {
+        return userRepository.findByRole(User.Role.valueOf(role.toUpperCase())).stream()
+                .map(user -> AuthDtos.UserProfile.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .role(user.getRole().name())
+                        .active(user.isActive())
+                        .build())
+                .toList();
+    }
+
     public void logout(String token) {
         // Blacklist the token in Redis
         JwtUtil jwtUtil = new JwtUtil(jwtSecret, jwtExpiration);

@@ -95,7 +95,7 @@ const certificates = [
 
 const engineFeatures = [
   { icon: Scan, label: "ML-Powered OCR", desc: "Reads any PDF/image certificate at 98% accuracy" },
-  { icon: ShieldCheck, label: "Issuer Verification", desc: "Validates against 2,000+ accredited institutes & global registries" },
+  { icon: ShieldCheck, label: "Issuer Verification", desc: "Validates against 390+ accredited institutes & registries" },
   { icon: QrCode, label: "QR Code Validation", desc: "Real-time QR scan and registry cross-check" },
   { icon: FileText, label: "Tamper Detection", desc: "Pixel-level analysis catches edited metadata and forged signatures" },
 ];
@@ -309,7 +309,7 @@ export default function Demo() {
                     {/* Info */}
                     <div className="mt-3">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="text-[11px] font-black text-slate-900 dark:text-white leading-tight truncate pr-2">{cert.title}</p>
+                        <p className="text-[11px] font-black text-white leading-tight truncate pr-2">{cert.title}</p>
                         <span className="text-[9px] font-black px-1.5 py-0.5 rounded flex-shrink-0"
                           style={{ background: `${cert.color}15`, color: cert.color, border: `1px solid ${cert.color}30` }}>
                           {cert.badgeLabel}
@@ -347,10 +347,10 @@ export default function Demo() {
                 { value: "1", label: "Warning", color: "#F59E0B" },
                 { value: "1", label: "Rejected", color: "#EF4444" },
               ].map(s => (
-                <div key={s.label} className="rounded-2xl border p-3 text-center"
-                  style={{ background: 'rgba(8,12,20,0.7)', borderColor: `${s.color}20`, backdropFilter: 'blur(20px)' }}>
+                <div key={s.label} className="rounded-2xl border p-3 text-center bg-white dark:bg-[rgba(8,12,20,0.94)] shadow-lg shadow-slate-200/50 dark:shadow-none"
+                  style={{ borderColor: `${s.color}20`, backdropFilter: 'blur(20px)' }}>
                   <p className="font-black text-xl" style={{ color: s.color, textShadow: `0 0 10px ${s.color}40` }}>{s.value}</p>
-                  <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{s.label}</p>
+                  <p className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{s.label}</p>
                 </div>
               ))}
             </div>

@@ -73,4 +73,15 @@ public class MlClient {
             );
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> checkProctorFrame(String imageBase64) {
+        try {
+            Map<String, Object> body = Map.of("image_base64", imageBase64 != null ? imageBase64 : "");
+            return restTemplate.postForObject(mlServiceUrl + "/ml/interview/proctor-check", body, Map.class);
+        } catch (RestClientException e) {
+            log.warn("ML proctor check failed, skipping this tick: {}", e.getMessage());
+            return Map.of("face_count", -1, "flagged", false);
+        }
+    }
 }

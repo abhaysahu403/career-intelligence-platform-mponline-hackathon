@@ -6,6 +6,7 @@ import com.cip.recommendation.entity.CareerTarget;
 import com.cip.recommendation.entity.Course;
 import com.cip.recommendation.entity.UserCourseProgress;
 import com.cip.recommendation.service.CampusToCorporateService;
+import com.cip.recommendation.service.CareerPathClient;
 import com.cip.recommendation.service.CourseService;
 import com.cip.recommendation.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,17 @@ public class RecommendationController {
     private final RecommendationService recommendationService;
     private final CourseService courseService;
     private final CampusToCorporateService campusToCorporateService;
+    private final CareerPathClient careerPathClient;
+
+    @SuppressWarnings("unchecked")
+    @PostMapping("/recommendations/career-path/discover")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> discoverCareerPath(
+            @RequestBody Map<String, Object> request) {
+        String branch = String.valueOf(request.getOrDefault("branch", ""));
+        List<String> interests = (List<String>) request.getOrDefault("interests", List.of());
+        List<Map<String, Object>> aptitudeAnswers = (List<Map<String, Object>>) request.getOrDefault("aptitudeAnswers", List.of());
+        return ResponseEntity.ok(ApiResponse.success(careerPathClient.discover(branch, interests, aptitudeAnswers)));
+    }
 
     /** GET /recommendations/campus-to-corporate/targets — dropdown data, optionally filtered by type */
     @GetMapping("/recommendations/campus-to-corporate/targets")

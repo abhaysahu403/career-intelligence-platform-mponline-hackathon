@@ -57,6 +57,12 @@ public class StudentDtos {
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class StudentSkillsResponse {
+        private Long userId;
+        private List<String> skills;
+    }
+
+    @Data @Builder @NoArgsConstructor @AllArgsConstructor
     public static class SkillDto {
         private String name;
         private String proficiency; // BEGINNER, INTERMEDIATE, ADVANCED, EXPERT

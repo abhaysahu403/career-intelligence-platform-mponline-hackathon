@@ -7,11 +7,13 @@ import Link from 'next/link';
 import { CheckCircle2, FileText, GraduationCap, Plus, Save, Upload, User } from 'lucide-react';
 import { studentApi, mlServiceApi } from '@/lib/api';
 import { useAppStore } from '@/store';
+import { useT } from '@/lib/i18n';
 import ParsingStatus from '@/components/resume/ParsingStatus';
 import type { ResumeParsingStatus } from '@/types';
 
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
+  const t = useT();
   const [skills, setSkills] = useState<string[]>(user?.skills ?? []);
   const [newSkill, setNewSkill] = useState('');
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -241,7 +243,7 @@ export default function ProfilePage() {
 
       {activeTab === 'personal' && (
         <div className="space-y-6 rounded-[32px] border backdrop-blur-[20px] p-8 shadow-xl bg-white dark:bg-[rgba(8,12,20,0.7)] border-slate-200 dark:border-[rgba(255,255,255,0.06)]">
-          <h3 className="font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest text-lg">Personal Information</h3>
+          <h3 className="font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest text-lg">{t('page.profile.sectionPersonalInfo')}</h3>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             {[
               { name: 'name', label: 'Full Name', type: 'text', placeholder: 'Aryan Sharma' },

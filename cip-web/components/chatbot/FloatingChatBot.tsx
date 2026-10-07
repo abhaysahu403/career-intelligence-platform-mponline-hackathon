@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Minimize2, Maximize2, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { MessageCircle, X, Send, Minimize2, Maximize2, ThumbsUp, ThumbsDown, Sparkles } from 'lucide-react';
 import { chatBotAPI, ChatMessage, ChatResponse } from '@/lib/api/chatbot';
 import toast from 'react-hot-toast';
 
@@ -163,15 +163,15 @@ export default function FloatingChatBot({
   const getChatTitle = () => {
     switch (sessionType) {
       case 'INTERVIEW':
-        return '🎯 Interview Coach';
+        return 'Interview Coach';
       case 'JOB':
-        return '💼 Career Advisor';
+        return 'Career Advisor';
       case 'CERTIFICATE':
-        return '📜 Certificate Assistant';
+        return 'Certificate Assistant';
       case 'ANALYTICS':
-        return '📊 Analytics Expert';
+        return 'Analytics Expert';
       default:
-        return '🤖 CIP Assistant';
+        return 'CIP AI Assistant';
     }
   };
 
@@ -181,13 +181,14 @@ export default function FloatingChatBot({
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
-          aria-label="Open chat"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full pl-4 pr-5 py-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
+          aria-label="Open AI assistant chat"
         >
-          <MessageCircle className="w-6 h-6" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-            AI
+          <span className="relative flex items-center justify-center w-8 h-8 bg-white/20 rounded-full">
+            <Sparkles className="w-5 h-5" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-blue-600"></span>
           </span>
+          <span className="font-bold text-sm whitespace-nowrap">Ask AI</span>
         </button>
       )}
 
@@ -201,7 +202,9 @@ export default function FloatingChatBot({
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-2xl">
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="flex items-center justify-center w-7 h-7 bg-white/20 rounded-full">
+                <Sparkles className="w-4 h-4" />
+              </span>
               <h3 className="font-semibold">{getChatTitle()}</h3>
             </div>
             <div className="flex items-center space-x-2">

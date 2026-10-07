@@ -26,6 +26,7 @@ import {
   Sparkles,
   Brain,
   Zap,
+  AlertTriangle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -83,12 +84,15 @@ function LiveInterviewContent() {
   const [voiceClarity, setVoiceClarity] = useState(85);
   const [emotion, setEmotion] = useState('CONFIDENT');
   const [posture, setPosture] = useState<'STABLE' | 'UNSTABLE'>('STABLE');
+  const [proctorWarning, setProctorWarning] = useState<string | null>(null);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
+  const proctorCanvasRef = useRef<HTMLCanvasElement>(null);
   const recognitionRef = useRef<any>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const analyticsIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const proctorIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isListeningRef = useRef<boolean>(false); // Track listening state in ref to avoid closure issues
 
   useEffect(() => {
@@ -105,6 +109,7 @@ function LiveInterviewContent() {
       stopCamera();
       stopListening();
       if (analyticsIntervalRef.current) clearInterval(analyticsIntervalRef.current);
+      if (proctorIntervalRef.current) clearInterval(proctorIntervalRef.current);
     };
   }, [interviewId]);
 
@@ -157,6 +162,7 @@ function LiveInterviewContent() {
     await startCamera();
     startListening();
     startAnalyticsTracking();
+    startProctorTracking();
     toast.success('Interview started! Good luck!');
     
     // Auto-speak the first question
@@ -169,6 +175,7 @@ function LiveInterviewContent() {
     await startCamera();
     startListening();
     startAnalyticsTracking();
+    startProctorTracking();
     toast('Tips skipped. Interview started!');
     
     // Auto-speak the first question
@@ -470,6 +477,33 @@ function LiveInterviewContent() {
     }
   };
 
+  const startProctorTracking = () => {
+    proctorIntervalRef.current = setInterval(() => {
+      checkProctorFrame();
+    }, 8000);
+  };
+
+  const checkProctorFrame = async () => {
+    const video = videoRef.current;
+    const canvas = proctorCanvasRef.current;
+    if (!video || !canvas || video.videoWidth === 0) return;
+
+    try {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const frame = canvas.toDataURL('image/jpeg', 0.6);
+
+      const response = await interviewApi.v3.checkProctorFrame(frame);
+      const result = response.data?.data ?? response.data;
+      setProctorWarning(result?.flagged ? result.reason || 'Proctoring alert' : null);
+    } catch (error) {
+      // Fail-soft: a network hiccup shouldn't flash a false warning
+    }
+  };
+
   const handleSendChat = async () => {
     if (!chatMessage.trim()) return;
     
@@ -511,6 +545,7 @@ function LiveInterviewContent() {
       stopCamera();
       stopListening();
       if (analyticsIntervalRef.current) clearInterval(analyticsIntervalRef.current);
+      if (proctorIntervalRef.current) clearInterval(proctorIntervalRef.current);
       router.push(`/interview/report/${interviewId}`);
     }
   };
@@ -636,17 +671,31 @@ function LiveInterviewContent() {
                 muted
                 className="w-full h-full object-cover"
               />
+              <canvas ref={proctorCanvasRef} className="hidden" />
               {!cameraEnabled && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
                   <VideoOff className="w-20 h-20 text-gray-600" />
                 </div>
               )}
-              
+
               {/* Recording Indicator */}
               <div className="absolute top-3 right-3 flex items-center gap-2 bg-red-500 px-3 py-1.5 rounded-full shadow-lg">
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                 <span className="text-slate-900 dark:text-white text-sm font-semibold">REC</span>
               </div>
+
+              {/* Proctoring Warning Banner */}
+              {proctorWarning && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute bottom-3 left-3 right-3 flex items-center gap-2 bg-red-600/90 backdrop-blur-md px-4 py-2 rounded-xl border border-red-400 shadow-lg z-10"
+                >
+                  <AlertTriangle className="w-4 h-4 text-white flex-shrink-0" />
+                  <span className="text-white text-sm font-semibold">{proctorWarning}</span>
+                </motion.div>
+              )}
 
               {/* Overlaid Analytics - Top Left Corner */}
               <div className="absolute top-3 left-3 grid grid-cols-2 gap-2">

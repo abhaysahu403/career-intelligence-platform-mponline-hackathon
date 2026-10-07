@@ -285,6 +285,10 @@ public class InterviewV3Service {
                 .build());
     }
 
+    public Map<String, Object> checkProctorFrame(String imageBase64) {
+        return mlClient.checkProctorFrame(imageBase64);
+    }
+
     public Map<String, Object> getReport(Long userId, Long id) {
         Interview interview = interviewRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> CipException.notFound("Interview"));

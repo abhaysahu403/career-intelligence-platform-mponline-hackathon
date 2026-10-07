@@ -5,16 +5,16 @@ import { ArrowRight, Sparkles, CheckCircle2, Brain, ShieldCheck, Zap, Target } f
 
 const perks = [
   "Free forever plan — no credit card required",
-  "Full access to all 4 AI modules",
+  "Full access to all 8 AI modules",
   "Unlimited AI interview practice in beta",
   "Export reports and certificates",
 ];
 
 const platformStats = [
-  { icon: Brain, value: "10,000+", label: "AI Interviews Conducted", color: "#38BDF8" },
-  { icon: ShieldCheck, value: "98.2%", label: "Certificate Accuracy", color: "#4ADE80" },
-  { icon: Target, value: "427+", label: "Live Job Matches", color: "#818CF8" },
-  { icon: Zap, value: "14 days", label: "Avg. Time to Offer", color: "#34D399" },
+  { icon: Brain, value: "250+", label: "Interview Question Bank", color: "#38BDF8" },
+  { icon: ShieldCheck, value: "390+", label: "Certificate Institutions Verified", color: "#4ADE80" },
+  { icon: Target, value: "194+", label: "Live Job & Govt. Postings", color: "#818CF8" },
+  { icon: Zap, value: "10", label: "AI-Powered Modules", color: "#34D399" },
 ];
 
 export default function CTA() {
@@ -43,12 +43,11 @@ export default function CTA() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               whileHover={{ scale: 1.03, y: -4 }}
-              className="p-6 rounded-[28px] border text-center transition-all duration-500 cursor-default"
+              className="p-6 rounded-[28px] border text-center transition-all duration-500 cursor-default bg-white dark:bg-[rgba(8,12,20,0.94)] shadow-xl shadow-slate-200/50 dark:shadow-none"
               style={{
-                background: 'rgba(8,12,20,0.7)',
                 backdropFilter: 'blur(40px)',
                 borderColor: `${stat.color}20`,
-                boxShadow: `0 15px 40px -10px rgba(0,0,0,0.4), inset 0 0 30px ${stat.color}06`,
+                boxShadow: `0 15px 40px -10px rgba(0,0,0,0.1), inset 0 0 30px ${stat.color}06`,
               }}
             >
               <div className="absolute top-0 inset-x-0 h-[1px] rounded-t-[28px]"
@@ -57,7 +56,7 @@ export default function CTA() {
               <p className="font-black text-2xl md:text-3xl mb-1" style={{ color: stat.color, textShadow: `0 0 15px ${stat.color}40` }}>
                 {stat.value}
               </p>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</p>
+              <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{stat.label}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -74,9 +73,8 @@ export default function CTA() {
             style={{ background: 'radial-gradient(ellipse, rgba(74,222,128,0.14) 0%, rgba(56,189,248,0.05) 70%, transparent 100%)' }} />
 
           <div
-            className="relative rounded-[48px] overflow-hidden border-2 text-center px-8 py-16 md:py-20"
+            className="relative rounded-[48px] overflow-hidden border-2 text-center px-8 py-16 md:py-20 bg-white dark:bg-[rgba(5,8,18,0.96)] shadow-2xl shadow-slate-200/60 dark:shadow-none"
             style={{
-              background: 'rgba(5,8,18,0.85)',
               backdropFilter: 'blur(50px)',
               borderColor: 'rgba(74,222,128,0.25)',
               boxShadow: '0 0 100px -20px rgba(74,222,128,0.25), inset 0 0 60px rgba(74,222,128,0.03)',
@@ -136,10 +134,10 @@ export default function CTA() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.35 }}
-              className="text-slate-600 dark:text-slate-400 text-lg max-w-xl mx-auto mb-10 font-medium leading-relaxed"
+              className="text-slate-600 dark:text-slate-300 text-lg max-w-xl mx-auto mb-10 font-medium leading-relaxed"
             >
-              Join thousands of candidates who stopped guessing and started landing offers
-              with AI-powered precision. Practice. Verify. Match. Get hired.
+              Stop guessing your next step. Discover your path, practice with AI, close
+              your skill gaps, and match to real opportunities — all in one place.
             </motion.p>
 
             {/* Perks */}
@@ -151,7 +149,7 @@ export default function CTA() {
               className="flex flex-wrap justify-center gap-5 mb-12"
             >
               {perks.map((perk) => (
-                <div key={perk} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 font-medium">
+                <div key={perk} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 font-medium">
                   <CheckCircle2 className="w-4 h-4 text-mint flex-shrink-0"
                     style={{ filter: 'drop-shadow(0 0 5px rgba(74,222,128,0.5))' }} />
                   {perk}
@@ -183,18 +181,17 @@ export default function CTA() {
               <motion.a
                 href="/dashboard"
                 whileHover={{ scale: 1.04 }}
-                className="flex items-center gap-2 px-8 py-5 rounded-full font-black text-sm uppercase tracking-widest text-slate-900 dark:text-white border transition-all"
+                className="flex items-center gap-2 px-8 py-5 rounded-full font-black text-sm uppercase tracking-widest text-slate-900 dark:text-white border transition-all bg-slate-100 dark:bg-[rgba(15,23,42,0.5)]"
                 style={{
-                  background: 'rgba(15,23,42,0.5)',
                   backdropFilter: 'blur(20px)',
-                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderColor: 'rgba(148,163,184,0.25)',
                 }}
               >
                 View Dashboard →
               </motion.a>
             </motion.div>
 
-            <p className="text-xs text-slate-600 font-bold uppercase tracking-widest">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">
               No spam, ever. Unsubscribe anytime.
             </p>
           </div>

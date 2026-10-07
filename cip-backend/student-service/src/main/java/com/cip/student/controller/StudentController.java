@@ -39,10 +39,28 @@ public class StudentController {
         return ResponseEntity.ok(ApiResponse.success(academicProfileService.get(userId)));
     }
 
+    @GetMapping("/academic/all")
+    public ResponseEntity<ApiResponse<java.util.List<AcademicProfileDtos.Response>>> getAllAcademicProfiles(
+            @RequestHeader("X-User-Role") String role) {
+        if (!"ADMIN".equals(role) && !"FACULTY".equals(role)) {
+            return ResponseEntity.status(403).body(ApiResponse.error("Admin or faculty access required"));
+        }
+        return ResponseEntity.ok(ApiResponse.success(academicProfileService.getAll()));
+    }
+
     @GetMapping("/academic/completeness")
     public ResponseEntity<ApiResponse<AcademicProfileDtos.CompletenessResponse>> getCompleteness(
             @RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(ApiResponse.success(academicProfileService.getCompleteness(userId)));
+    }
+
+    @GetMapping("/profiles/skills/all")
+    public ResponseEntity<ApiResponse<java.util.List<StudentDtos.StudentSkillsResponse>>> getAllSkills(
+            @RequestHeader("X-User-Role") String role) {
+        if (!"ADMIN".equals(role) && !"FACULTY".equals(role)) {
+            return ResponseEntity.status(403).body(ApiResponse.error("Admin or faculty access required"));
+        }
+        return ResponseEntity.ok(ApiResponse.success(studentService.getAllSkills()));
     }
 
     @GetMapping("/profile")

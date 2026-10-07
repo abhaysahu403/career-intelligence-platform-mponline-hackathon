@@ -4,7 +4,7 @@ pydantic==2.7.1
 python-multipart==0.0.9
 
 # AI Services
-google-generativeai==0.3.2  # Gemini AI for dynamic question generation
+anthropic>=0.40.0  # Claude for dynamic question generation, resume text, chatbot replies
 
 # Kafka
 kafka-python==2.0.2
@@ -17,7 +17,7 @@ kafka-python==2.0.2
 # ML / Stats
 numpy==1.26.4
 scikit-learn==1.5.0
-sentence-transformers==2.2.2  # For semantic similarity and embeddings
+sentence-transformers>=3.0.0  # For semantic similarity and embeddings (2.2.2 broke: calls huggingface_hub.cached_download, removed in current huggingface_hub)
 
 # PDF parsing (optional)
 # pdfminer.six==20221105  # for PDF resume parsing

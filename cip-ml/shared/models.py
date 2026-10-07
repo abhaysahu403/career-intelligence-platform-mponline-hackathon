@@ -160,6 +160,16 @@ class InterviewQuestionResponse(BaseModel):
     expected_answer: str
 
 
+class ProctorCheckRequest(BaseModel):
+    image_base64: str
+
+
+class ProctorCheckResponse(BaseModel):
+    face_count: int
+    flagged: bool
+    reason: Optional[str] = None
+
+
 # ─── Career Readiness Models ───────────────────────────────────────────────────
 
 class CareerReadinessRequest(BaseModel):

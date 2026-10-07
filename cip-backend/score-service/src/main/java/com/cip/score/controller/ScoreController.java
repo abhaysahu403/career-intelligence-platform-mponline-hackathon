@@ -37,8 +37,8 @@ public class ScoreController {
     @GetMapping("/leaderboard")
     public ResponseEntity<ApiResponse<List<Score>>> getLeaderboard(
             @RequestHeader("X-User-Role") String role) {
-        if (!"ADMIN".equals(role)) {
-            return ResponseEntity.status(403).body(ApiResponse.error("Admin access required"));
+        if (!"ADMIN".equals(role) && !"FACULTY".equals(role)) {
+            return ResponseEntity.status(403).body(ApiResponse.error("Admin or faculty access required"));
         }
         return ResponseEntity.ok(ApiResponse.success(scoreEngine.getLeaderboard()));
     }

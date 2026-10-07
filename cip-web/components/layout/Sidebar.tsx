@@ -3,33 +3,43 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, User, LineChart, Video, Briefcase,
-  Map, Users, Zap, ChevronLeft, LogOut, Settings, ShieldCheck, GraduationCap, FileText
+  Map, Users, Zap, ChevronLeft, LogOut, Settings, ShieldCheck, GraduationCap, FileText,
+  Building2, ClipboardList, Compass, Radar
 } from 'lucide-react';
 import { useAppStore } from '@/store';
 import { cn } from '@/lib/utils';
 import { authApi } from '@/lib/api';
+import { useT } from '@/lib/i18n';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const studentNav = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard'  },
-  { href: '/profile',   icon: User,            label: 'Profile'    },
-  { href: '/interview', icon: Video,           label: 'Interview'  },
-  { href: '/dashboard/certificates', icon: ShieldCheck, label: 'Certificates' },
-  { href: '/jobs',      icon: Briefcase,       label: 'Jobs'       },
-  { href: '/analytics', icon: LineChart,       label: 'Progress'   },
-  { href: '/roadmap',   icon: Map,             label: 'Roadmap'    },
-  { href: '/learning/pathway', icon: GraduationCap, label: 'Learning' },
-  { href: '/resume/builder', icon: FileText, label: 'Resume Builder' },
+  { href: '/dashboard', icon: LayoutDashboard, labelKey: 'nav.dashboard'  },
+  { href: '/profile',   icon: User,            labelKey: 'nav.profile'    },
+  { href: '/career-path', icon: Compass,       labelKey: 'nav.careerPath' },
+  { href: '/interview', icon: Video,           labelKey: 'nav.interview'  },
+  { href: '/roadmap',   icon: Map,             labelKey: 'nav.roadmap'    },
+  { href: '/learning/pathway', icon: GraduationCap, labelKey: 'nav.learning' },
+  { href: '/dashboard/certificates', icon: ShieldCheck, labelKey: 'nav.certificates' },
+  { href: '/resume/builder', icon: FileText, labelKey: 'nav.resumeBuilder' },
+  { href: '/jobs',      icon: Briefcase,       labelKey: 'nav.jobs'       },
+  { href: '/analytics', icon: LineChart,       labelKey: 'nav.progress'   },
 ];
 
-const navItems = studentNav;
+const facultyNav = [
+  { href: '/faculty/dashboard',    icon: LayoutDashboard, labelKey: 'nav.facultyDashboard'    },
+  { href: '/faculty/institution',  icon: Building2,       labelKey: 'nav.institutionOverview' },
+  { href: '/faculty/skill-gap',    icon: Radar,           labelKey: 'nav.skillGap'            },
+  { href: '/faculty/create-interview', icon: ClipboardList, labelKey: 'nav.createInterview'   },
+];
 
 export default function Sidebar() {
   const pathname    = usePathname();
   const router      = useRouter();
   const { user, sidebarOpen, setSidebarOpen, setUser, score } = useAppStore();
+  const t = useT();
+  const navItems = user?.role === 'faculty' ? facultyNav : studentNav;
 
   const handleLogout = async () => {
     try { await authApi.logout(); } catch {}
@@ -70,7 +80,7 @@ export default function Sidebar() {
         <div className="mx-4 mt-5 p-4 rounded-2xl border relative overflow-hidden group transition-all bg-sky-50 dark:bg-[rgba(56,189,248,0.03)] border-sky-200 dark:border-[rgba(56,189,248,0.1)]">
           <div className="absolute inset-0 bg-gradient-to-r from-sky/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative z-10">
-            <p className="text-[9px] uppercase tracking-widest mb-2 font-black text-slate-500">Readiness Score</p>
+            <p className="text-[9px] uppercase tracking-widest mb-2 font-black text-slate-500">{t('sidebar.readinessScore')}</p>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-black font-mono text-sky shadow-[0_0_10px_rgba(56,189,248,0.3)]">{score.readiness}</span>
               <span className="text-[10px] px-2 py-0.5 rounded-lg font-black uppercase tracking-widest text-sky bg-sky-100 dark:bg-[rgba(56,189,248,0.1)] border border-sky-200 dark:border-[rgba(56,189,248,0.2)]">
@@ -103,12 +113,12 @@ export default function Sidebar() {
               )}
               <item.icon size={18} className={cn("flex-shrink-0 transition-all duration-300", active ? "text-sky" : "group-hover:text-sky")} />
               {sidebarOpen && (
-                <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
+                <span className="text-sm font-medium whitespace-nowrap">{t(item.labelKey)}</span>
               )}
               {/* Tooltip when collapsed */}
               {!sidebarOpen && (
                 <div className="absolute left-full ml-2 px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 bg-slate-900 dark:bg-[rgba(15,23,42,0.9)] text-white border border-slate-700 dark:border-[rgba(255,255,255,0.1)] backdrop-blur-[10px]">
-                  {item.label}
+                  {t(item.labelKey)}
                 </div>
               )}
             </Link>
@@ -121,12 +131,12 @@ export default function Sidebar() {
         <Link href="/settings"
           className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all hover:bg-slate-100 dark:hover:bg-white/5 group text-slate-600 dark:text-[#64748B]">
           <Settings size={18} className="flex-shrink-0 group-hover:text-sky" />
-          {sidebarOpen && <span className="text-xs font-black uppercase tracking-widest group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Settings</span>}
+          {sidebarOpen && <span className="text-xs font-black uppercase tracking-widest group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{t('sidebar.settings')}</span>}
         </Link>
         <button onClick={handleLogout}
           className="w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all hover:bg-red-50 dark:hover:bg-red-500/10 group text-slate-600 dark:text-[#64748B]">
           <LogOut size={18} className="flex-shrink-0 group-hover:text-red-400" />
-          {sidebarOpen && <span className="text-xs font-black uppercase tracking-widest group-hover:text-red-400 transition-colors">Logout</span>}
+          {sidebarOpen && <span className="text-xs font-black uppercase tracking-widest group-hover:text-red-400 transition-colors">{t('sidebar.logout')}</span>}
         </button>
 
         {/* User info */}

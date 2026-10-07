@@ -118,6 +118,8 @@ export const analyticsApi = {
   getStudent: (studentId: string) => api.get(`/analytics/student/${studentId}`),
   getCareerAnalysis: (userId: number) => api.get(`/analytics/career/${userId}`),
   downloadProgress: () => api.get('/analytics/download/progress', { responseType: 'blob' }),
+  institutionOverview: () => api.get('/analytics/institution/overview'),
+  skillGapOverview: () => api.get('/analytics/institution/skill-gap'),
 };
 
 // ─── Interview ────────────────────────────────────────────────────────────────
@@ -193,6 +195,8 @@ export const interviewApi = {
       posture: 'STABLE' | 'UNSTABLE';
       voiceClarity: number;
     }) => api.post('/interview/v3/analytics/facial', data),
+    checkProctorFrame: (imageBase64: string) =>
+      api.post('/interview/v3/proctor-check', { imageBase64 }),
     getReport: (id: string) => api.get(`/interview/v3/report/${id}`),
   },
 };
@@ -248,6 +252,7 @@ export const jobsApi = {
     api.get('/jobs/filter', { params }),
   recommended: (params?: { readiness?: number; skills?: string[] }) => api.get('/jobs/recommended', { params }),
   getById:     (id: number) => api.get(`/jobs/${id}`),
+  trackStats:  () => api.get('/jobs/stats/tracks'),
 
   // ─── Government Jobs ──────────────────────────────────────────────────────
   government: {
@@ -280,6 +285,11 @@ export const courseApi = {
 };
 
 // ─── Campus to Corporate ──────────────────────────────────────────────────────
+export const careerPathApi = {
+  discover: (payload: { branch: string; interests: string[]; aptitudeAnswers: { questionId: string; selectedOption: string }[] }) =>
+    api.post('/recommendations/career-path/discover', payload),
+};
+
 export const campusToCorporateApi = {
   getTargets: (type?: string) => api.get('/recommendations/campus-to-corporate/targets', { params: { type } }),
   analyze: (targetCode: string) => api.get('/recommendations/campus-to-corporate', { params: { targetCode } }),

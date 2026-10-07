@@ -6,11 +6,25 @@ import {
   Zap,
   Target,
   ShieldCheck,
+  Compass,
+  Map,
+  Landmark,
+  Languages,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
 
 const features = [
+  {
+    icon: Compass,
+    title: "Career Path Discovery",
+    description:
+      "A short quiz on your branch, interests, and aptitude scores you across real career tracks — with live open-position counts and salary ranges, not guesses.",
+    color: "#F59E0B",
+    gradient: "from-amber-400/20 to-amber-400/5",
+    tag: "Start Here",
+    bullets: ["Interest + aptitude scoring", "Real market data", "Top 3 best-fit tracks"],
+  },
   {
     icon: Brain,
     title: "AI Interview Coach",
@@ -23,7 +37,7 @@ const features = [
   },
   {
     icon: Zap,
-    title: "Skill Intelligence",
+    title: "AI Resume Builder",
     description:
       "Upload your resume and get an instant 360° skill audit. AI identifies your gaps, maps learning paths, and shows exactly what companies want.",
     color: "#818CF8",
@@ -32,14 +46,34 @@ const features = [
     bullets: ["Resume parsing", "Gap mapping", "Learning paths"],
   },
   {
+    icon: Map,
+    title: "Roadmap & Learning",
+    description:
+      "A personalized, step-by-step trajectory from where you are to placement-ready — with the exact courses and certifications to close each gap.",
+    color: "#2DD4BF",
+    gradient: "from-teal-400/20 to-teal-400/5",
+    tag: "Guided Path",
+    bullets: ["Milestone tracking", "Curated courses", "Certification mapping"],
+  },
+  {
     icon: Target,
     title: "Smart Job Matching",
     description:
-      "AI cross-references your skill DNA against 400+ live job postings and surfaces only roles where your match score exceeds 75%. No noise.",
+      "AI cross-references your skill DNA against live job postings and surfaces only roles where your match score exceeds 75%. No noise.",
     color: "#4ADE80",
     gradient: "from-mint/20 to-mint/5",
     tag: "Live Jobs",
-    bullets: ["400+ companies", "Real-time sync", "Match scoring"],
+    bullets: ["Private + government", "Real-time sync", "Match scoring"],
+  },
+  {
+    icon: Landmark,
+    title: "Government Job Matching",
+    description:
+      "Discover PSU, banking, railway, defence, and state/central government openings you're actually eligible for, based on branch, CGPA, and graduation year.",
+    color: "#FB923C",
+    gradient: "from-orange-400/20 to-orange-400/5",
+    tag: "Public Sector",
+    bullets: ["Eligibility matching", "CGPA-aware", "Live vacancy data"],
   },
   {
     icon: ShieldCheck,
@@ -50,6 +84,16 @@ const features = [
     gradient: "from-[#34D399]/20 to-[#34D399]/5",
     tag: "Trust Layer",
     bullets: ["OCR scanning", "Tamper detection", "Verified badges"],
+  },
+  {
+    icon: Languages,
+    title: "English + Hindi Interface",
+    description:
+      "A fully self-contained Hindi/English toggle across navigation and every page heading, built in-house — aligned with NEP 2020's mother-tongue emphasis.",
+    color: "#F472B6",
+    gradient: "from-pink-400/20 to-pink-400/5",
+    tag: "NEP 2020 Aligned",
+    bullets: ["Zero external dependency", "Instant, no reload", "Works fully offline"],
   },
 ];
 
@@ -71,7 +115,7 @@ export default function Features() {
           >
             <Sparkles className="w-3.5 h-3.5 text-mint" />
             <span className="text-xs font-black text-mint uppercase tracking-widest">
-              Four Powerful Modules
+              Eight Powerful Modules
             </span>
           </motion.div>
 
@@ -108,7 +152,7 @@ export default function Features() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.6 }}
               whileHover={{ scale: 1.03, y: -6 }}
-              className="group relative p-6 rounded-[32px] bg-[rgba(8,12,20,0.7)] border backdrop-blur-[40px] saturate-150 transition-all duration-500 cursor-pointer overflow-hidden hover:-translate-y-2"
+              className="group relative p-6 rounded-[32px] bg-white dark:bg-[rgba(8,12,20,0.94)] border backdrop-blur-[40px] saturate-150 transition-all duration-500 cursor-pointer overflow-hidden hover:-translate-y-2 shadow-xl shadow-slate-200/50 dark:shadow-none"
               style={{
                 boxShadow: `0 8px 30px -10px ${f.color}30, inset 0 0 30px ${f.color}15`,
                 borderColor: `${f.color}40`
@@ -156,7 +200,7 @@ export default function Features() {
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm text-[#A1A1AA] leading-relaxed mb-4">
+                <p className="text-sm text-slate-600 dark:text-[#B0B0B8] leading-relaxed mb-4">
                   {f.description}
                 </p>
 
@@ -165,7 +209,7 @@ export default function Features() {
                   {f.bullets.map((b) => (
                     <li
                       key={b}
-                      className="flex items-center gap-2 text-xs text-[#71717A]"
+                      className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#9A9AA2]"
                     >
                       <span
                         className="w-1 h-1 rounded-full"

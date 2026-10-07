@@ -5,6 +5,7 @@ import { X, Sparkles, Award, Calendar, TrendingUp, GraduationCap } from 'lucide-
 import toast from 'react-hot-toast';
 import { courseApi, studentApi } from '@/lib/api';
 import { useAppStore } from '@/store';
+import { useT } from '@/lib/i18n';
 import CourseCard from '@/components/ui/CourseCard';
 import type { AcademicProfile, CourseRecommendations, CourseRecommendationEntry, UserCourseProgress } from '@/types';
 
@@ -18,6 +19,7 @@ const PREFERENCES = [
 export default function LearningPathwayPage() {
   const score = useAppStore(s => s.score);
   const queryClient = useQueryClient();
+  const t = useT();
 
   const [skillGaps, setSkillGaps] = useState<string[]>(['System Design', 'SQL']);
   const [skillInput, setSkillInput] = useState('');
@@ -120,7 +122,7 @@ export default function LearningPathwayPage() {
           </div>
           <div>
             <h2 className="text-3xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">
-              Your Learning Roadmap
+              {t('page.learning.title')}
             </h2>
             {govCertified && (
               <p className="text-sm font-bold text-amber-500 mt-1 flex items-center gap-1.5">

@@ -94,4 +94,9 @@ public class InterviewV3Dtos {
         private String posture;
         private Double voiceClarity;
     }
+
+    @Data @NoArgsConstructor @AllArgsConstructor
+    public static class ProctorCheckRequest {
+        private String imageBase64;
+    }
 }

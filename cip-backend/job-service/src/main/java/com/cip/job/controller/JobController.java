@@ -3,6 +3,7 @@ package com.cip.job.controller;
 import com.cip.common.dto.ApiResponse;
 import com.cip.job.entity.GovernmentJob;
 import com.cip.job.entity.Job;
+import com.cip.job.service.CareerTrackService;
 import com.cip.job.service.GovernmentJobService;
 import com.cip.job.service.JobService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,12 @@ public class JobController {
 
     private final JobService jobService;
     private final GovernmentJobService governmentJobService;
+    private final CareerTrackService careerTrackService;
+
+    @GetMapping("/stats/tracks")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getTrackStats() {
+        return ResponseEntity.ok(ApiResponse.success(careerTrackService.getTrackStats()));
+    }
 
     @GetMapping("/government")
     public ResponseEntity<ApiResponse<List<GovernmentJob>>> getGovernmentJobs(

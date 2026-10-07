@@ -210,7 +210,7 @@ ML_SERVICE_URL=http://cip-ml:8000
 
 ### ML Service:
 ```env
-GEMINI_API_KEY=<your_key>
+ANTHROPIC_API_KEY=<your_key>
 DATABASE_URL=postgresql://postgres:<password>@db:5432/career_intelligence
 ```
 

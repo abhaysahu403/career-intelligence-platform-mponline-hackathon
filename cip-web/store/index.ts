@@ -39,6 +39,11 @@ interface AppState {
   theme: 'light' | 'dark';
   setTheme: (theme: 'light' | 'dark') => void;
   toggleTheme: () => void;
+
+  // Language (UI chrome only — nav labels & page headings, not data content)
+  language: 'en' | 'hi';
+  setLanguage: (language: 'en' | 'hi') => void;
+  toggleLanguage: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -74,6 +79,11 @@ export const useAppStore = create<AppState>()(
       theme: 'dark',
       setTheme: (theme) => set({ theme }),
       toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
+
+      // Language
+      language: 'en',
+      setLanguage: (language) => set({ language }),
+      toggleLanguage: () => set((state) => ({ language: state.language === 'en' ? 'hi' : 'en' })),
     }),
     {
       name: 'cip-store',
@@ -82,6 +92,7 @@ export const useAppStore = create<AppState>()(
         isAuthenticated: state.isAuthenticated,
         sidebarOpen: state.sidebarOpen,
         theme: state.theme,
+        language: state.language,
       }),
     }
   )

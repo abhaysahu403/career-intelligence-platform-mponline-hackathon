@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, Play, Zap, ShieldCheck, Brain, Mic } from "lucide-react";
 
 const floatingStats = [
-  { label: "Match Score", value: "96%", color: "#4ADE80", glow: "rgba(74,222,128,0.3)" },
-  { label: "Trust Level", value: "VERIFIED", color: "#38BDF8", glow: "rgba(56,189,248,0.3)" },
-  { label: "AI Verdict", value: "HIRE", color: "#4ADE80", glow: "rgba(74,222,128,0.5)" },
+  { label: "Match Score", value: "96%", color: "#4ADE80", glow: "rgba(74,222,128,0.3)", top: "4%" },
+  { label: "Trust Level", value: "VERIFIED", color: "#38BDF8", glow: "rgba(56,189,248,0.3)", top: "36%" },
+  { label: "Career Fit", value: "STRONG", color: "#4ADE80", glow: "rgba(74,222,128,0.5)", top: "56%" },
 ];
 
 const pulseRings = [
@@ -17,7 +17,7 @@ const pulseRings = [
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-16">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-10">
       {/* Ambient glow zones */}
       <div className="absolute top-1/4 left-1/4 w-[700px] h-[700px] bg-sky/[0.08] blur-[140px] pointer-events-none rounded-full" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-mint/10 blur-[120px] pointer-events-none rounded-full" />
@@ -32,7 +32,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-3 mb-10"
+              className="inline-flex items-center gap-3 mb-6"
             >
               <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-full border bg-mint/10 dark:bg-mint/5 border-mint/30 dark:border-mint/20"
                 style={{ boxShadow: '0 0 20px rgba(74,222,128,0.1)' }}>
@@ -44,7 +44,7 @@ export default function Hero() {
                 />
                 <span className="text-mint font-mono-jetbrains text-[10px] font-black tracking-[0.3em] uppercase">LIVE</span>
                 <span className="text-slate-600 dark:text-slate-400 text-xs font-bold border-l border-mint/20 pl-3 uppercase tracking-widest">
-                  AI Hiring Intelligence
+                  AI Career Intelligence
                 </span>
               </div>
             </motion.div>
@@ -55,12 +55,12 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1 }}
             >
-              <h1 className="font-syne leading-[0.9] mb-6 tracking-tighter">
-                <span className="block text-6xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white">
-                  Recruitment
+              <h1 className="font-syne leading-[0.95] mb-5 tracking-tighter">
+                <span className="block text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 dark:text-white">
+                  From Campus
                 </span>
                 <span
-                  className="block text-6xl md:text-7xl lg:text-8xl font-black mt-2"
+                  className="block text-5xl md:text-6xl lg:text-7xl font-black mt-1"
                   style={{
                     background: 'linear-gradient(135deg, #38BDF8 0%, #4ADE80 50%, #38BDF8 100%)',
                     backgroundSize: '200% auto',
@@ -70,7 +70,7 @@ export default function Hero() {
                     filter: 'drop-shadow(0 0 30px rgba(74,222,128,0.3))',
                   }}
                 >
-                  Verdict.
+                  to Career. Completely.
                 </span>
               </h1>
             </motion.div>
@@ -79,17 +79,17 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="text-xl text-slate-600 dark:text-slate-400 font-medium max-w-lg mb-4 leading-relaxed"
+              className="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-medium max-w-lg mb-4 leading-relaxed"
             >
-              Unified AI Decision Engine. Analyze. Verify. Decide.
+              AI-guided career paths, mock interviews, resume building, verified certificates, and real job + government postings — everything between graduation and your first offer.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="text-sm text-slate-500 dark:text-slate-500 font-bold uppercase tracking-[0.4em] mb-10"
+              className="text-sm text-slate-500 dark:text-slate-500 font-bold uppercase tracking-[0.35em] mb-7"
             >
-              AI-powered candidate intelligence engine // AV-9942
+              Built for students, scaled for institutions
             </motion.p>
 
             {/* CTAs */}
@@ -97,7 +97,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-4 mb-14"
+              className="flex flex-col sm:flex-row gap-4 mb-8"
             >
               <motion.a
                 href="/auth/signup"
@@ -109,7 +109,7 @@ export default function Hero() {
                   boxShadow: '0 0 40px rgba(74,222,128,0.35), 0 0 80px rgba(56,189,248,0.15)',
                 }}
               >
-                Start Intelligence Engine
+                Start Your Journey
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </motion.a>
               <motion.a
@@ -133,7 +133,7 @@ export default function Hero() {
               {[
                 { icon: Brain, label: "AI Interview Engine", color: "#38BDF8" },
                 { icon: ShieldCheck, label: "OCR Cert Validation", color: "#4ADE80" },
-                { icon: Zap, label: "Real-time Verdict", color: "#818CF8" },
+                { icon: Zap, label: "Live Readiness Score", color: "#818CF8" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2">
                   <item.icon className="w-4 h-4" style={{ color: item.color }} />
@@ -172,7 +172,7 @@ export default function Hero() {
               <img
                 src="/hero-ai-interview.png"
                 alt="AI Interview Session - Student with AI analysis overlay"
-                className="w-full h-[420px] object-cover"
+                className="w-full h-[380px] object-cover"
                 style={{ filter: 'brightness(0.75) saturate(1.1)' }}
               />
 
@@ -224,7 +224,7 @@ export default function Hero() {
                 style={{
                   borderColor: `${stat.glow.replace('rgba', 'rgba').replace(/[\d.]+\)$/, '0.3)')}`,
                   boxShadow: `0 0 20px ${stat.glow}`,
-                  top: `${20 + i * 30}%`,
+                  top: stat.top,
                   left: i % 2 === 0 ? '-60px' : 'auto',
                   right: i % 2 === 1 ? '-60px' : 'auto',
                 }}

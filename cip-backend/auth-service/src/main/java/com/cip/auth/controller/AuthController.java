@@ -38,6 +38,16 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(profile));
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<ApiResponse<java.util.List<AuthDtos.UserProfile>>> listUsers(
+            @RequestParam(defaultValue = "STUDENT") String role,
+            @RequestHeader("X-User-Role") String requesterRole) {
+        if (!"ADMIN".equals(requesterRole) && !"FACULTY".equals(requesterRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("Admin or faculty access required"));
+        }
+        return ResponseEntity.ok(ApiResponse.success(authService.listByRole(role)));
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
             @RequestHeader("Authorization") String authHeader) {

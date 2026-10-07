@@ -11,7 +11,7 @@ import time
 from typing import Optional
 
 from dotenv import load_dotenv
-load_dotenv()  # Load .env file (GEMINI_API_KEY, ELEVENLABS_API_KEY, etc.)
+load_dotenv()  # Load .env file (ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, etc.)
 
 import httpx
 import uvicorn
@@ -29,6 +29,8 @@ from shared.models import (  # noqa: E402
     InterviewEvaluateResponse,
     InterviewQuestionRequest,
     InterviewQuestionResponse,
+    ProctorCheckRequest,
+    ProctorCheckResponse,
     RecommendRequest,
     RecommendResponse,
     ResumeAnalyzeRequest,
@@ -45,9 +47,25 @@ from services.embeddings_service import generate_embedding, calculate_similarity
 from services.resume_rag_service import parse_resume_with_rag, get_resume_context, generate_resume_embeddings  # noqa: E402
 
 try:
-    import google.generativeai as genai  # type: ignore
+    import anthropic  # type: ignore
 except Exception:
-    genai = None
+    anthropic = None
+
+try:
+    import cv2  # type: ignore
+    import numpy as np  # type: ignore
+except Exception:
+    cv2 = None
+    np = None
+
+_face_cascade = None
+
+
+def _get_face_cascade():
+    global _face_cascade
+    if _face_cascade is None and cv2 is not None:
+        _face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    return _face_cascade
 
 
 ROLE_TOPICS = {
@@ -238,12 +256,36 @@ Return JSON only:
         return fallback
 
 
+class _ClaudeResponse:
+    """Mimics the google-generativeai response shape (`.text`) so every call
+    site below (`model.generate_content(prompt).text`) needed zero changes
+    when this was migrated from Gemini to Claude."""
+    def __init__(self, text: str):
+        self.text = text
+
+
+class _ClaudeModel:
+    def __init__(self, client, model_name: str):
+        self._client = client
+        self._model_name = model_name
+
+    def generate_content(self, prompt: str) -> _ClaudeResponse:
+        message = self._client.messages.create(
+            model=self._model_name,
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        text = message.content[0].text if message.content else ""
+        return _ClaudeResponse(text)
+
+
 def _get_gemini_model():
-    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-    if not api_key or genai is None:
+    # Name kept for minimal diff across call sites — this is actually Claude now.
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key or anthropic is None:
         return None
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
+    client = anthropic.Anthropic(api_key=api_key)
+    return _ClaudeModel(client, os.getenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001"))
 
 
 def _json_from_response(text: str) -> dict:
@@ -560,7 +602,7 @@ async def root():
         "version": "1.0.0",
         "status": "operational",
         "kafka_enabled": KAFKA_ENABLED,
-        "gemini_enabled": _get_gemini_model() is not None,
+        "ai_enabled": _get_gemini_model() is not None,
         "endpoints": [
             "POST /ml/resume/analyze",
             "POST /ml/resume/rag-parse",
@@ -593,7 +635,7 @@ async def health_check():
             "resume_rag_service": "active",
         },
         "kafka": "connected" if KAFKA_ENABLED else "disconnected (offline mode)",
-        "gemini": "configured" if _get_gemini_model() is not None else "not configured",
+        "ai": "configured" if _get_gemini_model() is not None else "not configured",
     }
 
 
@@ -881,6 +923,37 @@ async def next_interview_question(request: InterviewQuestionRequest):
         raise HTTPException(status_code=500, detail=f"Question generation failed: {exc}")
 
 
+@app.post("/ml/interview/proctor-check", response_model=ProctorCheckResponse, tags=["Interview"])
+async def proctor_check(request: ProctorCheckRequest):
+    """
+    Webcam-snapshot face count check for live-interview proctoring. Fails open:
+    any decode/CV error returns face_count=-1, flagged=False rather than blocking
+    the interview on a CV hiccup.
+    """
+    if cv2 is None or np is None:
+        return ProctorCheckResponse(face_count=-1, flagged=False, reason=None)
+
+    try:
+        image_data = request.image_base64.split(",")[-1]  # strip data: URL prefix if present
+        frame_bytes = base64.b64decode(image_data)
+        frame = cv2.imdecode(np.frombuffer(frame_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
+        if frame is None:
+            return ProctorCheckResponse(face_count=-1, flagged=False, reason=None)
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        cascade = _get_face_cascade()
+        faces = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+        face_count = len(faces)
+
+        if face_count == 0:
+            return ProctorCheckResponse(face_count=0, flagged=True, reason="No face detected")
+        if face_count > 1:
+            return ProctorCheckResponse(face_count=face_count, flagged=True, reason="Multiple faces detected")
+        return ProctorCheckResponse(face_count=1, flagged=False, reason=None)
+    except Exception:
+        return ProctorCheckResponse(face_count=-1, flagged=False, reason=None)
+
+
 @app.post("/ml/interview/evaluate", response_model=InterviewEvaluateResponse, tags=["Interview"])
 async def evaluate_interview_endpoint(request: InterviewEvaluateRequest, background_tasks: BackgroundTasks):
     try:
@@ -980,11 +1053,11 @@ async def coach_interview_answer(payload: dict):
 
 
 _CHATBOT_SYSTEM_CONTEXT = {
-    "GLOBAL": "You are the CIP Assistant, a helpful guide for the Career Intelligence Platform, a career-readiness app for Madhya Pradesh engineering students covering mock interviews, resume building, certificate validation, and job matching.",
-    "INTERVIEW": "You are the CIP Assistant helping a student currently practicing mock interviews on the platform. Focus answers on interview prep, scoring, and technique.",
-    "JOB": "You are the CIP Assistant helping a student browsing job and government exam listings. Focus answers on job matching, eligibility, and application guidance.",
-    "CERTIFICATE": "You are the CIP Assistant helping a student with certificate upload and validation. Focus answers on how authenticity scoring, OCR, and issuer validation work.",
-    "ANALYTICS": "You are the CIP Assistant helping a student understand their readiness score and analytics dashboard. Focus answers on interpreting scores and what to improve next.",
+    "GLOBAL": "You are the CIP Assistant, a knowledgeable career mentor embedded in the Career Intelligence Platform, a career-readiness app for Madhya Pradesh engineering students covering mock interviews, resume building, certificate validation, and job matching.",
+    "INTERVIEW": "You are the CIP Assistant, currently sitting with a student on the platform's mock interview screen. You can go deep on interview prep, scoring, and technique, but you are not limited to that topic.",
+    "JOB": "You are the CIP Assistant, currently sitting with a student on the platform's job and government exam listings screen. You can go deep on job matching, eligibility, and applications, but you are not limited to that topic.",
+    "CERTIFICATE": "You are the CIP Assistant, currently sitting with a student on the platform's certificate upload/validation screen. You can go deep on authenticity scoring, OCR, and issuer validation, but you are not limited to that topic.",
+    "ANALYTICS": "You are the CIP Assistant, currently sitting with a student on the platform's readiness score and analytics screen. You can go deep on interpreting scores and what to improve next, but you are not limited to that topic.",
 }
 
 _CHATBOT_FALLBACK_SUGGESTIONS = {
@@ -1026,14 +1099,20 @@ async def chatbot_respond(payload: dict):
     prompt = f"""
     {_CHATBOT_SYSTEM_CONTEXT[session_type]}
 
-    Relevant context about the student's current screen:
+    Relevant context about the student's current screen (use it if it helps, ignore it if the
+    question is unrelated):
     {context_lines}
 
     Student's message: "{message}"
 
-    Reply helpfully and concisely (2-4 sentences max). Do not invent specific numbers
-    (scores, percentages, counts) you were not given in the context above — speak
-    generally if exact data isn't provided.
+    Answer the student's actual question directly and helpfully — you are a real career mentor,
+    not just a platform tour guide. If they ask what skills/topics to learn, what a technology or
+    concept means, how to prepare for something, or any general career/study question, give them
+    real, substantive guidance (e.g. name specific skills, topics, or steps) even if the platform
+    hasn't given you their exact scores — general advice is far more useful than asking a
+    clarifying question back. Only ask a follow-up question if you genuinely cannot give any
+    useful answer without it. Do not invent specific numbers (scores, percentages, counts) you
+    were not given in the context above. Reply in 2-5 sentences, plain and conversational.
     """
 
     try:
@@ -1045,6 +1124,115 @@ async def chatbot_respond(payload: dict):
             "reply": "Sorry, I'm having trouble answering that right now. Could you try rephrasing?",
             "suggestions": fallback_suggestions,
         })
+
+
+# ============================================================================
+# CAREER PATH DISCOVERY
+# ============================================================================
+
+_CAREER_TRACKS = {
+    "SOFTWARE_DEV": "Software Development",
+    "DATA_AI": "Data & AI",
+    "DEVOPS_CLOUD": "DevOps & Cloud",
+    "QA_TESTING": "QA & Testing",
+    "CORE_ENGINEERING": "Core Engineering",
+    "GOVERNMENT_SERVICES": "Government Services",
+    "BANKING": "Banking & Finance",
+}
+
+# interest label -> {track: weight}. Deliberately simple/deterministic so this
+# never depends on the AI model being available/configured.
+_INTEREST_WEIGHTS = {
+    "Building software/apps": {"SOFTWARE_DEV": 3, "DEVOPS_CLOUD": 1},
+    "Data & numbers": {"DATA_AI": 3, "BANKING": 1},
+    "Hardware & core engineering": {"CORE_ENGINEERING": 3},
+    "Stability & government service": {"GOVERNMENT_SERVICES": 3, "BANKING": 1},
+    "Finance & banking": {"BANKING": 3, "DATA_AI": 1},
+    "Infrastructure & systems": {"DEVOPS_CLOUD": 3, "SOFTWARE_DEV": 1},
+    "Quality & precision": {"QA_TESTING": 3, "SOFTWARE_DEV": 1},
+}
+
+# aptitude question option -> {track: weight}, keyed by "q{n}:{option}"
+_APTITUDE_WEIGHTS = {
+    "q1:a": {"SOFTWARE_DEV": 2}, "q1:b": {"DATA_AI": 2}, "q1:c": {"CORE_ENGINEERING": 2}, "q1:d": {"GOVERNMENT_SERVICES": 2},
+    "q2:a": {"DEVOPS_CLOUD": 2}, "q2:b": {"QA_TESTING": 2}, "q2:c": {"BANKING": 2}, "q2:d": {"SOFTWARE_DEV": 2},
+    "q3:a": {"DATA_AI": 2}, "q3:b": {"SOFTWARE_DEV": 2}, "q3:c": {"GOVERNMENT_SERVICES": 2}, "q3:d": {"CORE_ENGINEERING": 2},
+    "q4:a": {"QA_TESTING": 2}, "q4:b": {"DEVOPS_CLOUD": 2}, "q4:c": {"BANKING": 2}, "q4:d": {"DATA_AI": 2},
+    "q5:a": {"GOVERNMENT_SERVICES": 2}, "q5:b": {"CORE_ENGINEERING": 2}, "q5:c": {"SOFTWARE_DEV": 2}, "q5:d": {"DEVOPS_CLOUD": 2},
+}
+
+_CAREER_TRACK_FALLBACK_REASONING = {
+    "SOFTWARE_DEV": "Your answers lean toward building and shipping software — a strong fit for backend, full-stack, or mobile development roles.",
+    "DATA_AI": "You show a pull toward working with data and patterns — data analysis, data science, and ML roles would suit you.",
+    "DEVOPS_CLOUD": "You're drawn to systems and infrastructure — DevOps, cloud, and platform engineering roles fit this profile.",
+    "QA_TESTING": "You value precision and catching what others miss — QA and test automation roles reward exactly that mindset.",
+    "CORE_ENGINEERING": "Your interests point toward core/hardware engineering rather than pure software roles.",
+    "GOVERNMENT_SERVICES": "You value stability and public service — government exams (SSC/UPSC/PSU/Railway) are a strong track for you.",
+    "BANKING": "You lean toward structured, numbers-driven work — banking and financial-sector roles (IBPS/SBI/RBI) fit well.",
+}
+
+
+def _score_career_tracks(interests: list[str], aptitude_answers: list[dict]) -> list[tuple[str, float]]:
+    scores: dict[str, float] = {code: 0.0 for code in _CAREER_TRACKS}
+    for interest in interests or []:
+        for track, weight in _INTEREST_WEIGHTS.get(interest, {}).items():
+            scores[track] = scores.get(track, 0) + weight
+    for answer in aptitude_answers or []:
+        key = f"{str(answer.get('question_id', '')).lower()}:{str(answer.get('selected_option', '')).lower()}"
+        for track, weight in _APTITUDE_WEIGHTS.get(key, {}).items():
+            scores[track] = scores.get(track, 0) + weight
+    ranked = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
+    return ranked
+
+
+@app.post("/ml/career-path/discover", tags=["Career"])
+async def career_path_discover(payload: dict):
+    """
+    Deterministic interest/aptitude scoring always runs first (never depends on
+    the AI model being available). The AI model, when configured, only enriches
+    the top-3 tracks with a short "why this fits you" narrative; on any failure
+    it falls back to the canned per-track reasoning below.
+    """
+    branch = str(payload.get("branch", "")).strip()
+    interests = payload.get("interests") or []
+    aptitude_answers = payload.get("aptitude_answers") or []
+
+    ranked = _score_career_tracks(interests, aptitude_answers)
+    total = sum(score for _, score in ranked) or 1.0
+    top3 = [(code, score) for code, score in ranked if score > 0][:3] or ranked[:3]
+
+    tracks = [
+        {
+            "code": code,
+            "label": _CAREER_TRACKS[code],
+            "confidence": round((score / total) * 100, 1),
+            "reasoning": _CAREER_TRACK_FALLBACK_REASONING[code],
+        }
+        for code, score in top3
+    ]
+
+    model = _get_gemini_model()
+    if model:
+        try:
+            track_lines = "\n".join(f"- {t['label']} ({t['code']})" for t in tracks)
+            prompt = f"""A student (branch: {branch or "unspecified"}) took a career-interest quiz.
+Their top-matched career tracks, already determined by a scoring algorithm, are:
+{track_lines}
+
+Interests selected: {", ".join(interests) or "none"}
+
+For EACH track above, write one encouraging, specific 1-2 sentence reason it fits this student.
+Return JSON only: {{"reasoning": {{"<TRACK_CODE>": "string", ...}}}}"""
+            response = model.generate_content(prompt)
+            data = _json_from_response(response.text)
+            reasoning_map = data.get("reasoning", {})
+            for t in tracks:
+                if reasoning_map.get(t["code"]):
+                    t["reasoning"] = reasoning_map[t["code"]]
+        except Exception:
+            pass  # keep the deterministic fallback reasoning already set above
+
+    return JSONResponse(content={"tracks": tracks})
 
 
 @app.post("/ml/readiness", response_model=CareerReadinessResponse, tags=["Career"])

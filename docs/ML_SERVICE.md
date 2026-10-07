@@ -432,8 +432,8 @@ Match Score = (Skill Match × 50%) + (Performance × 30%) - (Gap Penalty × 20%)
 
 ```bash
 # Required
-GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+CLAUDE_MODEL=claude-haiku-4-5-20251001
 
 # Optional
 ELEVENLABS_API_KEY=your_elevenlabs_key  # For voice synthesis

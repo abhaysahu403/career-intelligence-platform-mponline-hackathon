@@ -38,6 +38,8 @@ service:
   score-service: ${SCORE_SERVICE_URL:http://score-service:8088}
   student-service: ${STUDENT_SERVICE_URL:http://student-service:8082}
   interview-service: ${INTERVIEW_SERVICE_URL:http://interview-service:8083}
+  auth-service: ${AUTH_SERVICE_URL:http://auth-service:8081}
+  job-service: ${JOB_SERVICE_URL:http://job-service:8086}
 
 management:
   endpoints:

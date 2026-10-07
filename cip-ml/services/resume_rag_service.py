@@ -15,7 +15,28 @@ _resume_store: Dict[str, Dict[str, Any]] = {}
 
 # Global models
 _sentence_model = None
-_gemini_model = None
+_claude_model = None
+
+
+class _ClaudeResponse:
+    """Mimics the google-generativeai response shape (`.text`)."""
+    def __init__(self, text: str):
+        self.text = text
+
+
+class _ClaudeModel:
+    def __init__(self, client, model_name: str):
+        self._client = client
+        self._model_name = model_name
+
+    def generate_content(self, prompt: str) -> "_ClaudeResponse":
+        message = self._client.messages.create(
+            model=self._model_name,
+            max_tokens=2048,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        text = message.content[0].text if message.content else ""
+        return _ClaudeResponse(text)
 
 
 def _get_sentence_model():
@@ -34,27 +55,27 @@ def _get_sentence_model():
 
 
 def _get_gemini_model():
-    """Lazy load the Gemini model"""
-    global _gemini_model
-    if _gemini_model is None:
+    """Lazy load the AI model (Claude — name kept for minimal diff)."""
+    global _claude_model
+    if _claude_model is None:
         try:
-            import google.generativeai as genai
-            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            import anthropic
+            api_key = os.getenv("ANTHROPIC_API_KEY")
             if not api_key:
-                logger.warning("⚠️ GEMINI_API_KEY not found, RAG parsing will use fallback")
+                logger.warning("⚠️ ANTHROPIC_API_KEY not found, RAG parsing will use fallback")
                 return None
-            
-            genai.configure(api_key=api_key)
-            _gemini_model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp"))
-            logger.info("✅ Gemini model configured for RAG")
+
+            client = anthropic.Anthropic(api_key=api_key)
+            _claude_model = _ClaudeModel(client, os.getenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001"))
+            logger.info("✅ Claude model configured for RAG")
         except Exception as e:
-            logger.warning(f"⚠️ Failed to configure Gemini: {e}")
+            logger.warning(f"⚠️ Failed to configure Claude: {e}")
             return None
-    return _gemini_model
+    return _claude_model
 
 
 def _extract_json_from_response(text: str) -> dict:
-    """Extract JSON from Gemini response, handling markdown formatting"""
+    """Extract JSON from the AI model's response, handling markdown formatting"""
     cleaned = text.strip()
     
     # Remove markdown code blocks
@@ -71,7 +92,7 @@ def _extract_json_from_response(text: str) -> dict:
 
 
 def _fallback_parse_resume(text: str) -> Dict[str, Any]:
-    """Fallback resume parsing when Gemini is unavailable"""
+    """Fallback resume parsing when the AI model is unavailable"""
     logger.info("📝 Using fallback resume parsing")
     
     # Simple keyword-based extraction
@@ -132,13 +153,13 @@ def parse_resume_with_rag(text: str, resume_id: str = None) -> Dict[str, Any]:
         if resume_id is None:
             resume_id = f"resume_{hash(text)}"
         
-        gemini_model = _get_gemini_model()
-        
-        if gemini_model is None:
+        ai_model = _get_gemini_model()
+
+        if ai_model is None:
             # Use fallback parsing
             parsed_data = _fallback_parse_resume(text)
         else:
-            # Use Gemini for structured extraction
+            # Use Claude for structured extraction
             prompt = f"""
 Extract the following information from this resume in JSON format:
 - skills: list of technical skills (strings)
@@ -162,11 +183,11 @@ Example format:
 """
             
             try:
-                response = gemini_model.generate_content(prompt)
+                response = ai_model.generate_content(prompt)
                 parsed_data = _extract_json_from_response(response.text)
-                logger.info("✅ Gemini parsing successful")
+                logger.info("✅ Claude parsing successful")
             except Exception as e:
-                logger.warning(f"⚠️ Gemini parsing failed: {e}, using fallback")
+                logger.warning(f"⚠️ Claude parsing failed: {e}, using fallback")
                 parsed_data = _fallback_parse_resume(text)
         
         # Generate embeddings for each section

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { roadmapApi, analyticsApi } from '@/lib/api';
 import { useAppStore } from '@/store';
+import { useT } from '@/lib/i18n';
 import type { RoadmapTask, Analytics } from '@/types';
 
 const categoryConfig = {
@@ -26,6 +27,7 @@ const unwrapPayload = <T,>(response: { data: T } | { data: { data: T } }) =>
 export default function RoadmapPage() {
   const qc = useQueryClient();
   const score = useAppStore(s => s.score);
+  const t = useT();
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set([1, 2]));
 
   const { data: tasks } = useQuery({
@@ -126,11 +128,11 @@ export default function RoadmapPage() {
             <div className="flex items-center gap-3 mb-2">
               <Trophy size={24} className="text-amber-400" />
               <h2 className="text-3xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">
-                Mission Roadmap
+                {t('page.roadmap.title')}
               </h2>
             </div>
             <p className="text-sm font-medium uppercase tracking-wide text-slate-500 mt-1">
-              Personalized trajectory from preparation to placement
+              {t('page.roadmap.subtitle')}
             </p>
             <div className="flex items-center gap-3 mt-3">
               <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>

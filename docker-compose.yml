@@ -310,6 +310,7 @@ services:
     environment:
       <<: *common-backend-env
       SERVER_PORT: 8089
+      JOB_SERVICE_URL: http://job-service:8086
     networks:
       - cip-network
     depends_on:
@@ -350,11 +351,11 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     environment:
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      # gemini-2.5-flash was retired by Google ("no longer available to new users");
-      # gemini-3.8-flash is the replacement they point to. Override via .env if this
-      # changes again.
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Cheapest/fastest current Claude model — plenty capable for these short
+      # prompts (resume text, interview Q&A, chatbot replies). Override via .env
+      # if you want a higher-quality model for a specific budget.
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-haiku-4-5-20251001}
       DATABASE_URL: postgresql://cip_user:${DB_PASSWORD:-cip_password_123}@postgres:5432/career_intelligence
       REDIS_URL: redis://:${REDIS_PASSWORD:-cip-redis-pass}@redis:6379/0
       ENV: docker

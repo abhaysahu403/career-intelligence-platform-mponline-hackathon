@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import { AlertTriangle, Brain, LineChart as LineChartIcon, Target } from 'lucide-react';
 import { analyticsApi } from '@/lib/api';
+import { useT } from '@/lib/i18n';
 import type { Analytics } from '@/types';
 
 const unwrapPayload = <T,>(response: { data: T } | { data: { data: T } }) =>
@@ -13,6 +14,7 @@ const unwrapPayload = <T,>(response: { data: T } | { data: { data: T } }) =>
     : (response.data as T);
 
 export default function AnalyticsPage() {
+  const t = useT();
   const { data: analytics, isLoading } = useQuery({
     queryKey: ['analytics'],
     queryFn: async () => {
@@ -69,10 +71,10 @@ export default function AnalyticsPage() {
         </div>
         <div>
           <h2 className="text-3xl font-syne font-black text-slate-900 dark:text-white uppercase tracking-widest">
-            Intelligence Matrix
+            {t('page.analytics.title')}
           </h2>
           <p className="text-sm font-medium uppercase tracking-wide text-slate-600 dark:text-slate-500 mt-1">
-            Deep forensic analysis of your career readiness
+            {t('page.analytics.subtitle')}
           </p>
         </div>
       </div>

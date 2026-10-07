@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
     Page<Job> findByActiveTrue(Pageable pageable);
+    List<Job> findAllByActiveTrue();
 
     @Query("SELECT j FROM Job j WHERE j.active = true AND j.minimumReadinessScore <= :readiness")
     List<Job> findJobsMatchingReadiness(Double readiness);

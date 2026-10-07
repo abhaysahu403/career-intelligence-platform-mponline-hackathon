@@ -30,6 +30,24 @@ public class AnalyticsController {
         return ResponseEntity.ok(ApiResponse.success(analyticsService.getPlatformAnalytics()));
     }
 
+    @GetMapping("/institution/overview")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getInstitutionOverview(
+            @RequestHeader("X-User-Role") String role) {
+        if (!"ADMIN".equals(role) && !"FACULTY".equals(role)) {
+            return ResponseEntity.status(403).body(ApiResponse.error("Admin or faculty access required"));
+        }
+        return ResponseEntity.ok(ApiResponse.success(analyticsService.getInstitutionOverview()));
+    }
+
+    @GetMapping("/institution/skill-gap")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getSkillGapOverview(
+            @RequestHeader("X-User-Role") String role) {
+        if (!"ADMIN".equals(role) && !"FACULTY".equals(role)) {
+            return ResponseEntity.status(403).body(ApiResponse.error("Admin or faculty access required"));
+        }
+        return ResponseEntity.ok(ApiResponse.success(analyticsService.getSkillGapOverview()));
+    }
+
     @GetMapping("/student/{userId}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getStudentAnalytics(
             @PathVariable Long userId,

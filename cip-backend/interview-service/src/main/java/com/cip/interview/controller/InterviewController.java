@@ -134,6 +134,13 @@ public class InterviewController {
         return ResponseEntity.ok(ApiResponse.success("saved"));
     }
 
+    @PostMapping("/v3/proctor-check")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> proctorCheckV3(
+            @RequestBody InterviewV3Dtos.ProctorCheckRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(
+                interviewV3Service.checkProctorFrame(request.getImageBase64())));
+    }
+
     @GetMapping("/v3/report/{id}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getReportV3(
             @RequestHeader("X-User-Id") Long userId,

@@ -37,7 +37,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-slate-500 leading-relaxed mb-6 font-medium">
-              AI-powered career intelligence platform for serious candidates.
+              AI-powered career readiness platform for students and institutions.
             </p>
             {/* System status */}
             <div className="flex items-center gap-2 mb-5 px-3 py-2 rounded-xl border"
@@ -108,7 +108,7 @@ export default function Footer() {
             >
               <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 inline mx-0.5" />
             </motion.span>
-            and AI for ambitious candidates
+            and AI for students building their careers
           </div>
           <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest"
             style={{ color: '#38BDF8' }}>

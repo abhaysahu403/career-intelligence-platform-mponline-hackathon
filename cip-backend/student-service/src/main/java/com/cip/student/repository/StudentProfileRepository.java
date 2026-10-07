@@ -14,4 +14,5 @@ public interface StudentProfileRepository extends JpaRepository<StudentProfile, 
     List<StudentProfile> findByGraduationYear(Integer graduationYear);
     Optional<StudentProfile> findBySlug(String slug);
     boolean existsBySlug(String slug);
+    List<StudentProfile> findBySkillsIsNotNull();
 }

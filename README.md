@@ -202,7 +202,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Create .env file
-echo "GEMINI_API_KEY=your_gemini_api_key" > .env
+echo "ANTHROPIC_API_KEY=your_anthropic_api_key" > .env
 
 # Run ML service
 python main.py

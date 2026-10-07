@@ -94,6 +94,22 @@ public class StudentService {
         return candidate;
     }
 
+    public List<StudentDtos.StudentSkillsResponse> getAllSkills() {
+        return profileRepository.findBySkillsIsNotNull().stream()
+                .map(profile -> {
+                    List<String> skills = Collections.emptyList();
+                    try {
+                        skills = objectMapper.readValue(profile.getSkills(), new TypeReference<List<String>>() {});
+                    } catch (Exception ignored) {
+                    }
+                    return StudentDtos.StudentSkillsResponse.builder()
+                            .userId(profile.getUserId())
+                            .skills(skills)
+                            .build();
+                })
+                .toList();
+    }
+
     @SuppressWarnings("unchecked")
     public StudentDtos.PublicProfileResponse getPublicProfile(String slug) {
         StudentProfile profile = profileRepository.findBySlug(slug)

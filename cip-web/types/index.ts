@@ -476,6 +476,55 @@ export interface StudentRecord {
   interviewScore?: number;
 }
 
+export interface BranchStat {
+  branch: string;
+  studentCount: number;
+  avgReadiness: number;
+  jobReadyCount: number;
+  atRiskCount: number;
+}
+
+export interface CareerTrackListing {
+  company: string;
+  role: string;
+  sourceUrl: string;
+}
+
+export interface CareerTrack {
+  code: string;
+  label: string;
+  confidence?: number;
+  reasoning: string;
+  openPositions?: number;
+  avgSalaryLpa?: number | null;
+  sampleListings?: CareerTrackListing[];
+}
+
+export interface InstitutionOverview {
+  totalStudents: number;
+  avgReadiness: number;
+  jobReadyCount: number;
+  atRiskCount: number;
+  branchStats: BranchStat[];
+  atRiskStudents: StudentRecord[];
+}
+
+export interface SkillDemand {
+  skill: string;
+  demandCount: number;
+  demandPct: number;
+  studentsWithSkill: number;
+  coveragePct: number;
+  status: RiskLevel; // here HIGH means a high skill gap (low coverage), not high readiness
+}
+
+export interface SkillGapOverview {
+  totalActiveJobs: number;
+  totalStudents: number;
+  topDemandedSkills: SkillDemand[];
+  criticalGaps: SkillDemand[];
+}
+
 // ─── Resume Builder ─────────────────────────────────────────────────────────────
 export type ResumeTemplateId = 'CLEAN_PROFESSIONAL' | 'MODERN_TECH' | 'EXECUTIVE';
 

@@ -70,6 +70,12 @@ public class AcademicProfileService {
         return toResponse(profile, computeAcademicScore(profile), computeExperienceScore(profile));
     }
 
+    public List<AcademicProfileDtos.Response> getAll() {
+        return academicProfileRepository.findAll().stream()
+                .map(p -> toResponse(p, computeAcademicScore(p), computeExperienceScore(p)))
+                .toList();
+    }
+
     public AcademicProfileDtos.CompletenessResponse getCompleteness(Long userId) {
         AcademicProfile profile = academicProfileRepository.findByUserId(userId).orElse(null);
         int totalFields = 13;

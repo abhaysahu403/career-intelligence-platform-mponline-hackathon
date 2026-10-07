@@ -62,7 +62,7 @@ const jobMatches = [
 ];
 
 const systemFeatures = [
-  { icon: Search, label: "AI-Powered Matching", desc: "Matches 400+ live jobs against your skill DNA in real-time", color: "#38BDF8" },
+  { icon: Search, label: "AI-Powered Matching", desc: "Matches live jobs against your skill DNA in real-time", color: "#38BDF8" },
   { icon: Filter, label: "Smart Filters", desc: "Filter by salary, location, role type, company tier & more", color: "#4ADE80" },
   { icon: TrendingUp, label: "Market Intelligence", desc: "Live salary benchmarks, hiring trends, and demand signals", color: "#818CF8" },
   { icon: Globe, label: "Pan-India + Remote", desc: "Jobs from startups to FAANG, internships to full-time roles", color: "#34D399" },
@@ -117,9 +117,9 @@ export default function HowItWorks() {
               transition={{ delay: 0.2 }}
               className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-10 font-medium"
             >
-              Our AI cross-references your skill DNA, interview performance, and verified certificates 
-              against 400+ live job postings — surfacing only roles where your readiness score exceeds 80%.
-              No noise. Only real opportunities.
+              Our AI cross-references your skill DNA, interview performance, and verified certificates
+              against live private and government job postings — surfacing only roles that clear your
+              readiness bar. No noise. Only real opportunities.
             </motion.p>
 
             {/* Feature grid */}
@@ -184,7 +184,7 @@ export default function HowItWorks() {
                   <span className="text-[11px] font-black text-mint uppercase tracking-widest">AI Job Intelligence — LIVE</span>
                 </div>
                 <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                  427 matches found
+                  194+ postings tracked
                 </div>
               </div>
 
@@ -272,7 +272,7 @@ export default function HowItWorks() {
               {/* Footer */}
               <div className="px-6 py-3 border-t flex items-center justify-between"
                 style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
-                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Showing 4 of 427 AI-matched opportunities</span>
+                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Showing 4 sample AI-matched opportunities</span>
                 <span className="text-[10px] font-black text-sky uppercase tracking-widest cursor-pointer hover:text-slate-900 dark:text-white transition-colors">View All →</span>
               </div>
             </div>
@@ -280,16 +280,16 @@ export default function HowItWorks() {
             {/* Stats row */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { value: "427+", label: "Live Jobs", color: "#4ADE80" },
+                { value: "194+", label: "Live Jobs", color: "#4ADE80" },
                 { value: "89%", label: "Avg Match Rate", color: "#38BDF8" },
                 { value: "₹28L", label: "Avg Package", color: "#818CF8" },
               ].map(stat => (
-                <div key={stat.label} className="rounded-2xl border p-3 text-center"
-                  style={{ background: 'rgba(8,12,20,0.7)', borderColor: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)' }}>
+                <div key={stat.label} className="rounded-2xl border p-3 text-center bg-white dark:bg-[rgba(8,12,20,0.94)] shadow-lg shadow-slate-200/50 dark:shadow-none"
+                  style={{ borderColor: 'rgba(148,163,184,0.2)', backdropFilter: 'blur(20px)' }}>
                   <p className="font-black text-xl leading-none mb-1" style={{ color: stat.color, textShadow: `0 0 10px ${stat.color}40` }}>
                     {stat.value}
                   </p>
-                  <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{stat.label}</p>
+                  <p className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{stat.label}</p>
                 </div>
               ))}
             </div>
